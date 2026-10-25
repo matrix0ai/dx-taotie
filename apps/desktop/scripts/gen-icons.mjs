@@ -5,12 +5,11 @@
 //                                       resources/icon.png (512, shown in dev)
 //       the ornate app icon, already drawn on the macOS icon grid (824 px tile
 //       inset 100 px); also -> build/icon.icns (macOS only, iconutil)
-//   apps/client/public/favicon.svg  ->  build/tray-source.png
-//       the simple mark: the app icon is too detailed for 16-32 px tray slots,
-//       so scripts/make-tray-icons.mjs cuts tray.ico / tray.png from this
-//   resources/tray-template.svg        ->  resources/trayTemplate.png (16) and
-//                                       resources/trayTemplate@2x.png (32)
-//       black-on-transparent macOS template image.
+//   build/tray-template-16.svg      ->  resources/trayTemplate.png (16)
+//   build/tray-template.svg         ->  resources/trayTemplate@2x.png (32)
+//       black-on-transparent macOS template images, each drawn on its own pixel
+//       grid (the app icon is far too detailed for a menu-bar slot)
+//   build/tray-color.svg            ->  see scripts/make-tray-icons.mjs
 //
 // Run from apps/desktop:  node scripts/gen-icons.mjs
 import { execFileSync } from 'node:child_process';
@@ -24,15 +23,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const buildDir = path.resolve(__dirname, '../build');
 const resources = path.resolve(__dirname, '../resources');
 const appIconSvg = path.join(buildDir, 'icon.svg');
-const favicon = path.resolve(__dirname, '../../client/public/favicon.svg');
 
-const transparent = { r: 0, g: 0, b: 0, alpha: 0 };
 const icon = await sharp(fs.readFileSync(appIconSvg), { density: 384 }).resize(1024, 1024).png().toBuffer();
 fs.writeFileSync(path.join(buildDir, 'icon.png'), icon);
 
-const tile = await sharp(fs.readFileSync(favicon), { density: 1200 }).resize(824, 824).png().toBuffer();
-await sharp(tile).extend({ top: 100, bottom: 100, left: 100, right: 100, background: transparent })
-  .png().toFile(path.join(buildDir, 'tray-source.png'));
 await sharp(icon).resize(512, 512).png().toFile(path.join(resources, 'icon.png'));
 
 if (process.platform === 'darwin') {
@@ -45,6 +39,6 @@ if (process.platform === 'darwin') {
   execFileSync('iconutil', ['-c', 'icns', iconset, '-o', path.join(buildDir, 'icon.icns')]);
 }
 
-const tray = fs.readFileSync(path.join(buildDir, 'tray-template.svg'));
-await sharp(tray, { density: 1200 }).resize(16, 16).png().toFile(path.join(resources, 'trayTemplate.png'));
-await sharp(tray, { density: 1200 }).resize(32, 32).png().toFile(path.join(resources, 'trayTemplate@2x.png'));
+// 72 dpi: the SVGs are authored at 1 unit = 1 px, so they render at exactly 16 / 32 px.
+await sharp(path.join(buildDir, 'tray-template-16.svg'), { density: 72 }).png().toFile(path.join(resources, 'trayTemplate.png'));
+await sharp(path.join(buildDir, 'tray-template.svg'), { density: 72 }).png().toFile(path.join(resources, 'trayTemplate@2x.png'));

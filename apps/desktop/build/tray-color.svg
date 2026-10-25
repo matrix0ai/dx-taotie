@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Taotie tray icon for Windows/Linux (no tinting): bone mask on the dark tile. -->
+  <defs>
+    <mask id="m">
+      <rect width="32" height="32" fill="#fff"/>
+      <g fill="#000">
+        <path id="eye" d="M8,16.5 L10.5,14.5 L14.2,14.5 L15.2,17 L13.2,19 L9.5,19 Z"/>
+        <use href="#eye" transform="translate(32,0) scale(-1,1)"/>
+        <path d="M10,22.5 H22 L21,26.5 H11 Z"/>
+      </g>
+    </mask>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0b0a09"/>
+  <g transform="translate(8 9) scale(1.5)" fill="#f4ead2" stroke="#f4ead2">
+    <g mask="url(#m)" stroke="none"><path d="M8,12 H24 L26,17 L23,28 H9 L6,17 Z"/></g>
+    <path id="horn" d="M12,11.5 C11,6 6,4 4,7 C3,9 5,11 7,10" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <use href="#horn" transform="translate(32,0) scale(-1,1)"/>
+    <g stroke="none"><circle cx="12.6" cy="16.8" r="1.5" fill="#b5251b"/><circle cx="19.4" cy="16.8" r="1.5" fill="#b5251b"/>
+      <path d="M11.5,22.5 H14 L12.7,25.3 Z M18,22.5 H20.5 L19.3,25.3 Z"/></g>
+  </g>
+</svg>

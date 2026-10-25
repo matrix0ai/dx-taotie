@@ -1,17 +1,18 @@
 #!/usr/bin/env node
-// Regenerates the non-macOS tray icons from build/tray-source.png (#1353).
+// Regenerates the non-macOS tray icons (#1353) from build/tray-color.svg,
+// rendered from the vector at every size so each one is crisp.
 //
 // The macOS tray uses trayTemplate.png, a black-on-transparent template image
-// that the menu bar tints for light/dark. Windows and Linux do not tint, so
-// that glyph would be black on a dark taskbar, and Shell_NotifyIcon wants a
-// multi-size .ico anyway. The app icon (dark tile, light dot, grey arc) reads
-// on both dark and light taskbars, so the tray icons are cut from it:
+// that the menu bar tints for light/dark (see gen-icons.mjs). Windows and Linux
+// do not tint, so that glyph would be black on a dark taskbar, and
+// Shell_NotifyIcon wants a multi-size .ico anyway. The colour glyph, a bone
+// mask on the dark tile, reads on both dark and light taskbars:
 //
 //   resources/tray.ico  Windows, 16/20/24/32/40/48/64 px (100% to 400% DPI)
 //   resources/tray.png  Linux, 32 px (panels scale it to their 22-24 px slot)
 //
-// The outputs are committed; run this only when the app icon changes:
-//   node desktop/scripts/make-tray-icons.mjs
+// The outputs are committed; run this only when build/tray-color.svg changes:
+//   node scripts/make-tray-icons.mjs   (from apps/desktop)
 // sharp is resolved from the monorepo's node_modules (a server dependency).
 
 import fs from 'node:fs';
@@ -21,20 +22,17 @@ import sharp from 'sharp';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const resources = path.join(here, '../resources');
-const SOURCE = path.join(here, '../build/tray-source.png');
-// build/tray-source.png is a 824 px tile inset 100 px on every side; a tray slot is
-// tiny, so drop the transparent margin and let the tile fill it.
-const TILE = { left: 100, top: 100, width: 824, height: 824 };
+const SOURCE = fs.readFileSync(path.join(here, '../build/tray-color.svg'));
 const ICO_SIZES = [16, 20, 24, 32, 40, 48, 64];
 const LINUX_SIZE = 32;
 
+// The SVG is drawn on a 64 unit box; density scales it so it renders at exactly size px.
+function render(size) {
+  return sharp(SOURCE, { density: (72 * size) / 64 }).resize(size, size);
+}
+
 async function rgba(size) {
-  const { data } = await sharp(SOURCE)
-    .extract(TILE)
-    .resize(size, size, { kernel: 'lanczos3' })
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  const { data } = await render(size).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   return data;
 }
 
@@ -94,9 +92,5 @@ async function buildIco() {
 }
 
 fs.writeFileSync(path.join(resources, 'tray.ico'), await buildIco());
-await sharp(SOURCE)
-  .extract(TILE)
-  .resize(LINUX_SIZE, LINUX_SIZE, { kernel: 'lanczos3' })
-  .png({ compressionLevel: 9 })
-  .toFile(path.join(resources, 'tray.png'));
+await render(LINUX_SIZE).png({ compressionLevel: 9 }).toFile(path.join(resources, 'tray.png'));
 console.log(`wrote resources/tray.ico (${ICO_SIZES.join('/')} px) and resources/tray.png (${LINUX_SIZE} px)`);

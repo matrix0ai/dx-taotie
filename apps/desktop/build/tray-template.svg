@@ -1,9 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <!-- Taotie tray glyph: black on transparent; macOS tints it for light/dark. -->
-  <g fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M27,22 C23,11 11,8 8,17 C6,23 12,27 16,23 M37,22 C41,11 53,8 56,17 C58,23 52,27 48,23" stroke-width="6"/>
-    <path d="M15,43 H49 L45,56 H19 Z" stroke-width="5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Taotie tray glyph (32 px grid): black on transparent, eyes and mouth knocked out. macOS tints it. -->
+  <defs>
+    <mask id="m">
+      <rect width="32" height="32" fill="#fff"/>
+      <g fill="#000">
+        <path id="eye" d="M8,16.5 L10.5,14.5 L14.2,14.5 L15.2,17 L13.2,19 L9.5,19 Z"/>
+        <use href="#eye" transform="translate(32,0) scale(-1,1)"/>
+        <path d="M10,22.5 H22 L21,26.5 H11 Z"/>
+      </g>
+    </mask>
+  </defs>
+  <g fill="#000" stroke="#000">
+    <g mask="url(#m)" stroke="none"><path d="M8,12 H24 L26,17 L23,28 H9 L6,17 Z"/></g>
+    <path id="horn" d="M12,11.5 C11,6 6,4 4,7 C3,9 5,11 7,10" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <use href="#horn" transform="translate(32,0) scale(-1,1)"/>
+    <g stroke="none"><circle cx="12.6" cy="16.8" r="1.5"/><circle cx="19.4" cy="16.8" r="1.5"/>
+      <path d="M11.5,22.5 H14 L12.7,25.3 Z M18,22.5 H20.5 L19.3,25.3 Z"/></g>
   </g>
-  <path d="M12,31 L18,25 L28,25 L31,31 L26,37 L17,37 Z M52,31 L46,25 L36,25 L33,31 L38,37 L47,37 Z" fill="#000"/>
-  <path d="M18,43 L25,43 L21.5,52 Z M27,43 L31,43 L29,50 Z M46,43 L39,43 L42.5,52 Z M37,43 L33,43 L35,50 Z" fill="#000"/>
 </svg>

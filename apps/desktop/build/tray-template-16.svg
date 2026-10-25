@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Taotie tray glyph (16 px grid, integer coordinates so every edge lands on a pixel). -->
+  <defs>
+    <mask id="m">
+      <rect width="16" height="16" fill="#fff"/>
+      <g fill="#000" shape-rendering="crispEdges">
+        <path id="eye" d="M4,9 L5,8 L7,8 L7,10 L5,10 Z"/>
+        <use href="#eye" transform="translate(16,0) scale(-1,1)"/>
+        <path d="M5,12 H11 L10,14 H6 Z"/>
+      </g>
+    </mask>
+  </defs>
+  <g fill="#000" shape-rendering="crispEdges">
+    <g mask="url(#m)"><path d="M4,6 H12 L13,9 L12,15 H4 L3,9 Z"/></g>
+    <path id="horn" d="M6,6 L5,4 L3,3 L2,5" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+    <use href="#horn" transform="translate(16,0) scale(-1,1)"/>
+  </g>
+</svg>

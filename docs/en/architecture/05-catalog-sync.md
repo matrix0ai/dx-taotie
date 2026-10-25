@@ -2,11 +2,11 @@
 
 # Catalog Sync — Deep Dive
 
-> **Source:** `server/src/services/catalog-sync.ts`, `server/src/services/model-state.ts`, `server/src/db/migrations/`
+> **Source:** `apps/server/src/services/catalog-sync.ts`, `apps/server/src/services/model-state.ts`, `apps/server/src/db/migrations/`
 
 ## 1. Overview
 
-The catalog sync keeps the local model catalog in step with the published catalog at `freellmapi.co`. It runs **twice daily** (and on demand), fetches a **signed catalog**, verifies it against a **pinned Ed25519 public key**, and applies it **transactionally** to the local SQLite database.
+The catalog sync keeps the local model catalog in step with the published catalog at `taotie.conouch.io`. It runs **twice daily** (and on demand), fetches a **signed catalog**, verifies it against a **pinned Ed25519 public key**, and applies it **transactionally** to the local SQLite database.
 
 ### Two Tiers
 

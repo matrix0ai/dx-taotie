@@ -2,7 +2,7 @@
 
 # 额度、冷却与密钥健康
 
-免费额度以特定的、被计量的方式耗尽：每分钟和每日的请求上限、词元预算、并发限制，以及直接的额度枯竭。网关把这一切建模出来，让路由器不再把回退尝试浪费在明知已经花光的密钥上。相关机制位于 [`server/src/services/ratelimit.ts`](../../../server/src/services/ratelimit.ts)、[`server/src/services/provider-quota.ts`](../../../server/src/services/provider-quota.ts)、[`server/src/services/cooldown-probe.ts`](../../../server/src/services/cooldown-probe.ts)、[`server/src/services/health.ts`](../../../server/src/services/health.ts)，以及 [`server/src/providers/base.ts`](../../../server/src/providers/base.ts) 中共享的退避解析器。
+免费额度以特定的、被计量的方式耗尽：每分钟和每日的请求上限、词元预算、并发限制，以及直接的额度枯竭。网关把这一切建模出来，让路由器不再把回退尝试浪费在明知已经花光的密钥上。相关机制位于 [`apps/server/src/services/ratelimit.ts`](../../../apps/server/src/services/ratelimit.ts)、[`apps/server/src/services/provider-quota.ts`](../../../apps/server/src/services/provider-quota.ts)、[`apps/server/src/services/cooldown-probe.ts`](../../../apps/server/src/services/cooldown-probe.ts)、[`apps/server/src/services/health.ts`](../../../apps/server/src/services/health.ts)，以及 [`apps/server/src/providers/base.ts`](../../../apps/server/src/providers/base.ts) 中共享的退避解析器。
 
 ## 限流窗口（RPM/RPD）
 
@@ -61,7 +61,7 @@
    - 自然语言：锚定的短语如 "try again in 30 seconds" 或 "retry after 2m" ——之所以锚定，是为了让错误消息里无关的数字永远不可能被误认成退避时间。
 3. 所有解析出的延迟都被钳制在 24h 内，畸形或恶意的提示不可能永久停用一个密钥。
 
-只保留数字——正文从不保留——因此没有任何多余的东西进入日志或尝试轨迹。测试：[`server/src/__tests__/providers/stated-retry.test.ts`](../../../server/src/__tests__/providers/stated-retry.test.ts)。
+只保留数字——正文从不保留——因此没有任何多余的东西进入日志或尝试轨迹。测试：[`apps/server/src/__tests__/providers/stated-retry.test.ts`](../../../apps/server/src/__tests__/providers/stated-retry.test.ts)。
 
 ## 健康检查不得燃烧计量额度（#882）
 

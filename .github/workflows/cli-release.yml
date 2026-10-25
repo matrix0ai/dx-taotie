@@ -6,13 +6,13 @@ name: CLI release
 # with npm E404.
 #
 # Triggers:
-#   - push to main touching cli/**   publish when cli/package.json's version is
+#   - push to main touching apps/cli/**   publish when apps/cli/package.json's version is
 #                                    not on the registry yet; no-op otherwise
 #   - workflow_dispatch              manual run
 #
-# The version guard makes this idempotent: ordinary cli/src changes re-run the
+# The version guard makes this idempotent: ordinary apps/cli/src changes re-run the
 # job, see the version already published, and skip. To ship a new version, bump
-# `version` in cli/package.json in the PR that changes the code.
+# `version` in apps/cli/package.json in the PR that changes the code.
 #
 # Auth is npm trusted publishing (OIDC) — no NPM_TOKEN, no long-lived secret.
 # npm revoked all classic tokens in December 2025, and granular tokens with
@@ -37,7 +37,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'cli/**'
+      - 'apps/cli/**'
       - '.github/workflows/cli-release.yml'
 
 permissions:
@@ -82,8 +82,8 @@ jobs:
       - name: Build and test the CLI
         if: steps.version.outputs.should-publish == 'true'
         run: |
-          npm run build -w cli
-          npm run test -w cli
+          npm run build -w apps/cli
+          npm run test -w apps/cli
 
       - name: Smoke-test the packed tarball
         if: steps.version.outputs.should-publish == 'true'
@@ -91,7 +91,7 @@ jobs:
           set -euo pipefail
           # Install what subscribers will actually download — catches a `files`
           # array that omits a runtime import, which `npm test` cannot see.
-          TARBALL=$(cd cli && npm pack --silent --pack-destination "$RUNNER_TEMP")
+          TARBALL=$(cd apps/cli && npm pack --silent --pack-destination "$RUNNER_TEMP")
           WORKDIR="$RUNNER_TEMP/smoke"
           mkdir -p "$WORKDIR" && cd "$WORKDIR"
           npm init -y >/dev/null
@@ -103,7 +103,7 @@ jobs:
       # Provenance is attached automatically under trusted publishing.
       - name: Publish
         if: steps.version.outputs.should-publish == 'true'
-        run: npm publish --access public -w cli
+        run: npm publish --access public -w apps/cli
 
       - name: Summary
         if: always()

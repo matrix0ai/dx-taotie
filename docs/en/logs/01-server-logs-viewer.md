@@ -108,7 +108,7 @@ handed ids it has already seen.
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `SERVER_LOGS_RETENTION_DAYS` | `7` | Rows older than this many days are deleted by a daily maintenance job (see `server/src/jobs/prune-logs.ts`). |
+| `SERVER_LOGS_RETENTION_DAYS` | `7` | Rows older than this many days are deleted by a daily maintenance job (see `apps/server/src/jobs/prune-logs.ts`). |
 | `SERVER_LOGS_MAX_ROWS` | `50000` | Hard cap on the `server_logs` table. When exceeded, oldest rows are deleted on the next insert. |
 
 Both are read at server boot; changing them requires a restart.
@@ -134,7 +134,7 @@ see exactly the same lines in the dashboard that they would see in the terminal.
 
 ---
 
-## Client implementation notes (`client/src/pages/LogsPage.tsx`)
+## Client implementation notes (`apps/client/src/pages/LogsPage.tsx`)
 
 - **Polling interval:** 3 seconds (`LOG_POLL_MS`), paused when the tab is
   backgrounded (`refetchIntervalInBackground: false`).
@@ -160,6 +160,6 @@ see exactly the same lines in the dashboard that they would see in the terminal.
 ## Navigation
 
 The Logs page is linked from the **Analytics** nav menu
-(`client/src/pages/AnalyticsPage.tsx` → sidebar). It sits alongside the
+(`apps/client/src/pages/AnalyticsPage.tsx` → sidebar). It sits alongside the
 analytics charts as a diagnostic companion: the charts show *what* happened
 (request volumes, latencies, errors); the logs show *why*.

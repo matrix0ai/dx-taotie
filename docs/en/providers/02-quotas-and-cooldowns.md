@@ -2,7 +2,7 @@
 
 # Quotas, cooldowns, and key health
 
-Free tiers fail in specific, metered ways: per-minute and per-day request caps, token budgets, concurrency limits, and outright quota exhaustion. The gateway models all of them so the router stops spending fallback attempts on keys it already knows are spent. The machinery lives in [`server/src/services/ratelimit.ts`](../../../server/src/services/ratelimit.ts), [`server/src/services/provider-quota.ts`](../../../server/src/services/provider-quota.ts), [`server/src/services/cooldown-probe.ts`](../../../server/src/services/cooldown-probe.ts), [`server/src/services/health.ts`](../../../server/src/services/health.ts), and the shared back-off parsers in [`server/src/providers/base.ts`](../../../server/src/providers/base.ts).
+Free tiers fail in specific, metered ways: per-minute and per-day request caps, token budgets, concurrency limits, and outright quota exhaustion. The gateway models all of them so the router stops spending fallback attempts on keys it already knows are spent. The machinery lives in [`apps/server/src/services/ratelimit.ts`](../../../apps/server/src/services/ratelimit.ts), [`apps/server/src/services/provider-quota.ts`](../../../apps/server/src/services/provider-quota.ts), [`apps/server/src/services/cooldown-probe.ts`](../../../apps/server/src/services/cooldown-probe.ts), [`apps/server/src/services/health.ts`](../../../apps/server/src/services/health.ts), and the shared back-off parsers in [`apps/server/src/providers/base.ts`](../../../apps/server/src/providers/base.ts).
 
 ## Rate-limit windows (RPM/RPD)
 
@@ -61,7 +61,7 @@ Before #798, a provider that stated exactly when to come back got the same heuri
    - prose: anchored phrases like "try again in 30 seconds" or "retry after 2m" — anchored so an unrelated number in an error message can never be mistaken for a back-off.
 3. All parsed delays are clamped to 24h so a malformed/hostile hint cannot bench a key forever.
 
-Only the number is kept — never the body — so nothing extra reaches logs or attempt traces. Tests: [`server/src/__tests__/providers/stated-retry.test.ts`](../../../server/src/__tests__/providers/stated-retry.test.ts).
+Only the number is kept — never the body — so nothing extra reaches logs or attempt traces. Tests: [`apps/server/src/__tests__/providers/stated-retry.test.ts`](../../../apps/server/src/__tests__/providers/stated-retry.test.ts).
 
 ## Provider-reported quota polling (#1403)
 

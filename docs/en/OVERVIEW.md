@@ -10,11 +10,11 @@ Language-specific index for English documentation.
 | --- | --- |
 | [api/](api/OVERVIEW.md) | API reference: chat completions, streaming, tool calling, vision, embeddings, response headers, Anthropic Messages surface. |
 | [architecture/](architecture/OVERVIEW.md) | Architecture deep-dives: bandit routing & scoring, quota & cooldown engine, streaming, degraded mode & failover, catalog sync, observability. See also [00-high-level-index.md](architecture/00-high-level-index.md). |
-| [cli/](cli/OVERVIEW.md) | Setup CLI: `setup-*` generators, config-file merge layer. |
+| [cli/](apps/cli/OVERVIEW.md) | Setup CLI: `setup-*` generators, config-file merge layer. |
 | [clients/](clients/OVERVIEW.md) | Clients & coding agents: OpenAI-compatible clients, setup recipes, MCP, autocomplete. |
 | [compression/](compression/OVERVIEW.md) | Prompt compression: modes, safeguards, per-request controls, filters, statistics. |
 | [deployment/](deployment/OVERVIEW.md) | Docker operations: image, Compose, networking, upgrades, backups. |
-| [desktop/](desktop/OVERVIEW.md) | Desktop app: Electron shape, file logging, update delivery. |
+| [desktop/](apps/desktop/OVERVIEW.md) | Desktop app: Electron shape, file logging, update delivery. |
 | [env/](env/OVERVIEW.md) | Runtime configuration: `.env` variables, encryption keys, outbound proxies. |
 | [fallback/](fallback/OVERVIEW.md) | Named fallback chains: lifecycle, `auto:<name>`, catalog-sync backfill. |
 | [glossary/](glossary/OVERVIEW.md) | Glossary of recurring terms: headroom, RPD/TPD, pool key, `auto:<name>`, model-age gate. |

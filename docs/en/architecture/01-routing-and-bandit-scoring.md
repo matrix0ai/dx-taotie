@@ -2,7 +2,7 @@
 
 # Routing & Bandit Scoring — Deep Dive
 
-> **Source:** `server/src/services/router.ts`, `server/src/services/scoring.ts`
+> **Source:** `apps/server/src/services/router.ts`, `apps/server/src/services/scoring.ts`
 
 ## 1. Overview
 

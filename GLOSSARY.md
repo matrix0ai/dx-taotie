@@ -1,9 +1,9 @@
 # Glossary
 
 Shared vocabulary for working in this repo. Read this before touching
-`server/src/services/router.ts`, `server/src/services/ratelimit.ts`,
-`server/src/lib/fallback-loop.ts`, `server/src/providers/*`, or anything
-under `server/src/services/model-*` / `custom-model-*`.
+`apps/server/src/services/router.ts`, `apps/server/src/services/ratelimit.ts`,
+`apps/server/src/lib/fallback-loop.ts`, `apps/server/src/providers/*`, or anything
+under `apps/server/src/services/model-*` / `custom-model-*`.
 
 Deep dives live under `docs/en/` — this file defines terms, it does not
 repeat implementation. When this file and a deep dive disagree, the deep
@@ -20,9 +20,9 @@ dive wins; fix this file.
 ## The four nouns agents mix up
 
 - **Platform**: a named upstream, e.g. `google`, `groq`, `openrouter`.
-  The closed list lives in `shared/types.ts` (`Platform`).
+  The closed list lives in `packages/shared/types.ts` (`Platform`).
 - **Provider adapter**: the code file for a platform
-  (`server/src/providers/<platform>.ts`). Most extend
+  (`apps/server/src/providers/<platform>.ts`). Most extend
   `OpenAICompatProvider`; a few with odd wire protocols extend
   `BaseProvider` directly.
 - **Model row**: one routable `(platform, model_id)` entry in the DB,
@@ -72,7 +72,7 @@ dive wins; fix this file.
   Retry-After) vs `credit` (402) vs `tier` (403). Escalates
   2 min → 10 min → 1 h → 24 h.
 - **Fallback loop**: the shared retry driver every route uses
-  (`server/src/lib/fallback-loop.ts`). Up to ~20 attempts inside one
+  (`apps/server/src/lib/fallback-loop.ts`). Up to ~20 attempts inside one
   wall-clock budget; a stalled first byte cancels the attempt.
 - **Degraded mode**: quota exhausted at the top of the chain, so the
   endpoint serves the next healthy tier instead of failing. Resets at
@@ -94,7 +94,7 @@ dive wins; fix this file.
   degraded mode, catalog sync, observability.
 - `docs/en/providers/` — per-platform quotas, adding a provider.
 - `docs/en/glossary/01-glossary.md` — deeper term table with code refs.
-- `server/src/__tests__/` — unit + integration + route tests.
+- `apps/server/src/__tests__/` — unit + integration + route tests.
 
 ## Confusables
 
@@ -112,6 +112,6 @@ dive wins; fix this file.
 - Never invent provider limits, model ids, or endpoints — verify
   against the provider.
 - Schema changes are file-per-migration under
-  `server/src/db/migrations/`; never edit an applied migration.
-- `client/src/i18n/locales/en.json` is the i18n source of truth
+  `apps/server/src/db/migrations/`; never edit an applied migration.
+- `apps/client/src/i18n/locales/en.json` is the i18n source of truth
   (`npm run check:i18n` in `client/`).

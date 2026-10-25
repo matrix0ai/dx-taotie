@@ -14,7 +14,7 @@ npx freellmapi --dry-run setup-claude  # 预览而不写入
 npx freellmapi setup-claude --model gpt-4o  # 固定模型
 ```
 
-每个生成器（`cli/src/tools.ts:52-622`）都会拉取实时目录、对照未过滤目录解析 `--model`（`c942352`）、对已有配置做带时间戳的备份、在不覆盖无关键的前提下合并，并以 `0600` 权限写入。
+每个生成器（`apps/cli/src/tools.ts:52-622`）都会拉取实时目录、对照未过滤目录解析 `--model`（`c942352`）、对已有配置做带时间戳的备份、在不覆盖无关键的前提下合并，并以 `0600` 权限写入。
 
 ## 生成器一览
 

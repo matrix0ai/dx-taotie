@@ -2,7 +2,7 @@
 
 # 流式管线 —— 深度剖析
 
-> **源码：** `server/src/routes/proxy.ts`、`server/src/routes/responses.ts`、`server/src/routes/anthropic.ts`、`server/src/lib/fallback-loop.ts`
+> **源码：** `apps/server/src/routes/proxy.ts`、`apps/server/src/routes/responses.ts`、`apps/server/src/routes/anthropic.ts`、`apps/server/src/lib/fallback-loop.ts`
 
 ## 1. 设计原则
 
@@ -138,7 +138,7 @@ headerSent = false
 
 ## 5. Responses API 适配 (`/v1/responses`)
 
-> **源码：** `server/src/routes/responses.ts`
+> **源码：** `apps/server/src/routes/responses.ts`
 
 ### 目的
 
@@ -181,7 +181,7 @@ Codex CLI 和 Agents SDK 说 **Responses API**（有状态、`previous_response_
 
 ## 7. Fusion 虚拟模型 (`model: "fusion"`)
 
-> **源码：** `server/src/services/fusion.ts`
+> **源码：** `apps/server/src/services/fusion.ts`
 
 - 把提示词**并行扇给多样模型面板**（视觉/工具按成员过滤）。
 - **裁判模型**综合出一个答案。

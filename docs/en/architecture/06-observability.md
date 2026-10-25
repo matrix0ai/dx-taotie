@@ -2,7 +2,7 @@
 
 # Observability — Deep Dive
 
-> **Source:** `server/src/lib/server-logs.ts`, `server/src/routes/logs.ts`, `server/src/lib/request-log.ts`, `server/src/lib/log-redaction.ts`, `server/src/lib/attempt-trace.ts`
+> **Source:** `apps/server/src/lib/server-logs.ts`, `apps/server/src/routes/logs.ts`, `apps/server/src/lib/request-log.ts`, `apps/server/src/lib/log-redaction.ts`, `apps/server/src/lib/attempt-trace.ts`
 
 ## 1. Server Logs Viewer (`server-logs.ts`)
 
@@ -53,7 +53,7 @@ The public query API (`queryLogs({ levels, q, provider, sinceId, limit })`), lev
 
 ### Desktop file logger
 
-The desktop app has no terminal attached, so it tees every console line to a **file logger** (`desktop/src/logger.ts`, added in `90aaa5b`) instead of relying on the in-memory ring: `<data dir>/logs/freeapi.log`, plus one rotated `freeapi.log.1` at 1 MB each. The same redaction wrapper feeds both the ring (server) and the file (desktop), so secrets never reach the file either. The desktop's password-reset code appears here — see the [Install & deploy FAQ](../install/01-install.md#where-are-the-logs).
+The desktop app has no terminal attached, so it tees every console line to a **file logger** (`apps/desktop/src/logger.ts`, added in `90aaa5b`) instead of relying on the in-memory ring: `<data dir>/logs/freeapi.log`, plus one rotated `freeapi.log.1` at 1 MB each. The same redaction wrapper feeds both the ring (server) and the file (desktop), so secrets never reach the file either. The desktop's password-reset code appears here — see the [Install & deploy FAQ](../install/01-install.md#where-are-the-logs).
 
 ---
 

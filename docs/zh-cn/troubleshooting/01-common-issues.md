@@ -26,7 +26,7 @@
 
 **原因：** 环回 `PROXY_URL`（`127.0.0.1`、`::1`）被 `enforceRelayUrlPolicy` 拦截，除非显式放行；fetch-relay 拒绝 SOCKS（仅支持 `http` / `https`，且 `http` 仅允许环回）。
 
-**修复：** 使用公开的 `https://relay.example.workers.dev` URL。本地测试时检查 `server/src/lib/proxy.ts:339-350` 中的策略。参见 `proxy/01-fetch-relay.md`。
+**修复：** 使用公开的 `https://relay.example.workers.dev` URL。本地测试时检查 `apps/server/src/lib/proxy.ts:339-350` 中的策略。参见 `proxy/01-fetch-relay.md`。
 
 ## 幂等 `409` 冲突
 
@@ -40,7 +40,7 @@
 
 **现象：** 额度面板更新缓慢或显示大量行。
 
-**修复：** `QUOTA_OBSERVATIONS_RETENTION_DAYS=30` / `QUOTA_OBSERVATIONS_MAX_ROWS=200000` 会以 `5k` / `250ms` 为块每日清理（`4a8f095`）；请确保数据库位于高速卷上。检查 `server/src/services/request-retention.ts:68-137` 与 `provider-quota.ts:532-586` 中相关的 `LIMIT 1` 索引查找。
+**修复：** `QUOTA_OBSERVATIONS_RETENTION_DAYS=30` / `QUOTA_OBSERVATIONS_MAX_ROWS=200000` 会以 `5k` / `250ms` 为块每日清理（`4a8f095`）；请确保数据库位于高速卷上。检查 `apps/server/src/services/request-retention.ts:68-137` 与 `provider-quota.ts:532-586` 中相关的 `LIMIT 1` 索引查找。
 
 ## 密码重置验证码不可见（桌面端）
 
@@ -48,13 +48,13 @@
 
 **原因：** 从 Finder / Explorer 启动的 Electron 没有附加 `stdout`。
 
-**修复：** 打开托盘 → `Open Logs Folder` → `freeapi.log`（`desktop/src/logger.ts` 的 tee，`installFileLogger` 在 server 启动前安装）。或使用 `docker logs`。
+**修复：** 打开托盘 → `Open Logs Folder` → `freeapi.log`（`apps/desktop/src/logger.ts` 的 tee，`installFileLogger` 在 server 启动前安装）。或使用 `docker logs`。
 
 ## 更新检查显示无更新 / 未签名构建无法自动更新
 
 **现象：** 仪表盘检查器显示 `latest > running`，但 `Squirrel.Mac` 拒绝更新，或 DMG 自动更新失败。
 
-**原因：** `Squirrel.Mac` 会校验代码签名。未带证书的本地 `npm run dist` 能产出应用，但不会产生有效的更新源（`desktop/02-logging-and-updates.md`）。DMG 在 `Apple stapler` 公证后需经 `refresh-mac-update-metadata.mjs` 重新盖戳。
+**原因：** `Squirrel.Mac` 会校验代码签名。未带证书的本地 `npm run dist` 能产出应用，但不会产生有效的更新源（`apps/desktop/02-logging-and-updates.md`）。DMG 在 `Apple stapler` 公证后需经 `refresh-mac-update-metadata.mjs` 重新盖戳。
 
 **修复：** 从 GitHub Releases 下载已签名的发布包，或使用 `CSC_*` / `APPLE_ID` 进行签名。
 
@@ -64,7 +64,7 @@
 
 **原因：** `TRUST_PROXY` 默认 `false`（防伪造）。
 
-**修复：** 单个反向代理（与宿主机同机的 Caddy / nginx / Traefik）设为 `TRUST_PROXY=1`，或使用 CIDR 列表（`TRUST_PROXY=100.64.0.0/10,192.168.1.10`）。参见 `env/01-variables.md` 中 `TRUST_PROXY` 与 `server/src/lib/config.ts:95-110` 的 `parseTrustProxy()`。
+**修复：** 单个反向代理（与宿主机同机的 Caddy / nginx / Traefik）设为 `TRUST_PROXY=1`，或使用 CIDR 列表（`TRUST_PROXY=100.64.0.0/10,192.168.1.10`）。参见 `env/01-variables.md` 中 `TRUST_PROXY` 与 `apps/server/src/lib/config.ts:95-110` 的 `parseTrustProxy()`。
 
 ## 相关
 

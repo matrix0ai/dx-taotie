@@ -2,7 +2,7 @@
 
 # Named Fallback Chains
 
-> **Source:** `server/src/services/router.ts` (`activeChainOrThrow`, `resolveRoutingChain`), `server/src/services/profile-models.ts` (`getActiveProfileId`, `autoIncludeNewModelsForProfiles`), `server/src/routes/fallback.ts`, `server/src/routes/profiles.ts`
+> **Source:** `apps/server/src/services/router.ts` (`activeChainOrThrow`, `resolveRoutingChain`), `apps/server/src/services/profile-models.ts` (`getActiveProfileId`, `autoIncludeNewModelsForProfiles`), `apps/server/src/routes/fallback.ts`, `apps/server/src/routes/profiles.ts`
 
 A *fallback chain* is the ordered set of models the router may try for a request. One chain is **active** at a time; `plain auto` always follows the active chain. Chains are stored in two places, depending on whether the install uses named profiles:
 

@@ -2,7 +2,7 @@
 
 # Docker
 
-生产镜像、Compose 快速开始，以及在容器里运行 FreeLLMAPI 的一切：持久化、端口、健康检查和网络坑点。
+生产镜像、Compose 快速开始，以及在容器里运行 Taotie 的一切：持久化、端口、健康检查和网络坑点。
 
 - [镜像](#镜像)
 - [Compose 快速开始](#compose-快速开始)
@@ -15,10 +15,10 @@
 
 ## 镜像
 
-FreeLLMAPI 发布单个生产镜像，内含 Express 服务器和构建好的 React 仪表盘：
+Taotie 发布单个生产镜像，内含 Express 服务器和构建好的 React 仪表盘：
 
 ```bash
-docker pull ghcr.io/tashfeenahmed/freellmapi:latest   # 或固定到某个发布版本，如 :v1.2.3
+docker pull ghcr.io/matrix0ai/dx-taotie:latest   # 或固定到某个发布版本，如 :v1.2.3
 ```
 
 已发布的标签：`latest`（默认分支）、`v*.*.*`（git release 标签）和 `sha-<commit>`。镜像是多架构的（`linux/amd64` + `linux/arm64`，所以树莓派也能跑）。
@@ -26,17 +26,17 @@ docker pull ghcr.io/tashfeenahmed/freellmapi:latest   # 或固定到某个发布
 构建形态（[Dockerfile](../../../Dockerfile)）：
 
 - 基于 `node:20-bookworm-slim` 的三个阶段（`deps` → `build` → `runtime`）；只有已构建完成的产物会被复制进 runtime 阶段。
-- runtime 阶段设置 `NODE_ENV=production`、`PORT=3001` 和 `FREELLMAPI_INSTALL_METHOD=docker`；进程为 `node server/dist/index.js`。
+- runtime 阶段设置 `NODE_ENV=production`、`PORT=3001` 和 `FREELLMAPI_INSTALL_METHOD=docker`；进程为 `node apps/server/dist/index.js`。
 - 一对 `FREELLMAPI_COMMIT_SHA` ARG/ENV 刻意放在所有 `COPY` 层之后：SHA 每次提交都会变，放得更高会让每次构建都使整个镜像的层缓存失效。
-- runtime 还会复制 `desktop/package.json`（一个约 400 字节的清单），让容器安装能报出自己的发布版本（#703）。
-- `.dockerignore` 把秘密和本地状态挡在构建上下文之外：`.env`、`.env.*`、`*.db`（含 `-wal`/`-shm` 边车文件）、`.encryption-key` 以及 `server/data` 永远不会进入镜像。
+- runtime 还会复制 `apps/desktop/package.json`（一个约 400 字节的清单），让容器安装能报出自己的发布版本（#703）。
+- `.dockerignore` 把秘密和本地状态挡在构建上下文之外：`.env`、`.env.*`、`*.db`（含 `-wal`/`-shm` 边车文件）、`.encryption-key` 以及 `apps/server/data` 永远不会进入镜像。
 
 ## Compose 快速开始
 
 前置条件：Docker、Docker Compose、OpenSSL。macOS/Linux：
 
 ```bash
-git clone https://github.com/tashfeenahmed/freellmapi.git
+git clone https://github.com/matrix0ai/dx-taotie.git
 cd freellmapi
 
 # 生成用于静态存储密钥的加密密钥
@@ -91,13 +91,13 @@ runtime 阶段在 `EXPOSE 3001` 之前切换到 `USER node`。服务器数据目
 
 `better-sqlite3` 是原生模块。在没有可用预编译二进制的 slim 镜像上——尤其是 QEMU 下的 `linux/arm64` 架构——node-gyp 会从源码编译它，这需要 Python 和一套 C++ 工具链。因此构建阶段通过 apt 安装 `python3 make g++`，而 runtime 镜像直接复制已经编译好的 `node_modules`，让发布的镜像保持干净、不带构建工具。（这套工具链由 #143 加入，此前没有它会构建失败。）
 
-一个相关的打包细节：npm 会把某些生产包嵌套在工作区之下而不是提升到顶层（`undici` 位于 `server/node_modules/undici`）。跳过 `server/node_modules` 的复制曾导致发布镜像里 HTTP(S) 代理分发器加载失败、所有请求都静默直连（#550，c6589ff 修复）。
+一个相关的打包细节：npm 会把某些生产包嵌套在工作区之下而不是提升到顶层（`undici` 位于 `apps/server/node_modules/undici`）。跳过 `apps/server/node_modules` 的复制曾导致发布镜像里 HTTP(S) 代理分发器加载失败、所有请求都静默直连（#550，c6589ff 修复）。
 
 ## 排障：容器够不着提供方（#733）
 
 宿主机一切正常，容器里的提供方却不可达？容器有自己独立的网络栈，有两件在你机器上顺理成章的事不会自动延续过去：
 
-- **`127.0.0.1` 上的代理不是你的机器。** 在容器内部，环回地址指容器自己。如果你经由宿主机上的代理客户端（Clash、v2rayN、sing-box 或公司代理）访问提供方，就让 FreeLLMAPI 指向宿主机：`PROXY_URL=socks5h://host.docker.internal:7890`。随附的 `docker-compose.yml` 通过 `extra_hosts` 把 `host.docker.internal` 映射到宿主机网关，所以在原生 Linux Docker 上和 Docker Desktop 里都可用。代理还得接受来自环回之外的连接（在 Clash 里是 `allow-lan: true`）。更多细节见 [../env/03-outbound-proxies.md](../env/03-outbound-proxies.md#docker127001-指的是容器)。
+- **`127.0.0.1` 上的代理不是你的机器。** 在容器内部，环回地址指容器自己。如果你经由宿主机上的代理客户端（Clash、v2rayN、sing-box 或公司代理）访问提供方，就让 Taotie 指向宿主机：`PROXY_URL=socks5h://host.docker.internal:7890`。随附的 `docker-compose.yml` 通过 `extra_hosts` 把 `host.docker.internal` 映射到宿主机网关，所以在原生 Linux Docker 上和 Docker Desktop 里都可用。代理还得接受来自环回之外的连接（在 Clash 里是 `allow-lan: true`）。更多细节见 [../env/03-outbound-proxies.md](../env/03-outbound-proxies.md#docker127001-指的是容器)。
 - **纯 IPv6 的宿主机需要在 Docker 里启用 IPv6。** 默认桥接网络只有 IPv4，所以在没有 IPv4 路由的主机上容器什么都够不着，DNS 也一样。在 `/etc/docker/daemon.json` 中以 `"ipv6": true`、`"ip6tables": true` 和一段 `"fixed-cidr-v6"` 网段启用，然后重启 Docker。
 
 想分辨自己撞上的是哪种情况，直接问容器本身：

@@ -4,7 +4,7 @@
 
 ## Layout
 
-All server tests live under [`server/src/__tests__/`](../../../server/src/__tests__), mirroring `src/`:
+All server tests live under [`apps/server/src/__tests__/`](../../../apps/server/src/__tests__), mirroring `src/`:
 
 | Directory | Contents |
 | --- | --- |
@@ -19,16 +19,16 @@ All server tests live under [`server/src/__tests__/`](../../../server/src/__test
 
 ## Serial forked execution
 
-`npm run test -w server` runs `vitest run --pool=forks --fileParallelism=false`. Two deliberate choices:
+`npm run test -w apps/server` runs `vitest run --pool=forks --fileParallelism=false`. Two deliberate choices:
 
 - **`--pool=forks`** isolates each test file in a fresh process. The suite manipulates real state — better-sqlite3 databases, `process.env`, module-level caches (cooldown maps, health schedulers) — that must not leak between files.
 - **`--fileParallelism=false`** serializes files so shared resources (ports, temp data dirs) cannot collide across concurrently executing files.
 
-The tradeoff is wall-clock time; the payoff is that the ~2300-test suite is deterministic. The client workspace does not need this: its [standalone vitest config](../../../client/vitest.config.ts) exists mainly to avoid loading the React/Tailwind vite plugins, and its tests are plain TypeScript in the default node environment.
+The tradeoff is wall-clock time; the payoff is that the ~2300-test suite is deterministic. The client workspace does not need this: its [standalone vitest config](../../../apps/client/vitest.config.ts) exists mainly to avoid loading the React/Tailwind vite plugins, and its tests are plain TypeScript in the default node environment.
 
 ## Pure-lib import guard (#858)
 
-[`src/__tests__/lib/module-purity.test.ts`](../../../server/src/__tests__/lib/module-purity.test.ts) enforces an architectural invariant: modules declared pure in [`server/src/lib/`](../../../server/src/lib/) (functions over their arguments — no I/O, no DB, no config) must stay free of **value** imports. `import type` stays legal because type imports are erased before they can create a cycle.
+[`src/__tests__/lib/module-purity.test.ts`](../../../apps/server/src/__tests__/lib/module-purity.test.ts) enforces an architectural invariant: modules declared pure in [`apps/server/src/lib/`](../../../apps/server/src/lib/) (functions over their arguments — no I/O, no DB, no config) must stay free of **value** imports. `import type` stays legal because type imports are erased before they can create a cycle.
 
 Why it exists: pure leaf modules like `error-classify.ts` are imported by the proxy chat path, the responses path, AND the fusion panel precisely because they depend on nothing. One added `import { getDb }` compiles cleanly, passes every behavioral test, and quietly turns a leaf into a hub — surfacing later as an import cycle (the fusion↔proxy case) or a unit test that suddenly needs a database. The guard also detects dynamic imports, re-exports, and `require()`.
 

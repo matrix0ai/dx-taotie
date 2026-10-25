@@ -4,7 +4,7 @@
 
 [← 返回 README](../../../README.zh-cn.md) · [文档索引](../README.md) · [深入解析域](OVERVIEW.md)
 
-FreeLLMAPI 是一个自托管的、兼容 OpenAI 的网关，把约 34 家提供方的免费额度叠加在一个 `freellmapi-…` Bearer 令牌之后。一个 Express 代理暴露 `/v1/chat/completions`（以及 `/v1/responses`、`/v1/messages`、`/v1/completions`、`/v1/embeddings` 和 `/v1/models`）；每次请求时，路由器挑选一个状态健康、且未触及任何限流的最佳模型，在内存中解密其上游密钥，再把响应流式传回。
+Taotie 是一个自托管的、兼容 OpenAI 的网关，把约 34 家提供方的免费额度叠加在一个 `freellmapi-…` Bearer 令牌之后。一个 Express 代理暴露 `/v1/chat/completions`（以及 `/v1/responses`、`/v1/messages`、`/v1/completions`、`/v1/embeddings` 和 `/v1/models`）；每次请求时，路由器挑选一个状态健康、且未触及任何限流的最佳模型，在内存中解密其上游密钥，再把响应流式传回。
 
 没有哪一家的免费额度足以单独支撑日常使用，所以路由器把目录当作一条汇聚的回退链来对待：通过 Thompson 采样的老虎机算法实时评估可靠性、速度、能力和余量，用持久化账本执行 RPM/RPD/TPM/TPD 与提供方级上限，并在墙钟预算内跨最多 20 次尝试进行故障转移。当链路顶端的模型耗尽当日额度时，端点会平滑降级到下一档健康模型，并在 UTC 午夜重置。
 
@@ -40,13 +40,13 @@ FreeLLMAPI 是一个自托管的、兼容 OpenAI 的网关，把约 34 家提供
  Google         Groq        Cerebras           OpenRouter        HF       …29 more
 ```
 
-- **路由器**（`server/src/services/router.ts`）—— 为每次请求挑选模型。
-- **限流账本**（`server/src/services/ratelimit.ts`）—— 由 SQLite 支撑的内存 RPM/RPD/TPM/TPD 计数器，遇到 429 时设置冷却。
-- **提供方适配器**（`server/src/providers/*.ts`）—— 每个提供方一个文件，实现 `Provider` 基类的 `chatCompletion()` 与 `streamChatCompletion()`。
-- **健康服务**（`server/src/services/health.ts`）—— 周期性探测，保持密钥状态最新。
+- **路由器**（`apps/server/src/services/router.ts`）—— 为每次请求挑选模型。
+- **限流账本**（`apps/server/src/services/ratelimit.ts`）—— 由 SQLite 支撑的内存 RPM/RPD/TPM/TPD 计数器，遇到 429 时设置冷却。
+- **提供方适配器**（`apps/server/src/providers/*.ts`）—— 每个提供方一个文件，实现 `Provider` 基类的 `chatCompletion()` 与 `streamChatCompletion()`。
+- **健康服务**（`apps/server/src/services/health.ts`）—— 周期性探测，保持密钥状态最新。
 - **仪表盘**（`client/`）—— 基于 React + Vite + shadcn/ui 的管理界面。
 - **存储** —— SQLite（`better-sqlite3`），密钥使用 AES-256-GCM 信封加密。
-- **工具调用救援**（`server/src/lib/tool-call-rescue.ts`）—— 把工具调用以纯文本而非结构化 JSON 输出的模型，其输出会被自动恢复为真正的 `tool_calls`；带工具的请求只会路由到确实支持工具的模型。
+- **工具调用救援**（`apps/server/src/lib/tool-call-rescue.ts`）—— 把工具调用以纯文本而非结构化 JSON 输出的模型，其输出会被自动恢复为真正的 `tool_calls`；带工具的请求只会路由到确实支持工具的模型。
 - **密钥导入与导出** —— 粘贴 `.env` 文件即可批量导入密钥（带预览与逐条选择），也可导出为 JSON、`.env` 或 CSV。
 
 > 路由策略、老虎机评分、额度与冷却核算、流式传输、降级模式故障转移以及提供方目录，在深入解析中有实现层面的说明 —— 见 [OVERVIEW.md](OVERVIEW.md)。
@@ -68,7 +68,7 @@ FreeLLMAPI 是一个自托管的、兼容 OpenAI 的网关，把约 34 家提供
 - **天花板是额度和可用性，不是模型级别。** 目录里确实有前沿级的条目 —— GPT-5.x、Grok 4.x、Kimi K3、DeepSeek V4 Pro、Gemini 3.x 都会出现在某家的免费额度里。你得不到的是对它们的*持续*访问：恰恰是这些条目日额度最小、排队最长、最可能在短时间内被下线或转为收费。请按容量和可用时间做预算，而不是按能力上限。
 - **智能程度会随一天的推进而下降。** 排名最高的模型（通常是 Gemini 3.6 Flash、DeepSeek V4、Kimi K2.6）日额度最低。它们触顶后，路由器会顺着优先级链退到更小、更弱的模型。预期端点的有效智能在每天的后半段下降，然后在 UTC 午夜重置。
 - **延迟波动很大。** Cerebras 和 Groq 极快，其他的则未必。你拿到的是当下可用的那一个。
-- **免费额度可能不打招呼就变。** 提供方经常收紧、放宽或取消免费额度。发生时你会看到 429 或鉴权错误，直到目录更新送达 —— 实时源安装几天内就能收到修复，免费安装则跟随 30 天延迟。重新播种脚本在 `server/src/scripts/`。
+- **免费额度可能不打招呼就变。** 提供方经常收紧、放宽或取消免费额度。发生时你会看到 429 或鉴权错误，直到目录更新送达 —— 实时源安装几天内就能收到修复，免费安装则跟随 30 天延迟。重新播种脚本在 `apps/server/src/scripts/`。
 - **根据定义，没有 SLA。** 需要可靠性就用有合同的付费提供方。
 - **本地优先。** 没有多租户鉴权。只给自己用，不要暴露到公网。
 

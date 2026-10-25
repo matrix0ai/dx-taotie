@@ -2,7 +2,7 @@
 
 # Quota & Cooldown Engine — Deep Dive
 
-> **Source:** `server/src/services/ratelimit.ts`, `server/src/services/cooldown-probe.ts`, `server/src/services/provider-quota.ts`
+> **Source:** `apps/server/src/services/ratelimit.ts`, `apps/server/src/services/cooldown-probe.ts`, `apps/server/src/services/provider-quota.ts`
 
 ## 1. Overview
 

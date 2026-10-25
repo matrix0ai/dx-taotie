@@ -2,11 +2,11 @@
 
 # Adding a new provider
 
-A contributor walkthrough that mirrors how the existing 41 built-in platforms are wired. Read [`server/src/providers/index.ts`](../../../server/src/providers/index.ts) alongside this guide — it is both the registry and the best documentation of per-platform judgment calls.
+A contributor walkthrough that mirrors how the existing 41 built-in platforms are wired. Read [`apps/server/src/providers/index.ts`](../../../apps/server/src/providers/index.ts) alongside this guide — it is both the registry and the best documentation of per-platform judgment calls.
 
 ## 1. Declare the platform
 
-Add the id to the `Platform` union in [`shared/types.ts`](../../../shared/types.ts) (line 59) with a comment stating the free-tier facts you can defend: what is free, recurring or promotional, card or no card, and any signup walls. The union must stay in sync with the `PLATFORMS` allowlist in [`server/src/routes/keys.ts`](../../../server/src/routes/keys.ts) — that zod enum gates which platforms users may register keys for.
+Add the id to the `Platform` union in [`packages/shared/types.ts`](../../../packages/shared/types.ts) (line 59) with a comment stating the free-tier facts you can defend: what is free, recurring or promotional, card or no card, and any signup walls. The union must stay in sync with the `PLATFORMS` allowlist in [`apps/server/src/routes/keys.ts`](../../../apps/server/src/routes/keys.ts) — that zod enum gates which platforms users may register keys for.
 
 ## 2. Choose an adapter
 
@@ -61,7 +61,7 @@ If the platform publishes no limits, set `null` rather than guessing; the unknow
 
 ## 6. Test it
 
-Ship tests under [`server/src/__tests__/providers/`](../../../server/src/__tests__/providers/) following the existing pattern (see `cn-providers.test.ts` for a batch of OpenAI-compat registrations): assert the outgoing request shape (URL, auth header placement, headers), response normalization, and any quirk you introduced. Run the full chain with `npm test` from the repo root — see [docs/testing](../testing/OVERVIEW.md).
+Ship tests under [`apps/server/src/__tests__/providers/`](../../../apps/server/src/__tests__/providers/) following the existing pattern (see `cn-providers.test.ts` for a batch of OpenAI-compat registrations): assert the outgoing request shape (URL, auth header placement, headers), response normalization, and any quirk you introduced. Run the full chain with `npm test` from the repo root — see [docs/testing](../testing/OVERVIEW.md).
 
 ## Checklist
 

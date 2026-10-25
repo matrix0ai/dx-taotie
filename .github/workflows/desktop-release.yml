@@ -8,9 +8,9 @@ name: Desktop release
 #   - workflow_dispatch        manual build (artifacts only)
 #   - push tags 'v*'           build + attach the installers to the release
 #   - pull_request (desktop)   build-only smoke test so the Windows build can't
-#                              silently rot (only when desktop/CI files change)
+#                              silently rot (only when apps/desktop/CI files change)
 #
-# Tagged runs check desktop/package.json against the tag before building — see
+# Tagged runs check apps/desktop/package.json against the tag before building — see
 # #948, where v0.8.2 through v0.8.4 shipped installers stamped 0.8.1 because
 # nobody bumped that file.
 #
@@ -31,7 +31,7 @@ on:
       - 'v*'
   pull_request:
     paths:
-      - 'desktop/**'
+      - 'apps/desktop/**'
       - '.github/workflows/desktop-release.yml'
 
 permissions:
@@ -51,38 +51,38 @@ jobs:
             ebArgs: --win --x64
             artifact: windows-installer
             glob: |
-              desktop/dist-electron/*.exe
-              desktop/dist-electron/*.zip
-              desktop/dist-electron/*.blockmap
-              desktop/dist-electron/latest.yml
+              apps/desktop/dist-electron/*.exe
+              apps/desktop/dist-electron/*.zip
+              apps/desktop/dist-electron/*.blockmap
+              apps/desktop/dist-electron/latest.yml
           - os: macos-latest
             arch: arm64
             ebArgs: --mac --arm64
             artifact: macos-installer-arm64
             glob: |
-              desktop/dist-electron/*.dmg
-              desktop/dist-electron/*.zip
-              desktop/dist-electron/*.blockmap
-              desktop/dist-electron/latest-mac.yml
+              apps/desktop/dist-electron/*.dmg
+              apps/desktop/dist-electron/*.zip
+              apps/desktop/dist-electron/*.blockmap
+              apps/desktop/dist-electron/latest-mac.yml
           # Build and exercise better-sqlite3 natively on Intel (#1232).
           - os: macos-15-intel
             arch: x64
             ebArgs: --mac --x64
             artifact: macos-installer-x64
             glob: |
-              desktop/dist-electron/*.dmg
-              desktop/dist-electron/*.zip
-              desktop/dist-electron/*.blockmap
-              desktop/dist-electron/latest-mac.yml
+              apps/desktop/dist-electron/*.dmg
+              apps/desktop/dist-electron/*.zip
+              apps/desktop/dist-electron/*.blockmap
+              apps/desktop/dist-electron/latest-mac.yml
           - os: ubuntu-latest
             ebArgs: --linux --x64
             artifact: linux-installer
             glob: |
-              desktop/dist-electron/*.AppImage
-              desktop/dist-electron/*.tar.xz
-              desktop/dist-electron/*.deb
-              desktop/dist-electron/*.rpm
-              desktop/dist-electron/latest-linux.yml
+              apps/desktop/dist-electron/*.AppImage
+              apps/desktop/dist-electron/*.tar.xz
+              apps/desktop/dist-electron/*.deb
+              apps/desktop/dist-electron/*.rpm
+              apps/desktop/dist-electron/latest-linux.yml
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -101,7 +101,7 @@ jobs:
           python-version: '3.11'
 
       # #948: v0.8.2–v0.8.4 shipped installers stamped 0.8.1 because
-      # desktop/package.json was never bumped after v0.8.1. electron-builder
+      # apps/desktop/package.json was never bumped after v0.8.1. electron-builder
       # reads that field for the artifact filenames AND the latest*.yml updater
       # manifests, so a stale number silently mislabels the whole release and
       # breaks auto-update. Fail the tagged run here — before the install,
@@ -115,36 +115,36 @@ jobs:
           set -euo pipefail
           VERSION=$(node -p "require('./desktop/package.json').version")
           if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
-            echo "::error file=desktop/package.json::desktop/package.json is $VERSION, so electron-builder would stamp the artifacts v$VERSION, but the tag is $GITHUB_REF_NAME. Set desktop/package.json and desktop/package-lock.json to ${GITHUB_REF_NAME#v}, then move the tag."
+            echo "::error file=apps/desktop/package.json::apps/desktop/package.json is $VERSION, so electron-builder would stamp the artifacts v$VERSION, but the tag is $GITHUB_REF_NAME. Set apps/desktop/package.json and apps/desktop/package-lock.json to ${GITHUB_REF_NAME#v}, then move the tag."
             exit 1
           fi
-          echo "desktop/package.json $VERSION matches tag $GITHUB_REF_NAME."
+          echo "apps/desktop/package.json $VERSION matches tag $GITHUB_REF_NAME."
 
       - name: Install workspace dependencies
         run: npm ci
 
-      # `npm ci` rather than `install`: install rewrites desktop/package-lock.json
+      # `npm ci` rather than `install`: install rewrites apps/desktop/package-lock.json
       # in place, which would quietly repair a stale lockfile version before the
       # lockfile-sync assertion in src/__tests__/version.test.ts ever sees it.
       # ci installs the lockfile as committed, so that test is a real guard here.
       - name: Install desktop dependencies
-        run: npm --prefix desktop ci
+        run: npm --prefix apps/desktop ci
 
       # The per-platform window chrome (#703's menu-bar fix) lives in a branch
       # that never executes on a developer's mac. These run on both matrix
       # hosts, so the Windows expectations are asserted on Windows.
       - name: Run desktop tests
-        run: npm --prefix desktop test
+        run: npm --prefix apps/desktop test
 
       - name: Build client + desktop bundles
         shell: bash
         run: |
-          npm run build -w client
-          npm --prefix desktop run build:all
-          # Stage client/dist into desktop/ so electron-builder's extraResources
+          npm run build -w apps/client
+          npm --prefix apps/desktop run build:all
+          # Stage apps/client/dist into desktop/ so electron-builder's extraResources
           # source stays inside desktop/ (no `../`). Belt-and-suspenders with the
           # root-hiding below; also makes local `desktop:dist:win` work on Windows.
-          npm --prefix desktop run stage:client
+          npm --prefix apps/desktop run stage:client
 
       - name: Validate macOS signing credentials
         id: maccreds
@@ -304,14 +304,14 @@ jobs:
             if [ -z "${!v:-}" ]; then unset "$v"; fi
           done
           # Run electron-builder with desktop/ as its own project root. Invoked
-          # from the monorepo root (e.g. via `npm --prefix desktop run`), it walks
+          # from the monorepo root (e.g. via `npm --prefix apps/desktop run`), it walks
           # up, treats the repo root as the project, and on Windows pulls parent
           # files (.dockerignore, .env.example, …) into the asar — failing with
           # "<file> must be under …/desktop/". Running from desktop/ and hiding the
           # root package.json (whose `workspaces` field triggers the upward scan)
           # makes desktop/ the detected project root.
           mv package.json "$RUNNER_TEMP/root-package.json"
-          cd desktop
+          cd apps/desktop
           # --publish never: the publish provider in electron-builder.yml exists
           # so latest*.yml update metadata gets GENERATED, not so electron-builder
           # uploads. The "Attach installer to release" step below owns publishing.
@@ -324,11 +324,11 @@ jobs:
           EXPECTED_ARCH: ${{ matrix.arch }}
         run: |
           set -euo pipefail
-          app_dir=desktop/dist-electron/mac
+          app_dir=apps/desktop/dist-electron/mac
           if [ "$EXPECTED_ARCH" = arm64 ]; then app_dir="$app_dir-arm64"; fi
-          app="$app_dir/FreeLLMAPI.app"
-          ELECTRON_RUN_AS_NODE=1 "$app/Contents/MacOS/FreeLLMAPI" \
-            desktop/scripts/smoke-mac-package.mjs "$app" "$EXPECTED_ARCH"
+          app="$app_dir/Taotie.app"
+          ELECTRON_RUN_AS_NODE=1 "$app/Contents/MacOS/Taotie" \
+            apps/desktop/scripts/smoke-mac-package.mjs "$app" "$EXPECTED_ARCH"
 
       # electron-builder notarizes and staples the .app, then wraps it in a DMG
       # it never submits. The DMG is the file users download, so it is the file
@@ -346,13 +346,13 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          dmgs=(desktop/dist-electron/*.dmg)
+          dmgs=(apps/desktop/dist-electron/*.dmg)
           if [ ${#dmgs[@]} -eq 0 ]; then
             echo "::error::signing was enabled but electron-builder produced no DMG"
             exit 1
           fi
           # app-builder ships the blockmap generator electron-builder itself uses.
-          app_builder=$(cd desktop && node -p "require('app-builder-bin').appBuilderPath")
+          app_builder=$(cd apps/desktop && node -p "require('app-builder-bin').appBuilderPath")
           for dmg in "${dmgs[@]}"; do
             echo "== notarizing $(basename "$dmg") =="
             # --wait turns a rejection into a non-zero exit, so a failed
@@ -384,8 +384,8 @@ jobs:
             # electron-builder computed a moment ago no longer describe it.
             # electron-updater verifies that hash, so leaving it stale would
             # break updates for every installed copy.
-            node desktop/scripts/refresh-mac-update-metadata.mjs \
-              "$dmg" desktop/dist-electron/latest-mac.yml
+            node apps/desktop/scripts/refresh-mac-update-metadata.mjs \
+              "$dmg" apps/desktop/dist-electron/latest-mac.yml
             "$app_builder" blockmap --input "$dmg" --output "$dmg.blockmap" --compression gzip
           done
 
@@ -444,14 +444,14 @@ jobs:
         with:
           node-version: '20'
       - name: Install metadata tooling
-        run: npm --prefix desktop ci --ignore-scripts
+        run: npm --prefix apps/desktop ci --ignore-scripts
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: macos-installer-*
           path: artifacts
       - name: Verify artifacts and merge update metadata
         run: |
-          node desktop/scripts/merge-mac-update-metadata.mjs \
+          node apps/desktop/scripts/merge-mac-update-metadata.mjs \
             artifacts/macos-installer-arm64 artifacts/macos-installer-x64 \
             artifacts/latest-mac.yml
       - name: Upload combined update metadata

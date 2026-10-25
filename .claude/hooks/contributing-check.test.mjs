@@ -15,7 +15,7 @@ test('watchedSubcommand matches the git writes we care about', () => {
   assert.equal(watchedSubcommand('git commit --amend --no-edit'), 'commit');
   // Chained and prefixed forms: git is not the first token.
   assert.equal(watchedSubcommand('npm test && git push'), 'push');
-  assert.equal(watchedSubcommand('cd server; git commit'), 'commit');
+  assert.equal(watchedSubcommand('cd apps/server; git commit'), 'commit');
   // Global options, including the ones that swallow the next token.
   assert.equal(watchedSubcommand('git -C /repo push'), 'push');
   assert.equal(watchedSubcommand('git -c user.name=x commit'), 'commit');
@@ -50,7 +50,7 @@ Every PR should:
 ## Database migrations
 
 Schema changes must use file-per-migration files under
-\`server/src/db/migrations/\`.
+\`apps/server/src/db/migrations/\`.
 
 ## Reporting issues
 
@@ -66,7 +66,7 @@ test('extract pulls bullets, directive paragraphs and commands', () => {
   // Multi-line paragraph is joined into one rule.
   assert.ok(
     texts.includes(
-      'Schema changes must use file-per-migration files under `server/src/db/migrations/`.',
+      'Schema changes must use file-per-migration files under `apps/server/src/db/migrations/`.',
     ),
   );
   assert.ok(commands.includes('npm test'));

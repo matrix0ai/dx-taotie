@@ -26,7 +26,7 @@
 
 **Cause:** Loopback `PROXY_URL` (`127.0.0.1`, `::1`) is blocked by `enforceRelayUrlPolicy` unless explicitly allowed; SOCKS is rejected for fetch-relay (only `http`/`https`, `http` only for loopback).
 
-**Fix:** Use a public `https://relay.example.workers.dev` URL. For local testing, check `server/src/lib/proxy.ts:339-350` policy. See `proxy/01-fetch-relay.md`.
+**Fix:** Use a public `https://relay.example.workers.dev` URL. For local testing, check `apps/server/src/lib/proxy.ts:339-350` policy. See `proxy/01-fetch-relay.md`.
 
 ## Idempotency `409` conflict
 
@@ -40,7 +40,7 @@
 
 **Symptom:** Quota panel slow to update or shows many rows.
 
-**Fix:** `QUOTA_OBSERVATIONS_RETENTION_DAYS=30` / `QUOTA_OBSERVATIONS_MAX_ROWS=200000` prune daily in `5k`/`250ms` chunks (`4a8f095`); ensure the DB is on a fast volume. Check `server/src/services/request-retention.ts:68-137` and `provider-quota.ts:532-586` correlated `LIMIT 1` seek.
+**Fix:** `QUOTA_OBSERVATIONS_RETENTION_DAYS=30` / `QUOTA_OBSERVATIONS_MAX_ROWS=200000` prune daily in `5k`/`250ms` chunks (`4a8f095`); ensure the DB is on a fast volume. Check `apps/server/src/services/request-retention.ts:68-137` and `provider-quota.ts:532-586` correlated `LIMIT 1` seek.
 
 ## Password-reset code not visible (desktop)
 
@@ -48,13 +48,13 @@
 
 **Cause:** Finder/Explorer-launched Electron has no attached `stdout`.
 
-**Fix:** Open tray → `Open Logs Folder` → `freeapi.log` (`desktop/src/logger.ts` tee, `installFileLogger` before server boot). Or use `docker logs`.
+**Fix:** Open tray → `Open Logs Folder` → `freeapi.log` (`apps/desktop/src/logger.ts` tee, `installFileLogger` before server boot). Or use `docker logs`.
 
 ## Update-check shows no update / unsigned build won't auto-update
 
 **Symptom:** Dashboard checker shows `latest > running` but `Squirrel.Mac` refuses, or DMG auto-update fails.
 
-**Cause:** `Squirrel.Mac` verifies code signature. An unsigned local `npm run dist` without certs produces an app but no valid update feed (`desktop/02-logging-and-updates.md`). DMG needs re-stamp via `refresh-mac-update-metadata.mjs` after `Apple stapler`.
+**Cause:** `Squirrel.Mac` verifies code signature. An unsigned local `npm run dist` without certs produces an app but no valid update feed (`apps/desktop/02-logging-and-updates.md`). DMG needs re-stamp via `refresh-mac-update-metadata.mjs` after `Apple stapler`.
 
 **Fix:** Download the signed release from GitHub Releases, or sign with `CSC_*` / `APPLE_ID`.
 
@@ -64,7 +64,7 @@
 
 **Cause:** `TRUST_PROXY` defaults `false` (no spoof).
 
-**Fix:** `TRUST_PROXY=1` for single reverse proxy (Caddy/nginx/Traefik on same host), or CIDR list (`TRUST_PROXY=100.64.0.0/10,192.168.1.10`). See `env/01-variables.md` `TRUST_PROXY` + `server/src/lib/config.ts:95-110` `parseTrustProxy()`.
+**Fix:** `TRUST_PROXY=1` for single reverse proxy (Caddy/nginx/Traefik on same host), or CIDR list (`TRUST_PROXY=100.64.0.0/10,192.168.1.10`). See `env/01-variables.md` `TRUST_PROXY` + `apps/server/src/lib/config.ts:95-110` `parseTrustProxy()`.
 
 ## Related
 

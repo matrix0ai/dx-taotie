@@ -2,7 +2,7 @@
 
 # Degraded Mode & Failover — Deep Dive
 
-> **Source:** `server/src/services/degradation.ts`, `server/src/lib/fallback-loop.ts`, `server/src/routes/proxy.ts`, `server/src/services/ratelimit.ts`, `server/src/services/idempotency.ts`
+> **Source:** `apps/server/src/services/degradation.ts`, `apps/server/src/lib/fallback-loop.ts`, `apps/server/src/routes/proxy.ts`, `apps/server/src/services/ratelimit.ts`, `apps/server/src/services/idempotency.ts`
 
 > **Cross-ref:** Client-facing contract for `Idempotency-Key` (header, replay/409/miss, fingerprint, TTL, curl example) lives in [`../api/02-idempotency.md`](../api/02-idempotency.md). This file notes how that replay interacts with failover.
 
@@ -342,7 +342,7 @@ The lookup happens **before** response-cache lookup (the cache is keyed by reque
 
 ### What is stored / replayed
 
-- Only a `SHA-256(key)` + `SHA-256(canonical model+messages+temperature/top_p/max_tokens/tools/tool_choice)` fingerprint are persisted; the raw key is never stored (`hashIdempotencyKey`, `computeIdempotencyFingerprint` in `server/src/services/idempotency.ts:46-70`).
+- Only a `SHA-256(key)` + `SHA-256(canonical model+messages+temperature/top_p/max_tokens/tools/tool_choice)` fingerprint are persisted; the raw key is never stored (`hashIdempotencyKey`, `computeIdempotencyFingerprint` in `apps/server/src/services/idempotency.ts:46-70`).
 - `response_status` + `response_body` (the sanitized `outboundBody` that the client received) are replayed verbatim. Replays carry no `X-Fallback-*` headers and do not write analytics rows — same zero-cost semantics as a cache `HIT`.
 - Streaming (`stream: true`) and truncated turns (`finish_reason === 'length'`) are never stored — consistent with the response cache.
 

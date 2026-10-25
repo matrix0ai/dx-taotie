@@ -2,7 +2,7 @@
 
 # Idempotency-Key —— 非流式聊天补全的安全重试
 
-> **来源：** `server/src/services/idempotency.ts`、`server/src/routes/proxy.ts:1793-1835`（入口）+ `2640-2656`（持久化）、`server/src/db/migrations/20260901_000001_idempotency_claims.ts`、提交 `36b877d`（功能）、`95bc46f`（在途请求说明），环境变量 `IDEMPOTENCY_TTL_MS` 记录在 [`docs/en/env/01-variables.md#idempotency`](../../en/env/01-variables.md#idempotency)。
+> **来源：** `apps/server/src/services/idempotency.ts`、`apps/server/src/routes/proxy.ts:1793-1835`（入口）+ `2640-2656`（持久化）、`apps/server/src/db/migrations/20260901_000001_idempotency_claims.ts`、提交 `36b877d`（功能）、`95bc46f`（在途请求说明），环境变量 `IDEMPOTENCY_TTL_MS` 记录在 [`docs/en/env/01-variables.md#idempotency`](../../en/env/01-variables.md#idempotency)。
 
 非流式的 `POST /v1/chat/completions` 支持可选的 `Idempotency-Key` 请求头：客户端超时后重试时，不会为一个已经收到过的答案再消耗一次免费额度。在重放窗口内再次看到相同的键与相同的请求内容时，网关以**零提供方成本**重放已存储的响应；相同的键配上不同的内容则返回 `409`，而不是悄悄给出错误答案。
 
@@ -16,7 +16,7 @@
 Idempotency-Key: <opaque client token>
 ```
 
-规范化（`server/src/services/idempotency.ts:176-182` 中的 `normalizeIdempotencyKey`）：
+规范化（`apps/server/src/services/idempotency.ts:176-182` 中的 `normalizeIdempotencyKey`）：
 
 - 去掉首尾空白；去掉后为空 → 忽略（不启用幂等）。
 - 必须 `≤ 255` 个 UTF-8 字节（`Buffer.byteLength(..., 'utf8')`）；更长 → 忽略。
@@ -30,7 +30,7 @@ Idempotency-Key: <opaque client token>
 
 ## 2. 状态 —— `miss` / `replay` / `409 conflict`
 
-`server/src/services/idempotency.ts:91-119` 中的 `lookupIdempotencyReplay(keyHash, fingerprint)` 在 `idempotency_claims` 表中查询同一 `key_hash` 的**未过期**行，并比较其存储的 `request_fingerprint`：
+`apps/server/src/services/idempotency.ts:91-119` 中的 `lookupIdempotencyReplay(keyHash, fingerprint)` 在 `idempotency_claims` 表中查询同一 `key_hash` 的**未过期**行，并比较其存储的 `request_fingerprint`：
 
 | 结果 | 条件 | 网关行为 |
 |--------|-----------|-----------------|
@@ -53,7 +53,7 @@ Idempotency-Key: <opaque client token>
 
 ## 4. 指纹的构成
 
-`computeIdempotencyFingerprint`（`server/src/services/idempotency.ts:51-70`）对下列字段的 JSON 序列化结果计算规范化的 `SHA-256`，且只包含这些字段：
+`computeIdempotencyFingerprint`（`apps/server/src/services/idempotency.ts:51-70`）对下列字段的 JSON 序列化结果计算规范化的 `SHA-256`，且只包含这些字段：
 
 ```typescript
 {
@@ -79,7 +79,7 @@ Idempotency-Key: <opaque client token>
 
 > 只有**已完成**的响应才可被记录。若两个请求以相同的键与指纹竞争，两者都会执行到底；第二次 `storeIdempotencyResult` 会替换第一次。之后第三个重复该键的请求将重放胜出者。
 
-要守住在途窗口，需要一个带有自身短 TTL 的 `pending` 记录状态，以免崩溃把一个键卡住 24 小时。这被**有意排除在范围之外**（提交 `95bc46f`，`server/src/services/idempotency.ts:17-20`）。需要更强去重的调用方，应等到第一个请求返回或客户端自己的超时触发后再重试。
+要守住在途窗口，需要一个带有自身短 TTL 的 `pending` 记录状态，以免崩溃把一个键卡住 24 小时。这被**有意排除在范围之外**（提交 `95bc46f`，`apps/server/src/services/idempotency.ts:17-20`）。需要更强去重的调用方，应等到第一个请求返回或客户端自己的超时触发后再重试。
 
 ---
 
@@ -91,7 +91,7 @@ Idempotency-Key: <opaque client token>
 
 - 通过 `idempotencyTtlMs()` → `envNum('IDEMPOTENCY_TTL_MS', 24*60*60*1000)` **每次调用时**读取，便于测试实时切换；非有限值或负数 → 回退到默认值。
 - `expires_at_ms = now + ttl`；过期行在下一次 `storeIdempotencyResult` 时**按 `key_hash`** 惰性清理（`DELETE ... WHERE key_hash = ? AND expires_at_ms <= ?`），范围扫描则借助 `idx_idempotency_claims_expires` 索引。
-- 权威来源：`server/src/services/idempotency.ts:40-42`、[`docs/en/env/01-variables.md#idempotency`](../../en/env/01-variables.md#idempotency)。
+- 权威来源：`apps/server/src/services/idempotency.ts:40-42`、[`docs/en/env/01-variables.md#idempotency`](../../en/env/01-variables.md#idempotency)。
 
 ---
 

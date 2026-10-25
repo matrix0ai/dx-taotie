@@ -2,7 +2,7 @@
 
 # 命名回退链
 
-> **来源：** `server/src/services/router.ts`（`activeChainOrThrow`、`resolveRoutingChain`）、`server/src/services/profile-models.ts`（`getActiveProfileId`、`autoIncludeNewModelsForProfiles`）、`server/src/routes/fallback.ts`、`server/src/routes/profiles.ts`
+> **来源：** `apps/server/src/services/router.ts`（`activeChainOrThrow`、`resolveRoutingChain`）、`apps/server/src/services/profile-models.ts`（`getActiveProfileId`、`autoIncludeNewModelsForProfiles`）、`apps/server/src/routes/fallback.ts`、`apps/server/src/routes/profiles.ts`
 
 *回退链*是路由器为一次请求可尝试的有序模型集合。同一时刻只有一条链处于**活跃**状态；`plain auto` 始终跟随活跃链。链的存储位置取决于安装是否使用命名配置档：
 

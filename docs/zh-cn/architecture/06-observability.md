@@ -2,7 +2,7 @@
 
 # 可观测性 —— 深度剖析
 
-> **源码：** `server/src/lib/server-logs.ts`、`server/src/routes/logs.ts`、`server/src/lib/request-log.ts`、`server/src/lib/log-redaction.ts`、`server/src/lib/attempt-trace.ts`
+> **源码：** `apps/server/src/lib/server-logs.ts`、`apps/server/src/routes/logs.ts`、`apps/server/src/lib/request-log.ts`、`apps/server/src/lib/log-redaction.ts`、`apps/server/src/lib/attempt-trace.ts`
 
 ## 1. 服务器日志查看器 (`server-logs.ts`)
 

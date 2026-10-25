@@ -10,34 +10,34 @@
 | --- | --- | --- |
 | `test:bootstrap` | `node --test scripts/dev-bootstrap.test.mjs` | 开发引导脚本。 |
 | `test:hooks` | `node --test .claude/hooks/contributing-check.test.mjs` | 贡献者检查 hook 逻辑。 |
-| server | `npm run test -w server` | Vitest 套件（见 [02-server-suite.md](02-server-suite.md)）。 |
-| cli | `npm run test -w cli` | Setup-CLI 测试（工具、配置文件合并、index）。 |
-| client | `npm run test -w client --if-present` | 客户端 vitest 套件加 i18n 一致性检查。 |
+| server | `npm run test -w apps/server` | Vitest 套件（见 [02-server-suite.md](02-server-suite.md)）。 |
+| cli | `npm run test -w apps/cli` | Setup-CLI 测试（工具、配置文件合并、index）。 |
+| client | `npm run test -w apps/client --if-present` | 客户端 vitest 套件加 i18n 一致性检查。 |
 
-desktop 工作区有自己的一小组套件（`desktop/src/__tests__/window-chrome.test.ts`），但不属于根链；它用自带工具经 `npm --prefix desktop` 运行。
+desktop 工作区有自己的一小组套件（`apps/desktop/src/__tests__/window-chrome.test.ts`），但不属于根链；它用自带工具经 `npm --prefix apps/desktop` 运行。
 
 ## 按工作区的命令
 
-### Server (`server/package.json`)
+### Server (`apps/server/package.json`)
 
 ```
-npm run test -w server            # vitest run --pool=forks --fileParallelism=false
-npm run test:watch -w server      # watch mode
-npm run test:migrations -w server # migration roundtrip only
+npm run test -w apps/server            # vitest run --pool=forks --fileParallelism=false
+npm run test:watch -w apps/server      # watch mode
+npm run test:migrations -w apps/server # migration roundtrip only
 ```
 
-`test:migrations` 只瞄准一个文件——[`src/__tests__/db/migrate/roundtrip.test.ts`](../../../server/src/__tests__/db/migrate/roundtrip.test.ts)——把每条已记录的迁移上滚再下滚，证明往返无损。动过 `src/db/migrate/` 下面的任何东西之后都要跑它。
+`test:migrations` 只瞄准一个文件——[`src/__tests__/db/migrate/roundtrip.test.ts`](../../../apps/server/src/__tests__/db/migrate/roundtrip.test.ts)——把每条已记录的迁移上滚再下滚，证明往返无损。动过 `src/db/migrate/` 下面的任何东西之后都要跑它。
 
 2026 年 8 月新增的测试文件，扩充了覆盖率：
 - `src/__tests__/routes/logs.test.ts` —— 服务器日志查看器的持久化与 API
 - `src/__tests__/routes/custom-transcription.test.ts` —— 自定义 STT 模型注册与转写用法
 - `src/__tests__/lib/provider-identity.test.ts` —— 自定义端点身份分类（#889）
 
-### Client (`client/package.json`)
+### Client (`apps/client/package.json`)
 
 ```
-npm run test -w client            # vitest run && npm run check:i18n
-npm run check:i18n -w client      # scripts/check-i18n.mjs
+npm run test -w apps/client            # vitest run && npm run check:i18n
+npm run check:i18n -w apps/client      # scripts/check-i18n.mjs
 ```
 
 `check:i18n` 校验每个语言文件的键/占位符一致性；缺失或占位符损坏的翻译会让套件失败，而不只是构建失败。

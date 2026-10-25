@@ -86,7 +86,7 @@
 
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
-| `SERVER_LOGS_RETENTION_DAYS` | `7` | 超过这么多天的行会被每日维护任务删除（见 `server/src/jobs/prune-logs.ts`）。 |
+| `SERVER_LOGS_RETENTION_DAYS` | `7` | 超过这么多天的行会被每日维护任务删除（见 `apps/server/src/jobs/prune-logs.ts`）。 |
 | `SERVER_LOGS_MAX_ROWS` | `50000` | `server_logs` 表的硬上限。超限时下一次插入会删最旧的行。 |
 
 两者启动时读取；改它们要重启。
@@ -106,7 +106,7 @@
 
 ---
 
-## 客户端实现注记 (`client/src/pages/LogsPage.tsx`)
+## 客户端实现注记 (`apps/client/src/pages/LogsPage.tsx`)
 
 - **轮询间隔：** 3 秒（`LOG_POLL_MS`），标签页后台时暂停（`refetchIntervalInBackground: false`）。
 - **过滤器变更**（级别复选框、提供方下拉、搜索框）重置流：缓冲清空、游标置空、新查询键 → 全新的最新 200 页。
@@ -123,4 +123,4 @@
 ## 导航
 
 日志页从 **分析** 导航菜单链接过来
-（`client/src/pages/AnalyticsPage.tsx` → 侧边栏）。它和分析图表并列，作为诊断伴侣：图表显示*发生了什么*（请求量、延迟、错误）；日志显示*为什么*。
+（`apps/client/src/pages/AnalyticsPage.tsx` → 侧边栏）。它和分析图表并列，作为诊断伴侣：图表显示*发生了什么*（请求量、延迟、错误）；日志显示*为什么*。

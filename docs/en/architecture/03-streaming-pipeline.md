@@ -2,7 +2,7 @@
 
 # Streaming Pipeline — Deep Dive
 
-> **Source:** `server/src/routes/proxy.ts`, `server/src/routes/responses.ts`, `server/src/routes/anthropic.ts`, `server/src/lib/fallback-loop.ts`
+> **Source:** `apps/server/src/routes/proxy.ts`, `apps/server/src/routes/responses.ts`, `apps/server/src/routes/anthropic.ts`, `apps/server/src/lib/fallback-loop.ts`
 
 ## 1. Design Principles
 
@@ -138,7 +138,7 @@ headerSent = false
 
 ## 5. Responses API Shim (`/v1/responses`)
 
-> **Source:** `server/src/routes/responses.ts`
+> **Source:** `apps/server/src/routes/responses.ts`
 
 ### Purpose
 
@@ -181,7 +181,7 @@ Thin adapter over shared fallback loop:
 
 ## 7. Fusion Virtual Model (`model: "fusion"`)
 
-> **Source:** `server/src/services/fusion.ts`
+> **Source:** `apps/server/src/services/fusion.ts`
 
 - Fans prompt to **panel of diverse models** in parallel (vision/tools filtered per member).
 - **Judge model** synthesizes one answer.

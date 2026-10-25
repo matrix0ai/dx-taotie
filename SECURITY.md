@@ -1,6 +1,6 @@
 # Security Policy
 
-FreeLLMAPI holds real credentials: your provider API keys (encrypted at rest in
+Taotie holds real credentials: your provider API keys (encrypted at rest in
 SQLite), a unified `/v1` bearer token, and a dashboard account. Bugs that expose
 any of those are taken seriously. Thanks for reporting them responsibly.
 
@@ -19,11 +19,11 @@ re-pull `:latest`).
 ## Reporting a vulnerability
 
 **Preferred:** GitHub private vulnerability reporting — go to the
-[Security tab](https://github.com/tashfeenahmed/freellmapi/security) and click
+[Security tab](https://github.com/matrix0ai/dx-taotie/security) and click
 **Report a vulnerability**. That opens a private thread with the maintainer and
 keeps the details out of public issues.
 
-**Alternate:** email **support@freellmapi.co** with `[freellmapi security]` in the
+**Alternate:** email **support@taotie.conouch.io** with `[freellmapi security]` in the
 subject.
 
 Please do not open a public issue, PR, or discussion for a security bug until a
@@ -67,7 +67,7 @@ Out of scope:
 - Vulnerabilities in upstream LLM providers themselves. Report those to the
   provider. Bugs in *how this router talks to them* are in scope.
 - Anything that requires the operator to deliberately expose the server to the
-  public internet. FreeLLMAPI is a single-user, trusted-network tool: it binds
+  public internet. Taotie is a single-user, trusted-network tool: it binds
   `127.0.0.1` by default, `HOST_BIND=0.0.0.0` is a documented opt-in with a
   warning attached, and there is no multi-tenant auth by design. "I put it on a
   public IP and someone used my quota" is expected behaviour, not a vulnerability.

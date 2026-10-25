@@ -34,9 +34,9 @@ Every PR should:
 ## Database migrations
 
 Schema changes must use file-per-migration files under
-`server/src/db/migrations/`. Do not edit previously applied migration files.
+`apps/server/src/db/migrations/`. Do not edit previously applied migration files.
 
-Control database migrations with ([db/README.md](server/src/db/README.md)):
+Control database migrations with ([db/README.md](apps/server/src/db/README.md)):
 
 ```bash
 npm run db:migration:create --name=add_embedding_index

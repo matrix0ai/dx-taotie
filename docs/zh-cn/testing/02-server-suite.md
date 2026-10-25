@@ -4,7 +4,7 @@
 
 ## 布局
 
-所有服务器测试位于 [`server/src/__tests__/`](../../../server/src/__tests__) 下，与 `src/` 镜像：
+所有服务器测试位于 [`apps/server/src/__tests__/`](../../../apps/server/src/__tests__) 下，与 `src/` 镜像：
 
 | 目录 | 内容 |
 | --- | --- |
@@ -19,16 +19,16 @@
 
 ## 串行 fork 执行
 
-`npm run test -w server` 以 `vitest run --pool=forks --fileParallelism=false` 运行。两个刻意的选择：
+`npm run test -w apps/server` 以 `vitest run --pool=forks --fileParallelism=false` 运行。两个刻意的选择：
 
 - **`--pool=forks`** 把每个测试文件隔离在全新进程里。套件操纵真实状态——better-sqlite3 数据库、`process.env`、模块级缓存（冷却映射、健康调度器）——这些绝不能在文件之间泄漏。
 - **`--fileParallelism=false`** 让文件串行执行，共享资源（端口、临时数据目录）就不会在并发执行的文件之间相撞。
 
-代价是挂钟时间；回报是约 2300 个测试的套件是确定性的。client 工作区不需要这些：它的[独立 vitest 配置](../../../client/vitest.config.ts)主要是为了避免加载 React/Tailwind 的 vite 插件，其测试就是默认 node 环境里的普通 TypeScript。
+代价是挂钟时间；回报是约 2300 个测试的套件是确定性的。client 工作区不需要这些：它的[独立 vitest 配置](../../../apps/client/vitest.config.ts)主要是为了避免加载 React/Tailwind 的 vite 插件，其测试就是默认 node 环境里的普通 TypeScript。
 
 ## 纯库导入守卫（#858）
 
-[`src/__tests__/lib/module-purity.test.ts`](../../../server/src/__tests__/lib/module-purity.test.ts) 强制一条架构不变量：在 [`server/src/lib/`](../../../server/src/lib/) 中被声明为纯的模块（只对其参数做函数运算——无 I/O、无数据库、无配置）必须保持没有**值**导入。`import type` 依然合法，因为类型导入会在制造循环之前就被擦除。
+[`src/__tests__/lib/module-purity.test.ts`](../../../apps/server/src/__tests__/lib/module-purity.test.ts) 强制一条架构不变量：在 [`apps/server/src/lib/`](../../../apps/server/src/lib/) 中被声明为纯的模块（只对其参数做函数运算——无 I/O、无数据库、无配置）必须保持没有**值**导入。`import type` 依然合法，因为类型导入会在制造循环之前就被擦除。
 
 它存在的理由：像 `error-classify.ts` 这样的纯叶子模块之所以同时被代理聊天路径、responses 路径和 fusion 面板导入，正是因为它们不依赖任何东西。加一句 `import { getDb }` 能干净地编译、通过每一个行为测试，然后悄悄把一片叶子变成一个枢纽——日后以导入循环（fusion↔proxy 案例）或某个突然需要数据库的单元测试的形式浮出水面。守卫还能识别动态导入、再导出和 `require()`。
 

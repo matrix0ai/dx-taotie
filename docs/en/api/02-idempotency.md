@@ -2,7 +2,7 @@
 
 # Idempotency-Key — Safe Retries for Non-Streaming Chat Completions
 
-> **Sources:** `server/src/services/idempotency.ts`, `server/src/routes/proxy.ts:1793-1835` (entry) + `2640-2656` (persist), `server/src/db/migrations/20260901_000001_idempotency_claims.ts`, commit `36b877d` (feature), `95bc46f` (in-flight clarification), env `IDEMPOTENCY_TTL_MS` documented in [`docs/en/env/01-variables.md#idempotency`](../env/01-variables.md#idempotency).
+> **Sources:** `apps/server/src/services/idempotency.ts`, `apps/server/src/routes/proxy.ts:1793-1835` (entry) + `2640-2656` (persist), `apps/server/src/db/migrations/20260901_000001_idempotency_claims.ts`, commit `36b877d` (feature), `95bc46f` (in-flight clarification), env `IDEMPOTENCY_TTL_MS` documented in [`docs/en/env/01-variables.md#idempotency`](../env/01-variables.md#idempotency).
 
 Non-streaming `POST /v1/chat/completions` supports an opt-in `Idempotency-Key` header so a client that times out and retries does not burn a second free-tier slot for an answer it already received. When the same key + same request content is seen again inside the replay window the gateway replays the stored response at **zero provider cost**; the same key with different content is a `409` rather than a silent wrong answer.
 
@@ -16,7 +16,7 @@ Send `Idempotency-Key` (case-insensitive — Express lower-cases to `idempotency
 Idempotency-Key: <opaque client token>
 ```
 
-Normalization (`normalizeIdempotencyKey` in `server/src/services/idempotency.ts:176-182`):
+Normalization (`normalizeIdempotencyKey` in `apps/server/src/services/idempotency.ts:176-182`):
 
 - Trim surrounding whitespace; empty after trim → ignored (no idempotency).
 - Must be `≤ 255` UTF-8 bytes (`Buffer.byteLength(..., 'utf8')`); longer → ignored.
@@ -30,7 +30,7 @@ Streaming requests (`stream: true`) **always bypass** idempotency (`const idemKe
 
 ## 2. States — `miss` / `replay` / `409 conflict`
 
-`lookupIdempotencyReplay(keyHash, fingerprint)` in `server/src/services/idempotency.ts:91-119` queries the `idempotency_claims` table for an **unexpired** row with the same `key_hash` and compares its stored `request_fingerprint`:
+`lookupIdempotencyReplay(keyHash, fingerprint)` in `apps/server/src/services/idempotency.ts:91-119` queries the `idempotency_claims` table for an **unexpired** row with the same `key_hash` and compares its stored `request_fingerprint`:
 
 | Result | Condition | Gateway behavior |
 |--------|-----------|-----------------|
@@ -53,7 +53,7 @@ DB failures degrade to `miss` — idempotency is best-effort and never fails the
 
 ## 4. Fingerprint composition
 
-`computeIdempotencyFingerprint` (`server/src/services/idempotency.ts:51-70`) builds a canonical `SHA-256` over the JSON serialization of exactly these fields:
+`computeIdempotencyFingerprint` (`apps/server/src/services/idempotency.ts:51-70`) builds a canonical `SHA-256` over the JSON serialization of exactly these fields:
 
 ```typescript
 {
@@ -79,7 +79,7 @@ A duplicate that arrives while the original is still running is **not coalesced*
 
 > Only **completed** responses are claimable. If two requests race with the same key + fingerprint, both execute to completion; the second `storeIdempotencyResult` replaces the first. A third request that then repeats the key will replay the winner.
 
-Guarding the in-flight window would require a `pending`-claim state with its own short TTL so a crash cannot wedge a key for 24 h. That is **deliberately out of scope** (commit `95bc46f`, `server/src/services/idempotency.ts:17-20`). Callers that need stronger dedup should hold off retrying until the first request either returns or the client's own timeout fires.
+Guarding the in-flight window would require a `pending`-claim state with its own short TTL so a crash cannot wedge a key for 24 h. That is **deliberately out of scope** (commit `95bc46f`, `apps/server/src/services/idempotency.ts:17-20`). Callers that need stronger dedup should hold off retrying until the first request either returns or the client's own timeout fires.
 
 ---
 
@@ -91,7 +91,7 @@ Guarding the in-flight window would require a `pending`-claim state with its own
 
 - Read **per call** via `idempotencyTtlMs()` → `envNum('IDEMPOTENCY_TTL_MS', 24*60*60*1000)` so tests can flip it live; non-finite / negative → fallback.
 - `expires_at_ms = now + ttl`; stale rows are lazily swept **per `key_hash`** at the next `storeIdempotencyResult` (`DELETE ... WHERE key_hash = ? AND expires_at_ms <= ?`) and via the `idx_idempotency_claims_expires` index for range scans.
-- Source of truth: `server/src/services/idempotency.ts:40-42`, [`docs/en/env/01-variables.md#idempotency`](../env/01-variables.md#idempotency).
+- Source of truth: `apps/server/src/services/idempotency.ts:40-42`, [`docs/en/env/01-variables.md#idempotency`](../env/01-variables.md#idempotency).
 
 ---
 

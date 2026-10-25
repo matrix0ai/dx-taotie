@@ -2,9 +2,9 @@
 
 # Security and key handling
 
-How FreeLLMAPI protects the provider API keys you store in it, and how the `ENCRYPTION_KEY` that makes that protection real is generated, stored, and migrated.
+How Taotie protects the provider API keys you store in it, and how the `ENCRYPTION_KEY` that makes that protection real is generated, stored, and migrated.
 
-Sources: [`.env.example`](../../../.env.example) (key lifecycle comments), [`server/src/lib/crypto.ts`](../../../server/src/lib/crypto.ts), and [`server/src/db/index.ts`](../../../server/src/db/index.ts).
+Sources: [`.env.example`](../../../.env.example) (key lifecycle comments), [`apps/server/src/lib/crypto.ts`](../../../apps/server/src/lib/crypto.ts), and [`apps/server/src/db/index.ts`](../../../apps/server/src/db/index.ts).
 
 - [The encryption key at a glance](#the-encryption-key-at-a-glance)
 - [Key resolution precedence](#key-resolution-precedence)
@@ -62,12 +62,12 @@ Stored provider keys are encrypted with AES-256-GCM using the resolved key. Cons
 
 ## Data directory hardening (WAL sidecars)
 
-SQLite creates `-wal` and `-shm` sidecar files on the first write and deletes them on the last clean close — so at startup there may be nothing there to chmod, and the files' protection has to come from the directory they live in. FreeLLMAPI therefore restricts the directory holding the database to the owning account before opening the connection (on Windows the ACL is inherited, so hardening first means the database file is born protected rather than spending its first moments with whatever ACL the parent handed down).
+SQLite creates `-wal` and `-shm` sidecar files on the first write and deletes them on the last clean close — so at startup there may be nothing there to chmod, and the files' protection has to come from the directory they live in. Taotie therefore restricts the directory holding the database to the owning account before opening the connection (on Windows the ACL is inherited, so hardening first means the database file is born protected rather than spending its first moments with whatever ACL the parent handed down).
 
 Because locking down a directory that is not ours would be a worse outage than the leak it prevents (pointing the DB at `/tmp/freeapi.db` must not chmod `0700` `/tmp`), hardening applies by ownership-by-construction:
 
 1. The directory was just created by this process, or
-2. It is the built-in default data directory (`server/data`), which ships as ours.
+2. It is the built-in default data directory (`apps/server/data`), which ships as ours.
 
 An operator pointing `FREEAPI_DB_PATH` at a dedicated pre-existing directory can opt in with `FREEAPI_DB_DIR_HARDENING=1`, and opt out entirely with `=0`. The default is default-on-where-safe rather than a required flag, because hardening that only runs when someone remembers to ask for it is the same class of failure as hardening nobody noticed had stopped running.
 

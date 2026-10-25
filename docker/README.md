@@ -1,6 +1,6 @@
 # Docker Guide
 
-Docker Compose is the recommended way to run FreeLLMAPI for personal use. The container serves the Express API and the built React dashboard from one process on port 3001, with SQLite persisted in a named volume.
+Docker Compose is the recommended way to run Taotie for personal use. The container serves the Express API and the built React dashboard from one process on port 3001, with SQLite persisted in a named volume.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ curl http://localhost:3001/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "auto",
-    "messages": [{"role": "user", "content": "Say hello from FreeLLMAPI."}]
+    "messages": [{"role": "user", "content": "Say hello from Taotie."}]
   }'
 ```
 
@@ -91,7 +91,7 @@ Example `freellmapi.config.json`:
 ```json
 {
   "admin": { "email": "ops@example.com", "password": "change-me-min-8-chars" },
-  "license": "premium license key from freellmapi.co",
+  "license": "premium license key from taotie.conouch.io",
   "keys": [
     { "platform": "groq", "key": "gsk_...", "label": "main" }
   ],
@@ -119,7 +119,7 @@ secrets, so protect it like `ENCRYPTION_KEY`.
 Images are published to GitHub Container Registry:
 
 ```bash
-docker pull ghcr.io/tashfeenahmed/freellmapi:latest
+docker pull ghcr.io/matrix0ai/dx-taotie:latest
 ```
 
 The Docker workflow builds pull requests without pushing. After this repository receives the workflow on `main`, pushes to `main` and version tags publish images to GHCR automatically.

@@ -14,7 +14,7 @@ npx freellmapi --dry-run setup-claude  # preview without writing
 npx freellmapi setup-claude --model gpt-4o  # pin a model
 ```
 
-Every generator (`cli/src/tools.ts:52-622`) fetches the live catalog, resolves `--model` against the unfiltered catalog (`c942352`), backs up existing config with a timestamped copy, merges without clobbering unrelated keys, and writes with `0600`.
+Every generator (`apps/cli/src/tools.ts:52-622`) fetches the live catalog, resolves `--model` against the unfiltered catalog (`c942352`), backs up existing config with a timestamped copy, merges without clobbering unrelated keys, and writes with `0600`.
 
 ## Generator table
 

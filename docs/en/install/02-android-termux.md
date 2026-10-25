@@ -2,9 +2,9 @@
 
 # Android (Termux) installation
 
-> Experimental and community-supported. FreeLLMAPI runs locally on the Android device.
+> Experimental and community-supported. Taotie runs locally on the Android device.
 
-FreeLLMAPI can run in [Termux](https://termux.dev/) without an Android NDK toolchain. On Android, the server uses Node's built-in SQLite driver instead of the native `better-sqlite3` package.
+Taotie can run in [Termux](https://termux.dev/) without an Android NDK toolchain. On Android, the server uses Node's built-in SQLite driver instead of the native `better-sqlite3` package.
 
 ## Requirements
 
@@ -31,10 +31,10 @@ Confirm that Node is new enough for `node:sqlite`:
 node --version
 ```
 
-Then clone and start FreeLLMAPI:
+Then clone and start Taotie:
 
 ```bash
-git clone https://github.com/tashfeenahmed/freellmapi.git
+git clone https://github.com/matrix0ai/dx-taotie.git
 cd freellmapi
 npm install --no-audit --no-fund
 npm run dev

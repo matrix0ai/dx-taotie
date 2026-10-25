@@ -2,7 +2,7 @@
 
 # 额度与冷却引擎 —— 深度剖析
 
-> **源码：** `server/src/services/ratelimit.ts`、`server/src/services/cooldown-probe.ts`、`server/src/services/provider-quota.ts`
+> **源码：** `apps/server/src/services/ratelimit.ts`、`apps/server/src/services/cooldown-probe.ts`、`apps/server/src/services/provider-quota.ts`
 
 ## 1. 概览
 

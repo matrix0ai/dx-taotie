@@ -2,7 +2,7 @@
 
 # 降级模式与回退 —— 深度剖析
 
-> **源码：** `server/src/services/degradation.ts`、`server/src/lib/fallback-loop.ts`、`server/src/routes/proxy.ts`、`server/src/services/ratelimit.ts`
+> **源码：** `apps/server/src/services/degradation.ts`、`apps/server/src/lib/fallback-loop.ts`、`apps/server/src/routes/proxy.ts`、`apps/server/src/services/ratelimit.ts`
 
 ## 1. 降级模式状态机 (f412e97)
 

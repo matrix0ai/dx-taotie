@@ -2,7 +2,7 @@
 
 # 路由与老虎机评分 —— 深度剖析
 
-> **源码：** `server/src/services/router.ts`、`server/src/services/scoring.ts`
+> **源码：** `apps/server/src/services/router.ts`、`apps/server/src/services/scoring.ts`
 
 ## 1. 概览
 

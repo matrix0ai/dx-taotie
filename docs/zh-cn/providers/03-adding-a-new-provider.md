@@ -2,11 +2,11 @@
 
 # 添加新提供方
 
-一篇贡献者走查，与现有 37 个内置平台的接入方式如出一辙。阅读时请把 [`server/src/providers/index.ts`](../../../server/src/providers/index.ts) 放在手边——它既是注册表，也是各平台取舍判断的最好文档。
+一篇贡献者走查，与现有 37 个内置平台的接入方式如出一辙。阅读时请把 [`apps/server/src/providers/index.ts`](../../../apps/server/src/providers/index.ts) 放在手边——它既是注册表，也是各平台取舍判断的最好文档。
 
 ## 1. 声明平台
 
-在 [`shared/types.ts`](../../../shared/types.ts)（第 59 行）的 `Platform` 联合中加入 id，并附注释写明你能够辩护的免费额度事实：什么免费、循环发放还是促销、要不要信用卡、有没有注册墙。联合必须与 [`server/src/routes/keys.ts`](../../../server/src/routes/keys.ts) 的 `PLATFORMS` 白名单保持同步——那个 zod 枚举决定用户可以为哪些平台登记密钥。
+在 [`packages/shared/types.ts`](../../../packages/shared/types.ts)（第 59 行）的 `Platform` 联合中加入 id，并附注释写明你能够辩护的免费额度事实：什么免费、循环发放还是促销、要不要信用卡、有没有注册墙。联合必须与 [`apps/server/src/routes/keys.ts`](../../../apps/server/src/routes/keys.ts) 的 `PLATFORMS` 白名单保持同步——那个 zod 枚举决定用户可以为哪些平台登记密钥。
 
 ## 2. 选择适配器
 
@@ -61,7 +61,7 @@ register(new OpenAICompatProvider({
 
 ## 6. 测试
 
-在 [`server/src/__tests__/providers/`](../../../server/src/__tests__/providers/) 下按照既有模式补测试（一批 OpenAI 兼容注册参见 `cn-providers.test.ts`）：断言出站请求的形状（URL、鉴权头的位置、请求头）、响应归一化，以及你引入的任何怪癖处理。在仓库根目录用 `npm test` 跑完整链路——见 [docs/testing](../testing/OVERVIEW.md)。
+在 [`apps/server/src/__tests__/providers/`](../../../apps/server/src/__tests__/providers/) 下按照既有模式补测试（一批 OpenAI 兼容注册参见 `cn-providers.test.ts`）：断言出站请求的形状（URL、鉴权头的位置、请求头）、响应归一化，以及你引入的任何怪癖处理。在仓库根目录用 `npm test` 跑完整链路——见 [docs/testing](../testing/OVERVIEW.md)。
 
 ## 清单
 

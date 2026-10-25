@@ -4,7 +4,7 @@
 
 [← 返回 README](../README.md) · [文档索引](../README.md)
 
-把 FreeLLMAPI 跑起来所需的一切：一行命令、Docker Compose、本地开发、声明式配置、生产构建、桌面应用，以及你的数据存放在哪里。
+把 Taotie 跑起来所需的一切：一行命令、Docker Compose、本地开发、声明式配置、生产构建、桌面应用，以及你的数据存放在哪里。
 
 - [快速开始](#快速开始)
 - [Docker Compose](#docker-compose)
@@ -19,18 +19,18 @@
 需要 Docker。它会建好 `~/freellmapi`、生成加密密钥、拉取镜像并启动容器：
 
 ```bash
-curl -fsSL https://freellmapi.co/install.sh | bash
+curl -fsSL https://taotie.conouch.io/install.sh | bash
 ```
 
-不放心直接管道给 bash？[脚本在这里](https://freellmapi.co/install.sh)。重复执行是安全的：你的 `.env`（以及加密密钥）会被保留，容器会更新到 `:latest`。可以用 `FREELLMAPI_DIR`、`PORT` 或 `HOST_BIND` 环境变量覆盖默认值。
+不放心直接管道给 bash？[脚本在这里](https://taotie.conouch.io/install.sh)。重复执行是安全的：你的 `.env`（以及加密密钥）会被保留，容器会更新到 `:latest`。可以用 `FREELLMAPI_DIR`、`PORT` 或 `HOST_BIND` 环境变量覆盖默认值。
 
-在 Windows 上，最省事的方式是桌面版 **[Releases 里的 `.exe` 安装包](https://github.com/tashfeenahmed/freellmapi/releases/latest)**（见[下文](#桌面应用)）；上面的 Docker 步骤在 WSL 或任意 bash shell 里同样可用。
+在 Windows 上，最省事的方式是桌面版 **[Releases 里的 `.exe` 安装包](https://github.com/matrix0ai/dx-taotie/releases/latest)**（见[下文](#桌面应用)）；上面的 Docker 步骤在 WSL 或任意 bash shell 里同样可用。
 
 在 Android 上，参见实验性的 [Termux 安装指南](02-android-termux.md)。它使用 Node 内置的 SQLite 驱动，不需要 Android NDK。
 
-打开 http://localhost:3001 ，在 **密钥** 页添加你的提供方密钥，按喜好调整 **回退链** 的顺序，然后在 **密钥** 页顶部拿到你的统一 API 密钥。这个统一密钥就是你的 OpenAI SDK 要指向的东西。
+打开 http://localhost:3001。首次访问时，先用邮箱和至少 8 位密码创建仪表盘账号；以后用这组信息登录。添加提供方密钥后，进入 **模型 → 开始使用 → 连接你的应用**，点击 **复制 API 密钥**。仪表盘密码和 API 密钥是两种不同凭据；OpenAI SDK 使用复制的 API 密钥。
 
-你的部署会自行从签名的目录源保持更新。当前的完整目录列在 [freellmapi.co/models](https://freellmapi.co/models.html)。
+你的部署会自行从签名的目录源保持更新。当前的完整目录列在 [taotie.conouch.io/models](https://taotie.conouch.io/models.html)。
 
 ## Docker Compose
 
@@ -40,7 +40,7 @@ curl -fsSL https://freellmapi.co/install.sh | bash
 
 *在 macOS / Linux 上（Bash）：*
 ```bash
-git clone https://github.com/tashfeenahmed/freellmapi.git
+git clone https://github.com/matrix0ai/dx-taotie.git
 cd freellmapi
 
 # 生成用于静态存储密钥的加密密钥
@@ -52,7 +52,7 @@ docker compose up -d
 
 *在 Windows 上（PowerShell）：*
 ```powershell
-git clone https://github.com/tashfeenahmed/freellmapi.git
+git clone https://github.com/matrix0ai/dx-taotie.git
 cd freellmapi
 
 $Bytes = New-Object Byte[] 32
@@ -72,7 +72,7 @@ docker compose up -d
 
 > **宿主机连得上提供方，容器里却连不上？** 容器有自己独立的网络栈，所以有两件在你机器上成立的事，到了容器里并不成立：
 >
-> - **`127.0.0.1` 在容器里指的是容器自己，不是你的机器。** 如果你是通过宿主机上的代理客户端（Clash、v2rayN、sing-box，或公司代理）访问提供方，请把 FreeLLMAPI 指向宿主机：`PROXY_URL=socks5h://host.docker.internal:7890`。仓库自带的 `docker-compose.yml` 已经把 `host.docker.internal` 映射到宿主网关，所以在 Linux 上的原生 Docker 里同样可用，不只是 Docker Desktop。另外代理本身也要允许来自 loopback 以外的连接（Clash 里是 `allow-lan: true`）。
+> - **`127.0.0.1` 在容器里指的是容器自己，不是你的机器。** 如果你是通过宿主机上的代理客户端（Clash、v2rayN、sing-box，或公司代理）访问提供方，请把 Taotie 指向宿主机：`PROXY_URL=socks5h://host.docker.internal:7890`。仓库自带的 `docker-compose.yml` 已经把 `host.docker.internal` 映射到宿主网关，所以在 Linux 上的原生 Docker 里同样可用，不只是 Docker Desktop。另外代理本身也要允许来自 loopback 以外的连接（Clash 里是 `allow-lan: true`）。
 > - **纯 IPv6 的宿主机需要在 Docker 里开启 IPv6。** 默认的 bridge 网络只有 IPv4，所以在没有 IPv4 出口的宿主机上，容器什么都连不上，连 DNS 也一样。在 `/etc/docker/daemon.json` 里加上 `"ipv6": true`、`"ip6tables": true` 和一个 `"fixed-cidr-v6"` 网段，然后重启 Docker。
 >
 > 想知道自己属于哪一种，直接问容器：
@@ -87,7 +87,7 @@ docker compose up -d
 
 *在 macOS / Linux 上（Bash）：*
 ```bash
-git clone https://github.com/tashfeenahmed/freellmapi.git
+git clone https://github.com/matrix0ai/dx-taotie.git
 cd freellmapi
 npm install
 ENCRYPTION_KEY="$(node -e 'console.log(require("crypto").randomBytes(32).toString("hex"))')"
@@ -97,7 +97,7 @@ npm run dev
 
 *在 Windows 上（PowerShell）：*
 ```powershell
-git clone https://github.com/tashfeenahmed/freellmapi.git
+git clone https://github.com/matrix0ai/dx-taotie.git
 cd freellmapi
 npm install
 $ENCRYPTION_KEY = node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -116,7 +116,7 @@ npm run dev
 NEW_KEY="$(node -e 'console.log(require("crypto").randomBytes(32).toString("hex"))')"
 
 # 2. 预演（只读，不写入任何内容）
-cd server
+cd apps/server
 ENCRYPTION_KEY=<旧密钥> npm run rotate-encryption-key -- \
   --new-key "$NEW_KEY" --dry-run
 
@@ -124,13 +124,13 @@ ENCRYPTION_KEY=<旧密钥> npm run rotate-encryption-key -- \
 ENCRYPTION_KEY=<旧密钥> npm run rotate-encryption-key -- --new-key "$NEW_KEY"
 ```
 
-`--old-key <hex>` 可以覆盖从 `ENCRYPTION_KEY` 读到的密钥，`--db <path>` 用来指向 `server/data` 以外的数据库。只有当每一个值都能解密时才会写入，所以旧密钥填错会以非零状态退出，数据库保持原样。
+`--old-key <hex>` 可以覆盖从 `ENCRYPTION_KEY` 读到的密钥，`--db <path>` 用来指向 `apps/server/data` 以外的数据库。只有当每一个值都能解密时才会写入，所以旧密钥填错会以非零状态退出，数据库保持原样。
 
 之后把新密钥写进 `.env`（`ENCRYPTION_KEY=$NEW_KEY`）并重启。使用 Docker 时，在容器内对挂载的数据库执行这条命令，然后用更新后的 `.env` 重启容器。轮换前请先备份数据库文件。
 
 请求分析数据默认保留 90 天或 100000 条请求记录，以先触发的那个上限为准。在 `.env` 里设置 `REQUEST_ANALYTICS_RETENTION_DAYS=0` 或 `REQUEST_ANALYTICS_MAX_ROWS=0` 可以分别关掉对应的保留上限。
 
-打开 http://localhost:5173 （Vite 开发界面），在 **密钥** 页添加你的提供方密钥，按喜好调整 **回退链** 的顺序，然后在 **密钥** 页顶部拿到你的统一 API 密钥。这个统一密钥就是你的 OpenAI SDK 要指向的东西。
+打开 http://localhost:5173（Vite 开发界面）。首次访问时，先用邮箱和至少 8 位密码创建仪表盘账号；以后用这组信息登录。添加提供方密钥后，进入 **模型 → 开始使用 → 连接你的应用**，点击 **复制 API 密钥**。仪表盘密码和 API 密钥是两种不同凭据；OpenAI SDK 使用复制的 API 密钥。
 
 > **想从局域网里的另一台设备访问开发界面？** 用 `npm run dev:lan`。它会把 `--host` 透传给 Vite，Vite 随后会打印一个 `Network: http://<你的 IP>:5173` 的地址，你可以在手机或另一台机器上打开。（直接写 `npm run dev -- --host` 在这里*不*管用：根目录的 `dev` 脚本是一个 `concurrently` 包装器，这个参数根本传不到 Vite。）API 调用走 Vite 的开发代理，所以不需要额外的服务端配置。
 
@@ -138,12 +138,12 @@ ENCRYPTION_KEY=<旧密钥> npm run rotate-encryption-key -- --new-key "$NEW_KEY"
 
 ```bash
 npm run build
-node server/dist/index.js     # 服务和仪表盘都在 :3001 上提供
+node apps/server/dist/index.js     # 服务和仪表盘都在 :3001 上提供
 ```
 
 ## 声明式启动配置
 
-为了让 Docker 或服务器安装可以重复复现，FreeLLMAPI 支持在每次启动时应用一份 JSON 配置。设置 `FREEAPI_CONFIG_PATH=/path/to/freellmapi.config.json`，或者把同样的 JSON 放进 `FREEAPI_CONFIG_JSON`。这份配置是幂等的：已存在的密钥、自定义提供方、模型改动、回退链条目和路由设置会被更新，而不是重复添加。
+为了让 Docker 或服务器安装可以重复复现，Taotie 支持在每次启动时应用一份 JSON 配置。设置 `FREEAPI_CONFIG_PATH=/path/to/freellmapi.config.json`，或者把同样的 JSON 放进 `FREEAPI_CONFIG_JSON`。这份配置是幂等的：已存在的密钥、自定义提供方、模型改动、回退链条目和路由设置会被更新，而不是重复添加。
 
 ```json
 {
@@ -185,10 +185,10 @@ node server/dist/index.js     # 服务和仪表盘都在 :3001 上提供
 
 ## Docker 镜像与运维
 
-FreeLLMAPI 发布一个生产镜像，里面包含 Express 服务和构建好的 React 仪表盘：
+Taotie 发布一个生产镜像，里面包含 Express 服务和构建好的 React 仪表盘：
 
 ```bash
-docker pull ghcr.io/tashfeenahmed/freellmapi:latest   # 也可以固定到某个版本，例如 :v1.2.3
+docker pull ghcr.io/matrix0ai/dx-taotie:latest   # 也可以固定到某个版本，例如 :v1.2.3
 ```
 
 镜像是多架构的（`linux/amd64` 和 `linux/arm64`，所以树莓派上也能跑）。发布的标签有：`latest`（最新发布版本）、`main`（默认分支）、`v*.*.*`（git 发布标签）和 `sha-<commit>`。
@@ -225,7 +225,7 @@ FREEAPI_DB_BACKUP_KEY=64-char-hex-backup-key
 FREEAPI_DB_BACKUP_INTERVAL_MS=300000
 ```
 
-启动时如果数据库文件不存在，FreeLLMAPI 会先恢复备份，再执行迁移。服务运行期间，它会定期上传一份新的加密备份。如果没有设置 `FREEAPI_DB_BACKUP_KEY`，备份信封也会使用 `ENCRYPTION_KEY`。
+启动时如果数据库文件不存在，Taotie 会先恢复备份，再执行迁移。服务运行期间，它会定期上传一份新的加密备份。如果没有设置 `FREEAPI_DB_BACKUP_KEY`，备份信封也会使用 `ENCRYPTION_KEY`。
 
 更多 Docker 运维内容和示例在 [docker/README.md](../../../docker/README.md)。
 
@@ -233,9 +233,9 @@ FREEAPI_DB_BACKUP_INTERVAL_MS=300000
 
 [`desktop/`](../../../desktop) 里有一个原生的菜单栏应用：整个路由器加仪表盘就在你的托盘里本地运行，还有一个玻璃质感的悬浮窗显示实时请求统计。
 
-![FreeLLMAPI 桌面应用](../../../repo-assets/desktop.png)
+![Taotie 桌面应用](../../../repo-assets/desktop.png)
 
-**[从 Releases 下载](https://github.com/tashfeenahmed/freellmapi/releases/latest)** —— macOS 的 `.dmg` 和 Windows 的 `.exe` 安装包由 [`desktop-release`](../../../.github/workflows/desktop-release.yml) 工作流在每个版本发布时构建并附带。你也可以花几分钟从本仓库自己构建：
+**[从 Releases 下载](https://github.com/matrix0ai/dx-taotie/releases/latest)** —— macOS 的 `.dmg` 和 Windows 的 `.exe` 安装包由 [`desktop-release`](../../../.github/workflows/desktop-release.yml) 工作流在每个版本发布时构建并附带。你也可以花几分钟从本仓库自己构建：
 
 **Mac 下载：** Apple Silicon 请选择 `arm64`，Intel 请选择 `x64`。两者都要求 macOS 12 Monterey 或更高版本，并提供 DMG 和 ZIP 下载。
 
@@ -245,14 +245,14 @@ FREEAPI_DB_BACKUP_INTERVAL_MS=300000
 
 ```bash
 npm install
-npm install --prefix desktop  # 安装桌面端依赖
-npm run desktop:dist          # macOS  → desktop/dist-electron/FreeLLMAPI-…-arm64.dmg
-npm run desktop:dist:mac:x64  # Intel Mac → desktop/dist-electron/FreeLLMAPI-…-x64.dmg
-npm run desktop:dist:win      # Windows → "desktop/dist-electron/FreeLLMAPI-Setup-….exe"
+npm install --prefix apps/desktop  # 安装桌面端依赖
+npm run desktop:dist          # macOS  → apps/desktop/dist-electron/Taotie-…-arm64.dmg
+npm run desktop:dist:mac:x64  # Intel Mac → apps/desktop/dist-electron/Taotie-…-x64.dmg
+npm run desktop:dist:win      # Windows → "apps/desktop/dist-electron/Taotie-Setup-….exe"
 ```
 
 > 本地构建出来的应用没有签名，所以 Windows SmartScreen 首次运行时可能会警告（点「更多信息」→「仍要运行」）；macOS 构建则不会触发 Gatekeeper 提示。
-> 完整说明见 [desktop/README.md](../../../desktop/README.md)。
+> 完整说明见 [apps/desktop/README.md](../../../apps/desktop/README.md)。
 
 ## 凭据与数据存放位置
 
@@ -269,8 +269,8 @@ npm run desktop:dist:win      # Windows → "desktop/dist-electron/FreeLLMAPI-Se
 
 | 操作系统 | 位置 |
 |----|----------|
-| Windows | `%APPDATA%\FreeLLMAPI\`（例如 `C:\Users\<你>\AppData\Roaming\FreeLLMAPI\`） |
-| macOS | `~/Library/Application Support/FreeLLMAPI/` |
-| Linux | `~/.config/FreeLLMAPI/` |
+| Windows | `%APPDATA%\Taotie\`（例如 `C:\Users\<你>\AppData\Roaming\Taotie\`） |
+| macOS | `~/Library/Application Support/Taotie/` |
+| Linux | `~/.config/Taotie/` |
 
-这个文件夹里有 `freeapi.db`（全部密钥、模型和设置，加密存储）和 `config.json`（窗口、主题、端口、局域网偏好）。搬迁安装时两个都要复制。对于服务器（非桌面）部署，对应的状态是 `.env` 文件和位于 `server/data/freeapi.db`（或者 `FREEAPI_DB_PATH` 指向的位置）的 SQLite 数据库。
+这个文件夹里有 `freeapi.db`（全部密钥、模型和设置，加密存储）和 `config.json`（窗口、主题、端口、局域网偏好）。搬迁安装时两个都要复制。对于服务器（非桌面）部署，对应的状态是 `.env` 文件和位于 `apps/server/data/freeapi.db`（或者 `FREEAPI_DB_PATH` 指向的位置）的 SQLite 数据库。

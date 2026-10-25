@@ -2,11 +2,11 @@
 
 # 目录同步 —— 深度剖析
 
-> **源码：** `server/src/services/catalog-sync.ts`、`server/src/services/model-state.ts`、`server/src/db/migrations/`
+> **源码：** `apps/server/src/services/catalog-sync.ts`、`apps/server/src/services/model-state.ts`、`apps/server/src/db/migrations/`
 
 ## 1. 概览
 
-目录同步把本地模型目录与 `freellmapi.co` 的发布目录保持同步。它**每天两次**（及按需）跑、抓取**签名目录**、对**钉死的 Ed25519 公钥**验签、并**事务性**应用到本地 SQLite。
+目录同步把本地模型目录与 `taotie.conouch.io` 的发布目录保持同步。它**每天两次**（及按需）跑、抓取**签名目录**、对**钉死的 Ed25519 公钥**验签、并**事务性**应用到本地 SQLite。
 
 ### 两层
 

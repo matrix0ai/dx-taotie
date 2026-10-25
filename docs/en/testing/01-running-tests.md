@@ -10,34 +10,34 @@
 | --- | --- | --- |
 | `test:bootstrap` | `node --test scripts/dev-bootstrap.test.mjs` | The dev bootstrap script. |
 | `test:hooks` | `node --test .claude/hooks/contributing-check.test.mjs` | Contributor-check hook logic. |
-| server | `npm run test -w server` | Vitest suite (see [02-server-suite.md](02-server-suite.md)). |
-| cli | `npm run test -w cli` | Setup-CLI tests (tools, config-file merging, index). |
-| client | `npm run test -w client --if-present` | Client vitest suite plus i18n parity check. |
+| server | `npm run test -w apps/server` | Vitest suite (see [02-server-suite.md](02-server-suite.md)). |
+| cli | `npm run test -w apps/cli` | Setup-CLI tests (tools, config-file merging, index). |
+| client | `npm run test -w apps/client --if-present` | Client vitest suite plus i18n parity check. |
 
-The desktop workspace has its own small suite (`desktop/src/__tests__/window-chrome.test.ts`) but is not part of the root chain; it runs with its own tooling via `npm --prefix desktop`.
+The desktop workspace has its own small suite (`apps/desktop/src/__tests__/window-chrome.test.ts`) but is not part of the root chain; it runs with its own tooling via `npm --prefix apps/desktop`.
 
 ## Per-workspace commands
 
-### Server (`server/package.json`)
+### Server (`apps/server/package.json`)
 
 ```
-npm run test -w server            # vitest run --pool=forks --fileParallelism=false
-npm run test:watch -w server      # watch mode
-npm run test:migrations -w server # migration roundtrip only
+npm run test -w apps/server            # vitest run --pool=forks --fileParallelism=false
+npm run test:watch -w apps/server      # watch mode
+npm run test:migrations -w apps/server # migration roundtrip only
 ```
 
-`test:migrations` targets exactly one file — [`src/__tests__/db/migrate/roundtrip.test.ts`](../../../server/src/__tests__/db/migrate/roundtrip.test.ts) — and replays every recorded migration up and down to prove the roundtrip. Run it after touching anything under `src/db/migrate/`.
+`test:migrations` targets exactly one file — [`src/__tests__/db/migrate/roundtrip.test.ts`](../../../apps/server/src/__tests__/db/migrate/roundtrip.test.ts) — and replays every recorded migration up and down to prove the roundtrip. Run it after touching anything under `src/db/migrate/`.
 
 New test files added in the August 2026 batch that expand coverage:
 - `src/__tests__/routes/logs.test.ts` — server log viewer persistence and API
 - `src/__tests__/routes/custom-transcription.test.ts` — custom STT model registration and transcription usage
 - `src/__tests__/lib/provider-identity.test.ts` — custom endpoint identity classification (#889)
 
-### Client (`client/package.json`)
+### Client (`apps/client/package.json`)
 
 ```
-npm run test -w client            # vitest run && npm run check:i18n
-npm run check:i18n -w client      # scripts/check-i18n.mjs
+npm run test -w apps/client            # vitest run && npm run check:i18n
+npm run check:i18n -w apps/client      # scripts/check-i18n.mjs
 ```
 
 `check:i18n` verifies every locale file for key/placeholder parity; a missing or placeholder-broken translation fails the suite, not just the build.

@@ -14,10 +14,10 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-COPY shared/package.json ./shared/
-COPY server/package.json ./server/
-COPY client/package.json ./client/
-COPY cli/package.json ./cli/
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/server/package.json ./apps/server/
+COPY apps/client/package.json ./apps/client/
+COPY apps/cli/package.json ./apps/cli/
 
 RUN npm ci
 
@@ -42,15 +42,15 @@ COPY --from=build --chown=node:node /app/node_modules ./node_modules
 # them (undici lives at server/node_modules/undici). Skipping this copy shipped
 # images where the HTTP(S) proxy dispatcher failed to load and every request
 # silently went direct — issue #550.
-COPY --from=build --chown=node:node /app/server/node_modules ./server/node_modules
-COPY --from=build --chown=node:node /app/shared ./shared
-COPY --from=build --chown=node:node /app/server/package.json ./server/package.json
+COPY --from=build --chown=node:node /app/apps/server/node_modules ./server/node_modules
+COPY --from=build --chown=node:node /app/packages/shared ./packages/shared
+COPY --from=build --chown=node:node /app/apps/server/package.json ./server/package.json
 # The dashboard shows which RELEASE this is, and the release version lives in
 # desktop/package.json (server/package.json tracks the workspace, not the app).
 # One 400-byte manifest so a container install can name its own version (#703).
-COPY --from=build --chown=node:node /app/desktop/package.json ./desktop/package.json
-COPY --from=build --chown=node:node /app/server/dist ./server/dist
-COPY --from=build --chown=node:node /app/client/dist ./client/dist
+COPY --from=build --chown=node:node /app/apps/desktop/package.json ./desktop/package.json
+COPY --from=build --chown=node:node /app/apps/server/dist ./server/dist
+COPY --from=build --chown=node:node /app/apps/client/dist ./client/dist
 
 RUN mkdir -p /app/server/data && chown -R node:node /app/server/data
 

@@ -47,6 +47,7 @@ import LogsPage from '@/pages/LogsPage'
 import PremiumPage from '@/pages/PremiumPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AgentsPage from '@/pages/AgentsPage'
+import { BrandMark } from '@/components/brand-mark'
 
 // Every failed mutation surfaces as an error toast, so no action fails
 // silently. A page that already shows the failure inline can opt out with
@@ -141,7 +142,7 @@ function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
 function Brand() {
   return (
     <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-70">
-      <span className="inline-block size-2 rounded-full bg-foreground" />
+      <BrandMark />
       <span className="font-semibold tracking-tight text-sm">Taotie</span>
     </Link>
   )

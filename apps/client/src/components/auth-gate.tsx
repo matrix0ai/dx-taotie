@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { isEmail } from '@/lib/validate'
 import { useI18n } from '@/i18n'
 import { toast } from '@/lib/toast'
+import { BrandMark } from '@/components/brand-mark'
 
 // Matches the server rule (routes/auth.ts zod schema).
 const PASSWORD_MIN = 8
@@ -129,7 +130,7 @@ function AuthForm({ mode, onAuthed }: { mode: 'setup' | 'login'; onAuthed: () =>
   return (
     <Centered>
       <div className="mb-6 flex items-center gap-2">
-        <span className="inline-block size-2 rounded-full bg-foreground" />
+        <BrandMark />
         <span className="font-semibold tracking-tight text-sm">Taotie</span>
       </div>
       <div className="rounded-3xl border bg-card p-6">
@@ -274,7 +275,7 @@ function ForgotPasswordForm({ onBack, onAuthed }: { onBack: () => void; onAuthed
   return (
     <Centered>
       <div className="mb-6 flex items-center gap-2">
-        <span className="inline-block size-2 rounded-full bg-foreground" />
+        <BrandMark />
         <span className="font-semibold tracking-tight text-sm">Taotie</span>
       </div>
       <div className="rounded-3xl border bg-card p-6">

@@ -1,44 +1,35 @@
 {
-  "name": "@freellmapi/monorepo",
+  "name": "@taotie/monorepo",
   "private": true,
-  "workspaces": [
-    "packages/shared",
-    "apps/server",
-    "apps/client",
-    "apps/cli"
-  ],
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail --names server,client \"npm run dev -w apps/server\" \"npm run dev -w apps/client\"",
-    "dev:lan": "concurrently --kill-others-on-fail --names server,client \"npm run dev -w apps/server\" \"npm run dev -w apps/client -- --host\"",
-    "test": "npm run test:bootstrap && npm run test:hooks && npm run test -w apps/server && npm run test -w apps/cli && npm run test -w apps/client --if-present",
+    "dev": "concurrently --kill-others-on-fail --names server,client \"pnpm --filter @taotie/server dev\" \"pnpm --filter @taotie/client dev\"",
+    "dev:lan": "concurrently --kill-others-on-fail --names server,client \"pnpm --filter @taotie/server dev\" \"pnpm --filter @taotie/client dev --host\"",
+    "test": "pnpm test:bootstrap && pnpm test:hooks && turbo run test",
     "test:bootstrap": "node --test scripts/dev-bootstrap.test.mjs",
     "test:hooks": "node --test .claude/hooks/contributing-check.test.mjs",
-    "build": "npm run build -w apps/server && npm run build -w apps/cli && npm run build -w apps/client",
-    "lint": "npm run lint -w apps/server && npm run lint -w apps/cli",
-    "build:server": "npm run build -w apps/server",
-    "test:migrations": "npm run test:migrations -w apps/server",
-    "desktop:dev": "npm run build -w apps/client && npm --prefix apps/desktop run dev",
-    "desktop:dist": "npm run build -w apps/client && npm --prefix apps/desktop run dist",
-    "desktop:dist:mac:x64": "npm run build -w apps/client && npm --prefix apps/desktop run dist:mac:x64",
-    "desktop:dist:win": "npm run build -w apps/client && npm --prefix apps/desktop run dist:win",
-    "desktop:dist:linux": "npm run build -w apps/client && npm --prefix apps/desktop run dist:linux",
-    "db:migration:up": "npm run db:migration:up -w apps/server",
-    "db:migration:down": "npm run db:migration:down -w apps/server",
-    "db:migration:fresh": "npm run db:migration:fresh -w apps/server",
-    "db:migration:status": "npm run db:migration:status -w apps/server",
-    "db:migration:create": "npm run db:migration:create -w apps/server"
+    "build": "turbo run build",
+    "lint": "turbo run lint --filter=@taotie/server --filter=taotie",
+    "build:server": "pnpm --filter @taotie/server build",
+    "test:migrations": "pnpm --filter @taotie/server test:migrations",
+    "desktop:dev": "pnpm --filter @taotie/client build && pnpm --filter taotie-desktop dev",
+    "desktop:dist": "pnpm --filter @taotie/client build && pnpm --filter taotie-desktop dist",
+    "desktop:dist:mac:x64": "pnpm --filter @taotie/client build && pnpm --filter taotie-desktop dist:mac:x64",
+    "desktop:dist:win": "pnpm --filter @taotie/client build && pnpm --filter taotie-desktop dist:win",
+    "desktop:dist:linux": "pnpm --filter @taotie/client build && pnpm --filter taotie-desktop dist:linux",
+    "db:migration:up": "pnpm --filter @taotie/server db:migration:up",
+    "db:migration:down": "pnpm --filter @taotie/server db:migration:down",
+    "db:migration:fresh": "pnpm --filter @taotie/server db:migration:fresh",
+    "db:migration:status": "pnpm --filter @taotie/server db:migration:status",
+    "db:migration:create": "pnpm --filter @taotie/server db:migration:create"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
-    "jsdom": "^27.4.0"
+    "jsdom": "^27.4.0",
+    "turbo": "^2.11.10"
   },
   "engines": {
     "node": ">=20.18.0 <25.0.0",
-    "npm": ">=10.0.0"
+    "pnpm": ">=10.0.0"
   },
-  "allowScripts": {
-    "better-sqlite3@12.10.0": true,
-    "esbuild@0.28.2": true,
-    "msw@2.14.6": true
-  }
+  "packageManager": "pnpm@10.28.1"
 }

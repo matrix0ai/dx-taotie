@@ -22,15 +22,15 @@ function runPowerShell(args) {
 }
 
 async function makeFixture(t) {
-  const fixture = await mkdtemp(join(tmpdir(), 'freellmapi-bootstrap-'));
-  const lockfile = join(fixture, 'package-lock.json');
-  const lockContents = '{"name":"bootstrap-fixture","lockfileVersion":3}\n';
+  const fixture = await mkdtemp(join(tmpdir(), 'taotie-bootstrap-'));
+  const lockfile = join(fixture, 'pnpm-lock.yaml');
+  const lockContents = "lockfileVersion: '9.0'\n";
   const lockHash = createHash('sha256').update(lockContents).digest('hex');
 
   await writeFile(join(fixture, 'package.json'), '{"name":"bootstrap-fixture"}\n');
   await writeFile(lockfile, lockContents);
   await mkdir(join(fixture, 'node_modules'));
-  await writeFile(join(fixture, 'node_modules', '.freellmapi-bootstrap-lock'), lockHash);
+  await writeFile(join(fixture, 'node_modules', '.taotie-bootstrap-lock'), lockHash);
   t.after(() => rm(fixture, { force: true, recursive: true }));
   return { fixture, lockfile };
 }
@@ -50,13 +50,13 @@ async function assertEnvIsCreatedAndPreserved(runBootstrap, t) {
 
 async function assertMissingStampInstalls(runBootstrap, t) {
   const { fixture, lockfile } = await makeFixture(t);
-  await rm(join(fixture, 'node_modules', '.freellmapi-bootstrap-lock'));
+  await rm(join(fixture, 'node_modules', '.taotie-bootstrap-lock'));
 
   await runBootstrap(fixture);
 
   const lockHash = createHash('sha256').update(await readFile(lockfile)).digest('hex');
   assert.equal(
-    (await readFile(join(fixture, 'node_modules', '.freellmapi-bootstrap-lock'), 'utf8')).trim(),
+    (await readFile(join(fixture, 'node_modules', '.taotie-bootstrap-lock'), 'utf8')).trim(),
     lockHash,
   );
 }

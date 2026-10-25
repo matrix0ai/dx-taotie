@@ -19,7 +19,7 @@ All server tests live under [`apps/server/src/__tests__/`](../../../apps/server/
 
 ## Serial forked execution
 
-`npm run test -w apps/server` runs `vitest run --pool=forks --fileParallelism=false`. Two deliberate choices:
+`pnpm --filter @taotie/server test` runs `vitest run --pool=forks --fileParallelism=false`. Two deliberate choices:
 
 - **`--pool=forks`** isolates each test file in a fresh process. The suite manipulates real state — better-sqlite3 databases, `process.env`, module-level caches (cooldown maps, health schedulers) — that must not leak between files.
 - **`--fileParallelism=false`** serializes files so shared resources (ports, temp data dirs) cannot collide across concurrently executing files.

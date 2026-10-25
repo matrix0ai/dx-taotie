@@ -10,7 +10,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/matrix0ai/dx-taotie?style=flat&logo=github&color=yellow)](https://github.com/matrix0ai/dx-taotie/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
-[![Docker image](https://img.shields.io/badge/ghcr.io-freellmapi-2496ED?logo=docker&logoColor=white)](https://github.com/matrix0ai/dx-taotie/pkgs/container/freellmapi)
+[![Docker image](https://img.shields.io/badge/ghcr.io-taotie-2496ED?logo=docker&logoColor=white)](https://github.com/matrix0ai/dx-taotie/pkgs/container/taotie)
 [![Ask DeepWiki](https://img.shields.io/badge/DeepWiki-Ask-blue)](https://deepwiki.com/matrix0ai/dx-taotie)
 
 **[taotie.conouch.io](https://taotie.conouch.io/?utm_source=github&utm_medium=readme&utm_campaign=repository&utm_content=readme_top)** · полный каталог: 474 семейства моделей и 635 бесплатных эндпоинтов
@@ -23,7 +23,7 @@
   <a href="https://github.com/matrix0ai/dx-taotie/releases/latest"><img src="repo-assets/badges/macos.svg" height="48" alt="Download for macOS"></a>
   <a href="https://github.com/matrix0ai/dx-taotie/releases/latest"><img src="repo-assets/badges/windows.svg" height="48" alt="Download for Windows"></a>
   <a href="docs/en/install/01-install.md#docker-compose"><img src="repo-assets/badges/docker.svg" height="48" alt="Self-host with Docker"></a>
-  <a href="https://play.google.com/store/apps/details?id=co.freellmapi.app"><img src="repo-assets/badges/play-store.svg" height="48" alt="Get it on Google Play"></a>
+  <a href="https://play.google.com/store/apps/details?id=co.taotie.app"><img src="repo-assets/badges/play-store.svg" height="48" alt="Get it on Google Play"></a>
   <a href="https://apps.apple.com/app/id6804648934"><img src="repo-assets/badges/app-store.svg" height="48" alt="Download on the App Store"></a>
 </p>
 
@@ -39,7 +39,7 @@
 
 ## Содержание
 
-- [Зачем нужен Taotie](#зачем-нужен-freellmapi)
+- [Зачем нужен Taotie](#зачем-нужен-taotie)
 - [Поддерживаемые провайдеры](#поддерживаемые-провайдеры)
 - [Совместимые CLI и программирующие агенты](#совместимые-cli-и-программирующие-агенты)
 - [Сравнение с альтернативами](#сравнение-с-альтернативами)
@@ -128,7 +128,7 @@
 Большинство агентов можно настроить одной командой. Она читает актуальный каталог, сохраняет резервную копию текущих настроек и объединяет их с новыми:
 
 ```bash
-npx freellmapi setup-claude --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-claude --url http://localhost:3001 --api-key <unified-key>
 ```
 
 **[Все поддерживаемые агенты и команды настройки →](docs/en/clients/02-supported-agents.md)** · [Инструкции для инструментов, MCP-сервер и URL-токены →](docs/en/clients/01-agent-clients.md)
@@ -155,7 +155,7 @@ npx freellmapi setup-claude --url http://localhost:3001 --api-key <unified-key>
 - **Автообновляемый каталог моделей**: маршрутизатор дважды в день синхронизирует подписанный каталог taotie.conouch.io с новыми моделями, изменениями квот и исправлениями совместимости. Бесплатные установки используют ежемесячный снимок с задержкой 30 дней, Premium получает изменения в день публикации. [Premium →](#premium-и-оперативный-каталог)
 - **Закрепление сессии и передача контекста**: диалог остаётся на одной модели в течение 30 минут. При переключении в ходе разговора можно передавать краткую сводку для сохранения контекста. [Подробности →](docs/en/clients/01-agent-clients.md#context-handoff)
 - **Необязательное сжатие промптов**: общий отказоустойчивый конвейер может удалять повторы, фильтровать вывод инструментов, уплотнять повторяющийся JSON и обрезать устаревший контекст до проверки кеша и маршрутизации. [Подробности →](docs/en/compression/01-compression-pipeline.md)
-- **Шифрование ключей и один токен для клиента**: ключи провайдеров хранятся в SQLite с шифрованием AES-256-GCM и расшифровываются в памяти во время запроса. Приложению передаётся только единый Bearer-токен `freellmapi-…`.
+- **Шифрование ключей и один токен для клиента**: ключи провайдеров хранятся в SQLite с шифрованием AES-256-GCM и расшифровываются в памяти во время запроса. Приложению передаётся только единый Bearer-токен `taotie-…`.
 - **Панель управления и аналитика**: интерфейс React позволяет управлять ключами, менять порядок резервной цепочки, тестировать модели в Playground, смотреть статистику p50/p95/TTFT за периоды от 24 часов до 90 дней; есть авторизация, светлая и тёмная темы и [60 языков](#языки-интерфейса).
 - **MCP-сервер для ChatGPT и интерактивная документация**: ChatGPT и другие MCP-клиенты могут отправлять запросы к Taotie, получать список моделей, сведения о состоянии провайдеров, использовании, кеше и маршрутизации, а также управлять стратегией через `/mcp`. Просмотрщик OpenAPI доступен по `/v1/docs`. [ChatGPT и программирующие агенты →](docs/en/clients/01-agent-clients.md#mcp-server)
 - **Дополнительные средства эксплуатации**: необязательный кеш ответов, зашифрованные резервные копии БД, регулярная проверка ключей, массовый импорт/экспорт, конфигурация запуска. [Установка и развёртывание →](docs/en/install/01-install.md)
@@ -165,7 +165,7 @@ npx freellmapi setup-claude --url http://localhost:3001 --api-key <unified-key>
 
 ## Быстрый запуск
 
-**Установка одной командой** (требуется Docker): создаёт `~/freellmapi`, генерирует ключ шифрования, загружает образ и запускает контейнер.
+**Установка одной командой** (требуется Docker): создаёт `~/taotie`, генерирует ключ шифрования, загружает образ и запускает контейнер.
 
 ```bash
 curl -fsSL https://taotie.conouch.io/install.sh | bash
@@ -191,11 +191,11 @@ curl -fsSL https://taotie.conouch.io/install.sh | bash
 
 ## OpenAI-совместимые клиенты
 
-Поддерживается любой клиент, которому можно задать OpenAI-совместимый базовый URL: укажите `http://localhost:3001/v1` и единый ключ с панели управления. Все генераторы конфигураций поддерживают `--dry-run`. Команды `npx freellmapi launch` (Claude Code) и `launch-codex` (Codex) позволяют не сохранять учётные данные в конфигурационных файлах. Маршрутизатор также работает как MCP-сервер, который агенты могут опрашивать во время сессии.
+Поддерживается любой клиент, которому можно задать OpenAI-совместимый базовый URL: укажите `http://localhost:3001/v1` и единый ключ с панели управления. Все генераторы конфигураций поддерживают `--dry-run`. Команды `npx taotie launch` (Claude Code) и `launch-codex` (Codex) позволяют не сохранять учётные данные в конфигурационных файлах. Маршрутизатор также работает как MCP-сервер, который агенты могут опрашивать во время сессии.
 
-**ChatGPT** подключается к тому же локальному маршрутизатору через приватный Secure MCP Tunnel. MCP-инструмент `ask_freellmapi` отправляет задачу ChatGPT через `/v1/chat/completions` и возвращает ответ с метаданными обслужившей модели, резервной маршрутизации, кеша, выполнения и токенов. Базовый URL и Bearer-аутентификация задаются в настройках клиента туннеля. Модель по умолчанию настраивается через `MCP_INFERENCE_DEFAULT_MODEL` (при отсутствии значения используется `auto`). Нельзя размещать ключ в Git или URL MCP. **[Настройка ChatGPT →](docs/en/clients/01-agent-clients.md#chatgpt-private-secure-mcp-tunnel)**
+**ChatGPT** подключается к тому же локальному маршрутизатору через приватный Secure MCP Tunnel. MCP-инструмент `ask_taotie` отправляет задачу ChatGPT через `/v1/chat/completions` и возвращает ответ с метаданными обслужившей модели, резервной маршрутизации, кеша, выполнения и токенов. Базовый URL и Bearer-аутентификация задаются в настройках клиента туннеля. Модель по умолчанию настраивается через `MCP_INFERENCE_DEFAULT_MODEL` (при отсутствии значения используется `auto`). Нельзя размещать ключ в Git или URL MCP. **[Настройка ChatGPT →](docs/en/clients/01-agent-clients.md#chatgpt-private-secure-mcp-tunnel)**
 
-Ключами провайдеров можно управлять и из терминала с токеном сессии панели (`FREELLMAPI_DASHBOARD_TOKEN` или `--token`): `npx freellmapi keys add|list|remove|test <platform>`. Команда `keys test` повторно проверяет сохранённые ключи. См. [apps/cli/README.md](apps/cli/README.md#provider-keys).
+Ключами провайдеров можно управлять и из терминала с токеном сессии панели (`TAOTIE_DASHBOARD_TOKEN` или `--token`): `npx taotie keys add|list|remove|test <platform>`. Команда `keys test` повторно проверяет сохранённые ключи. См. [apps/cli/README.md](apps/cli/README.md#provider-keys).
 
 Taotie рассчитан прежде всего на локальное использование одним пользователем. Ключи провайдеров остаются в вашей SQLite-базе, зашифрованы на диске, а запросы отправляются с вашего компьютера непосредственно выбранным внешним сервисам.
 
@@ -235,7 +235,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="http://localhost:3001/v1",
-    api_key="freellmapi-your-unified-key",
+    api_key="taotie-your-unified-key",
 )
 
 resp = client.chat.completions.create(
@@ -284,7 +284,7 @@ print("Routed via:", resp.headers.get("x-routed-via"))
 
 **Нужен ли пароль?** Для настольного приложения нет: вход в панель выполняется автоматически через скрытую локальную учётную запись. Откройте панель через значок в трее → **Open Dashboard**. В серверных установках (Docker, установка одной командой, `npm run dev`) используется учётная запись с адресом электронной почты и паролем.
 
-**Забыли пароль от серверной установки?** Нажмите **Forgot password?** на странице входа. Поскольку рассылка писем не настроена, одноразовый код печатается в журнале сервера. Его можно прочитать через `docker compose logs -f freellmapi`, в терминале работающего сервера или в журнале настольного приложения и ввести в форму сброса. Код действителен 15 минут.
+**Забыли пароль от серверной установки?** Нажмите **Forgot password?** на странице входа. Поскольку рассылка писем не настроена, одноразовый код печатается в журнале сервера. Его можно прочитать через `docker compose logs -f taotie`, в терминале работающего сервера или в журнале настольного приложения и ввести в форму сброса. Код действителен 15 минут.
 
 **Где находятся логи?** Для Docker в журнале контейнера, при запуске из исходников в терминале, для настольной версии в `<data dir>/logs/freeapi.log`. Открыть каталог логов также можно через **Open Logs Folder** в меню трея.
 

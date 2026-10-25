@@ -35,7 +35,7 @@ Then clone and start Taotie:
 
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 npm install --no-audit --no-fund
 npm run dev
 ```

@@ -163,7 +163,7 @@ describe('search service', () => {
       expect((init.headers as Record<string, string>)['x-api-key']).toBeUndefined();
       const body = bodyOf(calls(fn)[0]);
       expect(body).toMatchObject({ method: 'tools/call', params: { name: 'web_search', arguments: { objective: 'node version', search_queries: ['node version'] } } });
-      expect(body.params.arguments.session_id).toMatch(/^freellmapi-/);
+      expect(body.params.arguments.session_id).toMatch(/^taotie-/);
       expect(out).toMatchObject({ provider: 'parallel', engine: 'parallel-search' });
       expect(out.results).toEqual([
         { title: 'A & B', url: 'https://a', content: 'one … two', score: 1 },

@@ -28,10 +28,10 @@ Any client that can target an OpenAI-compatible base URL can use Taotie:
 Use the generator instead of hand-editing a client configuration:
 
 ```bash
-export FREELLMAPI_API_KEY=<unified-key>   # or pass --api-key on each command
-npx freellmapi setup-claude --url http://localhost:3001 --dry-run
-npx freellmapi setup-claude --url http://localhost:3001
-npx freellmapi setup-dsh --url http://localhost:3001 --api-key <unified-key>
+export TAOTIE_API_KEY=<unified-key>   # or pass --api-key on each command
+npx taotie setup-claude --url http://localhost:3001 --dry-run
+npx taotie setup-claude --url http://localhost:3001
+npx taotie setup-dsh --url http://localhost:3001 --api-key <unified-key>
 ```
 
 `--dry-run` prints a diff. Real writes merge with the existing configuration
@@ -74,32 +74,32 @@ base URL to include `/v1`.
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) keeps
 every provider as a route under `llm-pi-ai.providers` in
 `$DSH_HOME/settings.yaml` (`~/.dsh` by default). `setup-dsh` adds a
-`freellmapi` route there — `api: openai-completions`, the gateway's `/v1`
+`taotie` route there — `api: openai-completions`, the gateway's `/v1`
 base URL, and the live catalog as the route's `models` list, which DSH
 requires for a provider its installed catalog does not ship — and makes
-`freellmapi/auto` the default model. The key goes into `$DSH_HOME/.env`
-(mode 0600) as `FREELLMAPI_API_KEY`, the environment layer DSH reads on its
+`taotie/auto` the default model. The key goes into `$DSH_HOME/.env`
+(mode 0600) as `TAOTIE_API_KEY`, the environment layer DSH reads on its
 own, so nothing needs exporting. Both writes are structural merges: other
 routes, comments, and settings in the file are left as they were.
 
 ```bash
-npx freellmapi setup-dsh --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-dsh --url http://localhost:3001 --api-key <unified-key>
 npx @deepseek-ai/dsh web
 ```
 
 Settings are hot-reloaded, so a running `dsh` uses the route on its next
-request. `--profile <name>` adds a second route (`freellmapi-<name>`) without
+request. `--profile <name>` adds a second route (`taotie-<name>`) without
 changing the default model; `--model <id>` pins the default. Routes are
 declared text-only — add `input: [text, image]` to a model entry under
-`freellmapi.models` to send it images. `DSH_HOME` is honoured when set.
+`taotie.models` to send it images. `DSH_HOME` is honoured when set.
 
 ### MiMo Code (`mimo`)
 
 [MiMo Code](https://mimo.xiaomi.com/mimocode) is an OpenCode derivative, so it
 takes any OpenAI-compatible endpoint as a custom entry under `provider` — an
 `npm` package to speak with (`@ai-sdk/openai-compatible`), the credentials in
-`options`, and a `models` map. `setup-mimo` writes that entry as `freellmapi`
-and names `freellmapi/<model>` as the default `model`.
+`options`, and a `models` map. `setup-mimo` writes that entry as `taotie`
+and names `taotie/<model>` as the default `model`.
 
 The file is `config.json` in MiMo's own global config directory:
 `$XDG_CONFIG_HOME/mimocode` (`~/.config/mimocode` on macOS and Linux), or
@@ -110,12 +110,12 @@ generated file is the weakest layer and anything you hand-write in
 providers and settings already in `config.json` are left as they were.
 
 ```bash
-npx freellmapi setup-mimo --url http://localhost:3001
-export FREELLMAPI_API_KEY=<unified-key>
+npx taotie setup-mimo --url http://localhost:3001
+export TAOTIE_API_KEY=<unified-key>
 mimo
 ```
 
-The key is referenced as `{env:FREELLMAPI_API_KEY}`, MiMo's own substitution
+The key is referenced as `{env:TAOTIE_API_KEY}`, MiMo's own substitution
 syntax, so it stays out of the config file. There is no `MIMOCODE_API_KEY` or
 `MIMOCODE_BASE_URL`: MiMo's environment variables locate resources and toggle
 features, they are not a general fallback for config fields. Each model is
@@ -128,15 +128,15 @@ requires, both taken from the live catalog.
 coding agent, written in Rust. It reads `~/.atomcode/config.toml`, where a
 root `default_provider` key names one `[providers.<id>]` table and
 `type = "openai"` makes that table speak the OpenAI-compatible wire.
-`setup-atomcode` writes a `[providers.freellmapi]` table — `base_url` on the
+`setup-atomcode` writes a `[providers.taotie]` table — `base_url` on the
 gateway's `/v1`, the unified key as `api_key`, the chosen model and its
 `context_window` from the live catalog — and sets `default_provider` to it.
 The write is a structural merge: the root key is placed above any existing
-tables, only the `freellmapi` table is replaced, and other `[providers.*]`
+tables, only the `taotie` table is replaced, and other `[providers.*]`
 tables and settings in the file are left as they were.
 
 ```bash
-npx freellmapi setup-atomcode --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-atomcode --url http://localhost:3001 --api-key <unified-key>
 atomcode
 ```
 
@@ -152,29 +152,29 @@ that answers on WhatsApp, Telegram, Discord and the other channels its
 gateway connects to. It reads one JSON5 document, `~/.openclaw/openclaw.json`,
 and every model endpoint is an entry under `models.providers`; a provider its
 bundled catalog does not know must spell out `baseUrl`, `api` and a non-empty
-`models` list. `setup-openclaw` writes a `freellmapi` provider there —
+`models` list. `setup-openclaw` writes a `taotie` provider there —
 `api: openai-completions`, the gateway's `/v1` base URL, the live catalog as
-its `models` list — and makes `freellmapi/auto` the default model under
+its `models` list — and makes `taotie/auto` the default model under
 `agents.defaults.model.primary`. The key is referenced as
-`${FREELLMAPI_API_KEY}`, OpenClaw's own substitution, and the value goes into
+`${TAOTIE_API_KEY}`, OpenClaw's own substitution, and the value goes into
 `~/.openclaw/.env` (mode 0600), the global env file OpenClaw loads on its own,
 so nothing needs exporting. Both writes are structural merges: other
 providers, `fallbacks` on the default model, and every other setting in the
 file are left as they were.
 
 ```bash
-npx freellmapi setup-openclaw --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-openclaw --url http://localhost:3001 --api-key <unified-key>
 npm install -g openclaw@latest --allow-scripts=openclaw
-openclaw agent exec --model freellmapi/auto "Say hello"   # no gateway daemon needed
+openclaw agent exec --model taotie/auto "Say hello"   # no gateway daemon needed
 ```
 
 A running `openclaw gateway` needs a restart to pick the change up.
-`--profile <name>` adds a second provider (`freellmapi-<name>`) without
+`--profile <name>` adds a second provider (`taotie-<name>`) without
 changing the default model; `--model <id>` pins the default. OpenClaw sends a
 bare SDK user agent to custom endpoints, so the provider carries a static
 `User-Agent: openclaw` header — that is what lights the "seen recently" badge
 on the Agents page. Models are declared text-only; add `input: ["text",
-"image"]` to a model entry under `models.providers.freellmapi.models` to send
+"image"]` to a model entry under `models.providers.taotie.models` to send
 it images. `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR` and `OPENCLAW_HOME` are
 honoured when set.
 
@@ -189,21 +189,21 @@ so a custom endpoint has to be declared in the `model` block. `setup-hermes`
 writes that block — `provider: custom`, `api_mode: chat_completions`, the
 gateway's `/v1` as `base_url`, the chosen model as `default` with its
 `context_length` from the live catalog — and references the key as
-`api_key: "${FREELLMAPI_API_KEY}"`, Hermes's own substitution, with the value
+`api_key: "${TAOTIE_API_KEY}"`, Hermes's own substitution, with the value
 in `~/.hermes/.env` (mode 0600), which Hermes loads on its own. A fresh
 install ships `model: ""`, the "not configured" sentinel; replacing it is
 exactly what `hermes setup` would do, and it is what lets a headless first
 run skip the wizard. Every other key in the file is left as it was.
 
 ```bash
-npx freellmapi setup-hermes --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-hermes --url http://localhost:3001 --api-key <unified-key>
 curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --skip-setup
 hermes -z "Say hello"
 ```
 
 A running `hermes gateway` needs a restart to pick the change up.
-`--profile <name>` adds a `providers.freellmapi-<name>` entry instead —
-picked inside a chat with `/model custom:freellmapi-<name>:auto` — and leaves
+`--profile <name>` adds a `providers.taotie-<name>` entry instead —
+picked inside a chat with `/model custom:taotie-<name>:auto` — and leaves
 the default model alone; `--model <id>` pins the default. Hermes sends a bare
 SDK user agent to custom endpoints, so the block carries
 `default_headers: { User-Agent: hermes-agent }`, which is what the Agents
@@ -213,7 +213,7 @@ page's "seen recently" badge keys on. `HERMES_HOME` is honoured when set.
 
 [Pi](https://pi.dev) is a minimal terminal agent harness you extend with your
 own extensions, skills and prompt templates. Endpoints it does not ship are
-provider entries in `~/.pi/agent/models.json`. `setup-pi` adds a `freellmapi`
+provider entries in `~/.pi/agent/models.json`. `setup-pi` adds a `taotie`
 provider there — `api: openai-completions`, the gateway's `/v1` as `baseUrl`,
 and every model in the live catalog with its context window, the chosen model
 first — then sets `defaultProvider` and `defaultModel` in
@@ -223,14 +223,14 @@ created with mode 0600. Other providers and settings in both files are left
 as they were.
 
 ```bash
-npx freellmapi setup-pi --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-pi --url http://localhost:3001 --api-key <unified-key>
 npm install -g @earendil-works/pi-coding-agent
 pi -p "Say hello"
 ```
 
 A running session reloads `models.json` when `/model` is opened.
-`--profile <name>` adds a `freellmapi-<name>` provider instead, picked with
-`pi --model freellmapi-<name>/<model>` or from `/model`, and leaves the
+`--profile <name>` adds a `taotie-<name>` provider instead, picked with
+`pi --model taotie-<name>/<model>` or from `/model`, and leaves the
 default model alone; `--model <id>` pins the default. Models are declared
 text-only with `reasoning: false`. To send images to a vision model, add
 `"image"` to its `input`. Pi sends a bare SDK user agent to custom endpoints,
@@ -244,26 +244,26 @@ is what the Agents page's "seen recently" badge keys on.
 terminal coding agent built around prefix-cache stability. Every endpoint is a
 `[[providers]]` entry in `~/.reasonix/config.toml` (`%APPDATA%\reasonix` on
 Windows, `$REASONIX_HOME` when set). `setup-reasonix` adds one named
-`freellmapi` — `kind = "openai"`, the gateway's `/v1` as `base_url`, and every
+`taotie` — `kind = "openai"`, the gateway's `/v1` as `base_url`, and every
 model in the live catalog, the chosen model first — and points `default_model`
-at `freellmapi/<model>`. The entry names its key with
-`api_key_env = "FREELLMAPI_API_KEY"`; the value goes to `~/.reasonix/.env`
+at `taotie/<model>`. The entry names its key with
+`api_key_env = "TAOTIE_API_KEY"`; the value goes to `~/.reasonix/.env`
 (0600), which Reasonix loads itself, so nothing needs exporting. Your other
 `[[providers]]` entries and settings are left as they were, and a rerun
-replaces only the `freellmapi` entry.
+replaces only the `taotie` entry.
 
 ```bash
-npx freellmapi setup-reasonix --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-reasonix --url http://localhost:3001 --api-key <unified-key>
 npm install -g reasonix
 reasonix -p "Say hello"
 ```
 
-Every catalog model is in `/model` as `freellmapi/<id>`. `--profile <name>`
-adds a `freellmapi-<name>` entry instead, picked with
-`reasonix --model freellmapi-<name>/<model>`, and leaves the default model
+Every catalog model is in `/model` as `taotie/<id>`. `--profile <name>`
+adds a `taotie-<name>` entry instead, picked with
+`reasonix --model taotie-<name>/<model>`, and leaves the default model
 alone; `--model <id>` pins the default. A zero `price` keeps Reasonix's cost
 readout at $0. Reasonix Studio only lists the providers in
-`[desktop].provider_access` when that list is set, so add `"freellmapi"` there
+`[desktop].provider_access` when that list is set, so add `"taotie"` there
 (or under Settings → Model → Access). Reasonix sends `Reasonix/<version>` as
 its user agent, which is what the Agents page's "seen recently" badge keys on.
 
@@ -275,7 +275,7 @@ unified key from its dashboard, then open **Settings → Models** in the QwenPaw
 Console:
 
 1. Under **Providers**, choose **Add Provider**.
-2. Give it a **Provider ID** such as `freellmapi` and a **Provider Name** such
+2. Give it a **Provider ID** such as `taotie` and a **Provider Name** such
    as `Taotie`, and set the API compatibility mode to OpenAI
    `chat.completions`.
 3. Open the new provider's settings and set **Base URL** to
@@ -299,7 +299,7 @@ Gemini CLI and Gemini-lineage clients can speak Google's wire format directly:
 
 ```bash
 export GOOGLE_GEMINI_BASE_URL=http://localhost:3001
-export GEMINI_API_KEY=freellmapi-your-unified-key
+export GEMINI_API_KEY=taotie-your-unified-key
 gemini
 ```
 
@@ -368,8 +368,8 @@ While it is off, every verb on `/mcp` answers `403` with a JSON-RPC error saying
 For Claude Code:
 
 ```bash
-claude mcp add --transport http freellmapi http://localhost:3001/mcp \
-  --header "Authorization: Bearer freellmapi-your-unified-key"
+claude mcp add --transport http taotie http://localhost:3001/mcp \
+  --header "Authorization: Bearer taotie-your-unified-key"
 ```
 
 Any MCP client that speaks Streamable HTTP works the same way: point it at `/mcp` with the
@@ -377,7 +377,7 @@ unified key as a Bearer token.
 
 ### ChatGPT (private Secure MCP Tunnel)
 
-`ask_freellmapi` makes Taotie directly callable from a ChatGPT conversation. It uses
+`ask_taotie` makes Taotie directly callable from a ChatGPT conversation. It uses
 the same `/v1/chat/completions` implementation as every OpenAI-compatible client, so model
 routing, fallback, response caching, prompt compression, token accounting, execution ids,
 and redacted provider errors stay consistent. The result includes the answer, requested and
@@ -388,7 +388,7 @@ The three relevant settings are deliberately separate:
 | Setting | Where it lives | Example |
 | --- | --- | --- |
 | Base URL | `mcp.server_urls[].url` in tunnel-client | `http://127.0.0.1:3001/mcp` |
-| API key | `FREELLMAPI_MCP_AUTHORIZATION` environment variable | `Bearer freellmapi-...` |
+| API key | `TAOTIE_MCP_AUTHORIZATION` environment variable | `Bearer taotie-...` |
 | Default model | Taotie `MCP_INFERENCE_DEFAULT_MODEL` | `auto`, a model id, or `auto:<profile>` |
 
 1. Enable the MCP surface as shown above. Optionally set the default model before starting
@@ -406,14 +406,14 @@ The three relevant settings are deliberately separate:
 
    ```powershell
    $env:CONTROL_PLANE_API_KEY = '<OpenAI tunnel runtime key>'
-   $env:FREELLMAPI_MCP_AUTHORIZATION = 'Bearer <Taotie unified key>'
+   $env:TAOTIE_MCP_AUTHORIZATION = 'Bearer <Taotie unified key>'
    tunnel-client doctor --profile-file .\tunnel-client.yaml --explain
    tunnel-client run --profile-file .\tunnel-client.yaml
    ```
 
    ```bash
    export CONTROL_PLANE_API_KEY='<OpenAI tunnel runtime key>'
-   export FREELLMAPI_MCP_AUTHORIZATION='Bearer <Taotie unified key>'
+   export TAOTIE_MCP_AUTHORIZATION='Bearer <Taotie unified key>'
    tunnel-client doctor --profile-file ./tunnel-client.yaml --explain
    tunnel-client run --profile-file ./tunnel-client.yaml
    ```
@@ -421,7 +421,7 @@ The three relevant settings are deliberately separate:
 3. In ChatGPT, enable **Settings → Security and login → Developer mode**. Open the Plugins
    directory, create a developer-mode plugin, choose **Tunnel**, and select the tunnel id.
    Review the discovered tools before saving. Start with `healthcheck`; use
-   `ask_freellmapi` for inference and `list_models` when selecting an explicit model.
+   `ask_taotie` for inference and `list_models` when selecting an explicit model.
 
 The tunnel's static MCP headers are sent only to the configured Taotie origin. Do not
 put either API key in the YAML file, MCP URL, screenshots, logs, or commits. A public plugin
@@ -442,7 +442,7 @@ models:
     provider: openai
     model: auto
     apiBase: http://localhost:3001/v1
-    apiKey: freellmapi-your-unified-key
+    apiKey: taotie-your-unified-key
     useLegacyCompletionsEndpoint: true
     roles:
       - autocomplete
@@ -467,7 +467,7 @@ Assistant: …
 **Enable it in `.env`:**
 
 ```env
-FREELLMAPI_CONTEXT_HANDOFF=on_model_switch
+TAOTIE_CONTEXT_HANDOFF=on_model_switch
 ```
 
 **How it works:**

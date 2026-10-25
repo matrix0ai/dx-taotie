@@ -4,7 +4,7 @@
 
 ## 包清单
 
-`apps/desktop/package.json` `freellmapi-desktop@0.9.2` —— Electron `38.8.6`、`better-sqlite3@12.10.0`、`electron-builder@25.1.8`、`esbuild@0.24.0`。入口 `build/main.mjs`（`type: module`）。AppId `me.systembug.taotie`，发布 `github:matrix0ai/dx-taotie`（`apps/desktop/electron-builder.yml`）。`asar` + `client-dist` 位于 `extraResources`；按系统划分的签名目标（mac `dmg`+`zip` `arm64`+`x64` 经 `refresh-mac-update-metadata.mjs` 签名/公证/钉装、win `nsis`+`zip` `x64`、linux `AppImage`+`deb`+`tar.xz`+`rpm` `x64` 自 #981 `d8fae97` 起）。
+`apps/desktop/package.json` `taotie-desktop@0.9.2` —— Electron `38.8.6`、`better-sqlite3@12.10.0`、`electron-builder@25.1.8`、`esbuild@0.24.0`。入口 `build/main.mjs`（`type: module`）。AppId `me.systembug.taotie`，发布 `github:matrix0ai/dx-taotie`（`apps/desktop/electron-builder.yml`）。`asar` + `client-dist` 位于 `extraResources`；按系统划分的签名目标（mac `dmg`+`zip` `arm64`+`x64` 经 `refresh-mac-update-metadata.mjs` 签名/公证/钉装、win `nsis`+`zip` `x64`、linux `AppImage`+`deb`+`tar.xz`+`rpm` `x64` 自 #981 `d8fae97` 起）。
 
 ## 构建流水线
 
@@ -12,7 +12,7 @@
 bundle:server → build:main / build:preload → stage:client → electron-builder
 ```
 
-- `scripts/bundle-server.mjs` esbuild `define: { 'process.env.FREELLMAPI_COMMIT_SHA', 'process.env.FREELLMAPI_INSTALL_METHOD' }` 取自 `GITHUB_SHA`（40 位十六进制）；在 `server-host.ts` 中镜像进运行时的 `process.env`，以便 `routes/update.ts` 正确解析。
+- `scripts/bundle-server.mjs` esbuild `define: { 'process.env.TAOTIE_COMMIT_SHA', 'process.env.TAOTIE_INSTALL_METHOD' }` 取自 `GITHUB_SHA`（40 位十六进制）；在 `server-host.ts` 中镜像进运行时的 `process.env`，以便 `routes/update.ts` 正确解析。
 - `build/main.mjs` 打包 `src/main.ts`（`--platform=node --format=esm --external:electron --external:./server.mjs`），`build/preload` 对应 `preload.ts`/`preload-popover.ts`。
 - `scripts/stage-client.mjs` 将 `apps/client/dist` 复制到 `build/client-dist` 或已打包应用中的 `Resources/client-dist`；开发环境经 `FREEAPI_REPO` 覆盖。
 

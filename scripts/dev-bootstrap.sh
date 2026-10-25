@@ -14,16 +14,16 @@ if [[ $# -gt 0 ]]; then
   exit 1
 fi
 
-if [[ ! -f "$project_root/package.json" || ! -f "$project_root/package-lock.json" ]]; then
-  echo "Project root must contain package.json and package-lock.json: $project_root" >&2
+if [[ ! -f "$project_root/package.json" || ! -f "$project_root/pnpm-lock.yaml" ]]; then
+  echo "Project root must contain package.json and pnpm-lock.yaml: $project_root" >&2
   exit 1
 fi
 
 node_version="$(node --version | sed 's/^v//')"
-npm_version="$(npm --version)"
+pnpm_version="$(pnpm --version)"
 
-version_is_supported="$(node - "$node_version" "$npm_version" <<'NODE'
-const [nodeVersion, npmVersion] = process.argv.slice(2).map((value) => value.split('.').map(Number));
+version_is_supported="$(node - "$node_version" "$pnpm_version" <<'NODE'
+const [nodeVersion, pnpmVersion] = process.argv.slice(2).map((value) => value.split('.').map(Number));
 const compare = (left, right) => {
   for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
     const difference = (left[index] ?? 0) - (right[index] ?? 0);
@@ -32,13 +32,13 @@ const compare = (left, right) => {
   return 0;
 };
 const nodeOk = compare(nodeVersion, [20, 18, 0]) >= 0 && nodeVersion[0] < 25;
-const npmOk = compare(npmVersion, [10, 0, 0]) >= 0;
-process.stdout.write(nodeOk && npmOk ? 'yes' : 'no');
+const pnpmOk = compare(pnpmVersion, [10, 0, 0]) >= 0;
+process.stdout.write(nodeOk && pnpmOk ? 'yes' : 'no');
 NODE
 )"
 
 if [[ "$version_is_supported" != "yes" ]]; then
-  echo "Node.js >=20.18.0 and <25.0.0 plus npm >=10.0.0 are required; found Node.js $node_version and npm $npm_version." >&2
+  echo "Node.js >=20.18.0 and <25.0.0 plus pnpm >=10.0.0 are required; found Node.js $node_version and pnpm $pnpm_version." >&2
   exit 1
 fi
 
@@ -46,9 +46,9 @@ lock_hash_for() {
   node -e "const fs = require('node:fs'); const crypto = require('node:crypto'); process.stdout.write(crypto.createHash('sha256').update(fs.readFileSync(process.argv[1])).digest('hex'))" "$1"
 }
 
-lockfile="$project_root/package-lock.json"
+lockfile="$project_root/pnpm-lock.yaml"
 node_modules="$project_root/node_modules"
-lock_stamp="$node_modules/.freellmapi-bootstrap-lock"
+lock_stamp="$node_modules/.taotie-bootstrap-lock"
 lock_hash="$(lock_hash_for "$lockfile")"
 installed_lock_hash=""
 
@@ -60,11 +60,11 @@ cd "$project_root"
 
 if [[ ! -d "$node_modules" || "$installed_lock_hash" != "$lock_hash" ]]; then
   echo 'Installing dependencies...'
-  npm install
+  pnpm install
   lock_hash="$(lock_hash_for "$lockfile")"
   printf '%s' "$lock_hash" > "$lock_stamp"
 else
-  echo 'Dependencies already match package-lock.json.'
+  echo 'Dependencies already match pnpm-lock.yaml.'
 fi
 
 if [[ ! -e .env ]]; then
@@ -76,4 +76,4 @@ else
   echo '.env already exists; leaving it unchanged.'
 fi
 
-echo 'Bootstrap complete. Start development with: npm run dev'
+echo 'Bootstrap complete. Start development with: pnpm dev'

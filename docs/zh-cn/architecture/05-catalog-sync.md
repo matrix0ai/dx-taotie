@@ -260,7 +260,7 @@ startCatalogSync(scheduler: Scheduler)
 
 | 变量 | 默认值 | 用途 |
 |----------|---------|---------|
-| `CATALOG_BASE_URL` | `https://api.freellmapi.co` | 目录服务端点 |
+| `CATALOG_BASE_URL` | `https://api.taotie.conouch.io` | 目录服务端点 |
 | `CATALOG_PUBKEY` | 钉死 Ed25519 公钥 | 自托管目录覆盖 |
 | `CATALOG_SYNC_DISABLED` | `0` | 熔断开关（`1` = 禁用） |
 

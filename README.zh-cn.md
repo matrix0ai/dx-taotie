@@ -10,7 +10,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/matrix0ai/dx-taotie?style=flat&logo=github&color=yellow)](https://github.com/matrix0ai/dx-taotie/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#参与贡献)
-[![Docker image](https://img.shields.io/badge/ghcr.io-freellmapi-2496ED?logo=docker&logoColor=white)](https://github.com/matrix0ai/dx-taotie/pkgs/container/freellmapi)
+[![Docker image](https://img.shields.io/badge/ghcr.io-taotie-2496ED?logo=docker&logoColor=white)](https://github.com/matrix0ai/dx-taotie/pkgs/container/taotie)
 [![Ask DeepWiki](https://img.shields.io/badge/DeepWiki-Ask-blue)](https://deepwiki.com/matrix0ai/dx-taotie)
 
 **[taotie.conouch.io](https://taotie.conouch.io/?utm_source=github&utm_medium=readme&utm_campaign=repository&utm_content=readme_top)** · 浏览完整目录：474 个模型系列，635 个免费端点
@@ -129,7 +129,7 @@
 
 </div>
 
-其中大多数一条命令就能配好：`npx freellmapi setup-claude`、`setup-codex`、`setup-aider`，还有另外十几个生成器。它们会拉取你当前的实时目录，备份已有配置，并且绝不覆盖你已经写好的内容。Claude Code 和 Codex 另有零留存启动器（`freellmapi launch`、`freellmapi launch-codex`），只把凭据注入子进程。Zed 和 JetBrains AI 通过可选的 [Ollama 模拟](docs/en/clients/01-agent-clients.md#ollama-clients) 接入；Gemini CLI 走它自己的 `/v1beta` 协议。
+其中大多数一条命令就能配好：`npx taotie setup-claude`、`setup-codex`、`setup-aider`，还有另外十几个生成器。它们会拉取你当前的实时目录，备份已有配置，并且绝不覆盖你已经写好的内容。Claude Code 和 Codex 另有零留存启动器（`taotie launch`、`taotie launch-codex`），只把凭据注入子进程。Zed 和 JetBrains AI 通过可选的 [Ollama 模拟](docs/en/clients/01-agent-clients.md#ollama-clients) 接入；Gemini CLI 走它自己的 `/v1beta` 协议。
 
 各工具的具体配方、setup CLI 参考、给无法发送请求头的客户端用的可撤销 URL 令牌，以及 MCP 服务，都在 **[客户端与编程智能体 →](docs/zh-cn/clients/01-agent-clients.md)**
 
@@ -155,7 +155,7 @@
 - **自更新的模型目录** —— 路由器每天两次从 taotie.conouch.io 同步经过签名的目录：新模型、额度变更和提供方的怪癖修复都会自动生效。[Premium →](#premium-实时目录)
 - **粘性会话与上下文交接** —— 对话会在同一个模型上停留 30 分钟；如果中途确实换了模型，可选的精简交接说明能让话题保持连贯。[详情 →](docs/en/clients/01-agent-clients.md#context-handoff)
 - **提示词压缩（可选开启）** —— 一条共享且失败即放行的请求流程，可以在缓存查找和路由之前对提示词去重、过滤工具输出、压紧重复的 JSON，并裁掉过时的上下文。[详情 →](docs/zh-cn/compression/01-compression-pipeline.md)
-- **密钥加密存储，对外只有一个令牌** —— 提供方密钥以 AES-256-GCM 加密存放在 SQLite 中，每次请求时在内存里解密；你的应用自始至终只看到一个统一的 `freellmapi-…` bearer 令牌。
+- **密钥加密存储，对外只有一个令牌** —— 提供方密钥以 AES-256-GCM 加密存放在 SQLite 中，每次请求时在内存里解密；你的应用自始至终只看到一个统一的 `taotie-…` bearer 令牌。
 - **管理仪表盘与分析** —— React 界面用来管理密钥、调整链路顺序、使用试验台，并查看 24 小时到 90 天窗口的 p50/p95/首个词元用时分析；带登录保护，支持明暗主题和 [60 种语言](#语言)。
 - **MCP 服务与交互式文档** —— 智能体可以通过 `/mcp` 查询可用模型、提供方健康状况和路由策略；`/v1/docs` 提供一个零依赖的 OpenAPI 浏览器。[编程智能体 →](docs/zh-cn/clients/01-agent-clients.md)
 - **运维上的便利** —— 可选的响应缓存、加密的数据库备份、定期密钥健康检查、密钥批量导入导出、声明式启动配置。[安装与部署 →](docs/zh-cn/install/01-install.md)
@@ -165,7 +165,7 @@
 
 ## 快速开始
 
-**一行命令**（需要 Docker。它会建好 `~/freellmapi`、生成加密密钥、拉取镜像并启动容器）：
+**一行命令**（需要 Docker。它会建好 `~/taotie`、生成加密密钥、拉取镜像并启动容器）：
 
 ```bash
 curl -fsSL https://taotie.conouch.io/install.sh | bash
@@ -196,10 +196,10 @@ macOS 要求 12 Monterey 或更高版本；Apple Silicon 请选择 **arm64**，I
 最快的配置方式是根据你服务器上实际可用的模型生成：
 
 ```bash
-npx freellmapi setup-claude --url http://localhost:3001 --api-key <统一密钥>
+npx taotie setup-claude --url http://localhost:3001 --api-key <统一密钥>
 ```
 
-每个生成器都支持 `--dry-run`，改动已有文件前会先创建带时间戳的备份，并且是合并进用户配置而不是覆盖。启动器则把凭据完全挡在配置文件之外：Claude Code 用 `npx freellmapi launch`，Codex 用 `npx freellmapi launch-codex`。
+每个生成器都支持 `--dry-run`，改动已有文件前会先创建带时间戳的备份，并且是合并进用户配置而不是覆盖。启动器则把凭据完全挡在配置文件之外：Claude Code 用 `npx taotie launch`，Codex 用 `npx taotie launch-codex`。
 
 | 智能体 | 自动配置命令 | Base URL |
 | --- | --- | --- |
@@ -254,7 +254,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="http://localhost:3001/v1",
-    api_key="freellmapi-your-unified-key",
+    api_key="taotie-your-unified-key",
 )
 
 resp = client.chat.completions.create(

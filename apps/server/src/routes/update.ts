@@ -342,12 +342,12 @@ export function createUpdateRouter(options: UpdateRouterOptions = {}): Router {
   const logger = options.logger ?? console;
   const appVersion = options.version ?? getAppVersion;
   const autoCheckEnabled = options.autoCheckEnabled ?? isAutoUpdateCheckEnabled;
-  const updateCheckDisabled = env.FREELLMAPI_UPDATE_CHECK?.trim().toLowerCase() === 'off';
-  const githubToken = env.FREELLMAPI_UPDATE_GITHUB_TOKEN?.trim();
+  const updateCheckDisabled = env.TAOTIE_UPDATE_CHECK?.trim().toLowerCase() === 'off';
+  const githubToken = env.TAOTIE_UPDATE_GITHUB_TOKEN?.trim();
   // docker-compose.yml's opt-in `autoupdate` profile runs a Watchtower sidecar
   // with only its token-protected update endpoint enabled; these point at it.
-  const selfUpdateUrl = env.FREELLMAPI_SELF_UPDATE_URL?.trim().replace(/\/+$/, '');
-  const selfUpdateToken = env.FREELLMAPI_SELF_UPDATE_TOKEN?.trim();
+  const selfUpdateUrl = env.TAOTIE_SELF_UPDATE_URL?.trim().replace(/\/+$/, '');
+  const selfUpdateToken = env.TAOTIE_SELF_UPDATE_TOKEN?.trim();
   const selfUpdateConfigured = Boolean(selfUpdateUrl && selfUpdateToken);
   const canSelfUpdate = (installation: Installation) => installation === 'docker' && selfUpdateConfigured;
 
@@ -362,7 +362,7 @@ export function createUpdateRouter(options: UpdateRouterOptions = {}): Router {
   function githubHeaders(accept: string): Record<string, string> {
     return {
       Accept: accept,
-      'User-Agent': 'freellmapi-update-checker',
+      'User-Agent': 'taotie-update-checker',
       'X-GitHub-Api-Version': '2022-11-28',
       ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
     };
@@ -374,8 +374,8 @@ export function createUpdateRouter(options: UpdateRouterOptions = {}): Router {
   async function resolveIdentity(): Promise<Identity> {
     if (identity) return identity;
 
-    const environmentSha = validSha(env.FREELLMAPI_COMMIT_SHA);
-    const installMethod = env.FREELLMAPI_INSTALL_METHOD;
+    const environmentSha = validSha(env.TAOTIE_COMMIT_SHA);
+    const installMethod = env.TAOTIE_INSTALL_METHOD;
     if (installMethod === 'docker' || installMethod === 'desktop') {
       // Deliberately before the SHA check: a self-built image without
       // --build-arg has no embedded SHA, and it is still a container install.
@@ -444,7 +444,7 @@ export function createUpdateRouter(options: UpdateRouterOptions = {}): Router {
       const atomResponse = await fetchImpl(`https://github.com/${REPOSITORY}/commits/main.atom`, {
         headers: {
           Accept: 'application/atom+xml',
-          'User-Agent': 'freellmapi-update-checker',
+          'User-Agent': 'taotie-update-checker',
         },
         signal: AbortSignal.timeout(10_000),
       });

@@ -13,41 +13,36 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
 
-COPY package.json package-lock.json ./
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared/package.json ./packages/shared/
 COPY apps/server/package.json ./apps/server/
 COPY apps/client/package.json ./apps/client/
 COPY apps/cli/package.json ./apps/cli/
+COPY apps/desktop/package.json ./apps/desktop/
 
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 WORKDIR /app
 
 COPY . .
 
-RUN npm run build
-RUN npm prune --omit=dev
+RUN pnpm build
+# Standalone production tree for the server: prod dependencies only, with the
+# workspace package (@taotie/shared) copied in rather than symlinked.
+RUN pnpm --filter @taotie/server --prod deploy --legacy /deploy
 
 FROM ${NODE_IMAGE} AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3001
-ENV FREELLMAPI_INSTALL_METHOD=docker
+ENV TAOTIE_INSTALL_METHOD=docker
 
-COPY --from=build --chown=node:node /app/package.json /app/package-lock.json ./
-COPY --from=build --chown=node:node /app/node_modules ./node_modules
-# npm nests some production packages under the workspace instead of hoisting
-# them (undici lives at server/node_modules/undici). Skipping this copy shipped
-# images where the HTTP(S) proxy dispatcher failed to load and every request
-# silently went direct — issue #550.
-COPY --from=build --chown=node:node /app/apps/server/node_modules ./server/node_modules
-COPY --from=build --chown=node:node /app/packages/shared ./packages/shared
-COPY --from=build --chown=node:node /app/apps/server/package.json ./server/package.json
-# The dashboard shows which RELEASE this is, and the release version lives in
-# desktop/package.json (server/package.json tracks the workspace, not the app).
-# One 400-byte manifest so a container install can name its own version (#703).
+COPY --from=build --chown=node:node /deploy/node_modules ./server/node_modules
+COPY --from=build --chown=node:node /deploy/package.json ./server/package.json
 COPY --from=build --chown=node:node /app/apps/desktop/package.json ./desktop/package.json
 COPY --from=build --chown=node:node /app/apps/server/dist ./server/dist
 COPY --from=build --chown=node:node /app/apps/client/dist ./client/dist
@@ -61,8 +56,8 @@ COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # Deliberately last of the runtime layers: the SHA changes on every commit, and
 # an ARG/ENV above the COPYs invalidates the cache for all of them on each build.
-ARG FREELLMAPI_COMMIT_SHA
-ENV FREELLMAPI_COMMIT_SHA=${FREELLMAPI_COMMIT_SHA}
+ARG TAOTIE_COMMIT_SHA
+ENV TAOTIE_COMMIT_SHA=${TAOTIE_COMMIT_SHA}
 
 # Runs as root so docker-entrypoint.sh can chown a root-owned volume mount on
 # PaaS runtimes; the entrypoint drops back to the node user before exec'ing CMD.
@@ -73,7 +68,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 EXPOSE 3001
 
 # No VOLUME for /app/server/data on purpose. Persistence is the deployment's
-# job — docker-compose.yml maps the named `freellmapi-data` volume there, and a
+# job — docker-compose.yml maps the named `taotie-data` volume there, and a
 # plain `docker run` takes -v. Declaring it here instead creates an ANONYMOUS
 # volume on every container that doesn't override it: PaaS runtimes that build
 # from the Dockerfile (Railway, Render, Coolify, Dokploy, CapRover) then either

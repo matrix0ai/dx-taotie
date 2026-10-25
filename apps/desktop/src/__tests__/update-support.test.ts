@@ -23,8 +23,8 @@ describe('updateSupport', () => {
   });
 
   it('updates the AppImage on Linux and leaves deb/rpm to the package manager', () => {
-    expect(updateSupport({ ...base, platform: 'linux', execPath: '/tmp/.mount_x/freellmapi-desktop', appImage: '/home/me/Taotie.AppImage' })).toBeNull();
-    expect(updateSupport({ ...base, platform: 'linux', execPath: '/opt/Taotie/freellmapi-desktop' })).toEqual({ phase: 'unsupported', reason: 'package' });
+    expect(updateSupport({ ...base, platform: 'linux', execPath: '/tmp/.mount_x/taotie-desktop', appImage: '/home/me/Taotie.AppImage' })).toBeNull();
+    expect(updateSupport({ ...base, platform: 'linux', execPath: '/opt/Taotie/taotie-desktop' })).toEqual({ phase: 'unsupported', reason: 'package' });
   });
 });
 

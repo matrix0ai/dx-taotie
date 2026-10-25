@@ -19,7 +19,7 @@
 
 ## 串行 fork 执行
 
-`npm run test -w apps/server` 以 `vitest run --pool=forks --fileParallelism=false` 运行。两个刻意的选择：
+`pnpm --filter @taotie/server test` 以 `vitest run --pool=forks --fileParallelism=false` 运行。两个刻意的选择：
 
 - **`--pool=forks`** 把每个测试文件隔离在全新进程里。套件操纵真实状态——better-sqlite3 数据库、`process.env`、模块级缓存（冷却映射、健康调度器）——这些绝不能在文件之间泄漏。
 - **`--fileParallelism=false`** 让文件串行执行，共享资源（端口、临时数据目录）就不会在并发执行的文件之间相撞。

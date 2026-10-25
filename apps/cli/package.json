@@ -1,5 +1,5 @@
 {
-  "name": "freellmapi",
+  "name": "taotie",
   "version": "0.8.1",
   "description": "Set up coding agents to use a Taotie gateway",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "url": "https://github.com/matrix0ai/dx-taotie/issues"
   },
   "keywords": [
-    "freellmapi",
+    "taotie",
     "llm",
     "openai-compatible",
     "claude-code",
@@ -25,7 +25,7 @@
   ],
   "type": "module",
   "bin": {
-    "freellmapi": "dist/index.js"
+    "taotie": "dist/index.js"
   },
   "exports": {
     ".": "./dist/index.js",
@@ -54,7 +54,7 @@
     "build": "tsc",
     "test": "vitest run",
     "lint": "eslint .",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "pnpm run build && pnpm test"
   },
   "engines": {
     "node": ">=20.18.0 <25.0.0"

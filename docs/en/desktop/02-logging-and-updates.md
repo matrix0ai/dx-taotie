@@ -31,7 +31,7 @@ The tray menu exposes both folders; `openBackupsFolder` resolves to `<userData>/
 
 ### Build identity
 
-`scripts/bundle-server.mjs` `define: { 'process.env.FREELLMAPI_COMMIT_SHA': JSON.stringify(GITHUB_SHA), 'process.env.FREELLMAPI_INSTALL_METHOD': '"desktop"' }` — 40-hex SHA stamped at build, mirrored into live `process.env` in `server-host.ts` so `apps/server/src/routes/update.ts` resolves the running commit vs `GET /api/update` available. `FREEAPI_VERSION` from `app.getVersion()` (`0.9.2`).
+`scripts/bundle-server.mjs` `define: { 'process.env.TAOTIE_COMMIT_SHA': JSON.stringify(GITHUB_SHA), 'process.env.TAOTIE_INSTALL_METHOD': '"desktop"' }` — 40-hex SHA stamped at build, mirrored into live `process.env` in `server-host.ts` so `apps/server/src/routes/update.ts` resolves the running commit vs `GET /api/update` available. `FREEAPI_VERSION` from `app.getVersion()` (`0.9.2`).
 
 ### In-dashboard checker
 

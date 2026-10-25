@@ -35,8 +35,8 @@ export const EXCLUDED_SECTIONS = new Set([
 // A paragraph counts as a rule if it is phrased as one.
 const DIRECTIVE = /\b(must|should|do not|don't|never|always|before opening a pr|run\b.*\bbefore)\b/i;
 
-// Commands worth re-running before a commit — setup commands (`npm install`,
-// `npm run dev`) are not.
+// Commands worth re-running before a commit — setup commands (`pnpm install`,
+// `pnpm dev`) are not.
 const VERIFICATION_COMMAND = /\b(test|build|check:|lint|migration)\b/;
 
 const WATCHED_SUBCOMMANDS = new Set(['commit', 'push']);
@@ -173,7 +173,7 @@ function extractCommands({ prose, fences }) {
   // Commands named inline in prose, e.g. "run `npm run check:i18n` before ...".
   for (const line of prose) {
     for (const [, inline] of line.matchAll(/`([^`]+)`/g)) {
-      if (/^(npm|npx|node|\.\/|\.\\)/.test(inline) && VERIFICATION_COMMAND.test(inline)) {
+      if (/^(npm|pnpm|npx|node|\.\/|\.\\)/.test(inline) && VERIFICATION_COMMAND.test(inline)) {
         commands.add(normalizeCommand(inline));
       }
     }

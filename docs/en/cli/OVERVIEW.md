@@ -4,11 +4,11 @@
 
 ## Scope
 
-This domain documents the Taotie setup CLI (`cli/`) — the `npx freellmapi` generators that wire coding agents to the local gateway in one command. Each generator (`setup-claude`, `setup-codex`, …) fetches the live catalog, backs up existing config, never clobbers unrelated keys, and records `tools.json` metadata for `freellmapi launch` / `launch-codex` zero-persistence launchers and `freellmapi doctor`.
+This domain documents the Taotie setup CLI (`cli/`) — the `npx taotie` generators that wire coding agents to the local gateway in one command. Each generator (`setup-claude`, `setup-codex`, …) fetches the live catalog, backs up existing config, never clobbers unrelated keys, and records `tools.json` metadata for `taotie launch` / `launch-codex` zero-persistence launchers and `taotie doctor`.
 
 Authoritative sources: [`apps/cli/src/tools.ts`](../../../apps/cli/src/tools.ts) (all `Xxx()` generator functions), [`apps/cli/tools.json`](../../../apps/cli/tools.json) (registry), [`apps/cli/src/config-files.ts`](../../../apps/cli/src/config-files.ts) (merge + `0600` + timestamped backup), [`apps/cli/README.md`](../../../apps/cli/README.md), [`apps/client/src/data/agent-tools.json`](../../../apps/client/src/data/agent-tools.json).
 
-For per-agent wiring recipes and the MCP/headerless-client story, see [Clients & coding agents](../clients/OVERVIEW.md). For the env vars the CLI injects (`FREELLMAPI_API_KEY`, `FREELLMAPI_MODEL`), see [env/](../env/OVERVIEW.md).
+For per-agent wiring recipes and the MCP/headerless-client story, see [Clients & coding agents](../clients/OVERVIEW.md). For the env vars the CLI injects (`TAOTIE_API_KEY`, `TAOTIE_MODEL`), see [env/](../env/OVERVIEW.md).
 
 ## File Index
 

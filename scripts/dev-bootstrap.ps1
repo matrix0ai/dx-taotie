@@ -36,13 +36,13 @@ function Get-LockHash {
 
 $ProjectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
 $packageJson = Join-Path $ProjectRoot 'package.json'
-$lockfile = Join-Path $ProjectRoot 'package-lock.json'
+$lockfile = Join-Path $ProjectRoot 'pnpm-lock.yaml'
 $nodeModules = Join-Path $ProjectRoot 'node_modules'
-$lockStamp = Join-Path $nodeModules '.freellmapi-bootstrap-lock'
+$lockStamp = Join-Path $nodeModules '.taotie-bootstrap-lock'
 $envFile = Join-Path $ProjectRoot '.env'
 
 if (-not (Test-Path -LiteralPath $packageJson) -or -not (Test-Path -LiteralPath $lockfile)) {
-    throw "Project root must contain package.json and package-lock.json: $ProjectRoot"
+    throw "Project root must contain package.json and pnpm-lock.yaml: $ProjectRoot"
 }
 
 $nodeVersion = Get-CommandVersion -Command 'node' -Argument '--version'
@@ -50,9 +50,9 @@ if ($nodeVersion -lt [Version]'20.18.0' -or $nodeVersion -ge [Version]'25.0.0') 
     throw "Node.js >=20.18.0 and <25.0.0 is required; found $nodeVersion."
 }
 
-$npmVersion = Get-CommandVersion -Command 'npm' -Argument '--version'
-if ($npmVersion -lt [Version]'10.0.0') {
-    throw "npm >=10.0.0 is required; found $npmVersion."
+$pnpmVersion = Get-CommandVersion -Command 'pnpm' -Argument '--version'
+if ($pnpmVersion -lt [Version]'10.0.0') {
+    throw "pnpm >=10.0.0 is required; found $pnpmVersion."
 }
 
 $lockHash = Get-LockHash -Path $lockfile
@@ -66,15 +66,15 @@ Push-Location $ProjectRoot
 try {
     if (-not (Test-Path -LiteralPath $nodeModules) -or $installedLockHash -ne $lockHash) {
         Write-Host 'Installing dependencies...'
-        & npm install
+        & pnpm install
         if ($LASTEXITCODE -ne 0) {
-            throw "npm install failed with exit code $LASTEXITCODE."
+            throw "pnpm install failed with exit code $LASTEXITCODE."
         }
 
         $lockHash = Get-LockHash -Path $lockfile
         Set-Content -LiteralPath $lockStamp -Value $lockHash -NoNewline -Encoding ascii
     } else {
-        Write-Host 'Dependencies already match package-lock.json.'
+        Write-Host 'Dependencies already match pnpm-lock.yaml.'
     }
 
     if (-not (Test-Path -LiteralPath $envFile)) {
@@ -95,4 +95,4 @@ try {
     Pop-Location
 }
 
-Write-Host 'Bootstrap complete. Start development with: npm run dev'
+Write-Host 'Bootstrap complete. Start development with: pnpm dev'

@@ -106,7 +106,7 @@ test('the real CONTRIBUTING.md still yields the rules that matter', () => {
   );
   assert.ok(rules.length > 0, 'expected rules from the repo CONTRIBUTING.md');
   assert.ok(rules.some((rule) => /Include a test/.test(rule.text)));
-  assert.ok(commands.includes('npm test'));
+  assert.ok(commands.includes('pnpm test'));
   // This file documents the hook; quoting it back at the agent would be noise.
   assert.ok(!rules.some((rule) => rule.section === 'Commit checklist hook'));
 });

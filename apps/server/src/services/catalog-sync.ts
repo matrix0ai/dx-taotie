@@ -6,7 +6,7 @@ import { MEDIA_PLATFORMS, TRANSCRIPTION_PLATFORMS, VIDEO_PLATFORMS } from './med
 import { SEARCH_ENGINE_PLATFORMS, SEARCH_MODALITY } from './search.js';
 import { DECISION_MODALITY, DECISION_PLATFORMS } from './decision.js';
 import { EMBEDDING_PLATFORMS } from './embeddings.js';
-import type { Platform } from '@freellmapi/shared/types.js';
+import type { Platform } from '@taotie/shared/types.js';
 import type { Scheduler } from '../lib/scheduler.js';
 import {
   applyAllModelOverrides,
@@ -40,7 +40,7 @@ const MEDIA_MODALITIES = new Set(['image', 'audio']);
  * app version added via migrations.
  */
 
-const DEFAULT_BASE_URL = 'https://api.freellmapi.co';
+const DEFAULT_BASE_URL = 'https://api.taotie.conouch.io';
 
 // The Ed25519 public key the production catalog is signed with. The private
 // half was generated on the catalog host and has never left it. Self-hosters

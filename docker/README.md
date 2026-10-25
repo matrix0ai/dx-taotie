@@ -23,13 +23,13 @@ Start the app:
 docker compose up -d
 ```
 
-Open http://localhost:3001, add provider keys on the **Keys** page, then use the generated `freellmapi-...` key with any OpenAI-compatible client.
+Open http://localhost:3001, add provider keys on the **Keys** page, then use the generated `taotie-...` key with any OpenAI-compatible client.
 
 ## Example API Call
 
 ```bash
 curl http://localhost:3001/v1/chat/completions \
-  -H "Authorization: Bearer freellmapi-your-unified-key" \
+  -H "Authorization: Bearer taotie-your-unified-key" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "auto",
@@ -48,7 +48,7 @@ docker compose ps
 Tail logs:
 
 ```bash
-docker compose logs -f freellmapi
+docker compose logs -f taotie
 ```
 
 Stop the app:
@@ -76,7 +76,7 @@ docker compose up -d --build
 | --- | --- | --- | --- |
 | `ENCRYPTION_KEY` | Yes | None | 64-character hex key used to encrypt provider API keys at rest. Generate it once and keep it stable. |
 | `PORT` | No | `3001` | Host port exposed by Docker Compose. The container listens on port 3001. |
-| `FREEAPI_DB_PATH` | No | `/app/server/data/freellmapi.db` | SQLite file path. Set this when your host only persists one mounted directory. |
+| `FREEAPI_DB_PATH` | No | `/app/server/data/taotie.db` | SQLite file path. Set this when your host only persists one mounted directory. |
 | `FREEAPI_DB_BACKUP_PATH` | No | None | Local encrypted backup file. Restored on startup if the DB file is missing, then refreshed while the app runs. |
 | `FREEAPI_DB_BACKUP_URL` | No | None | HTTP(S) encrypted backup target. Startup uses `GET`; periodic backups use `PUT`. |
 | `FREEAPI_DB_BACKUP_TOKEN` | No | None | Optional bearer token for `FREEAPI_DB_BACKUP_URL`. |
@@ -84,9 +84,9 @@ docker compose up -d --build
 | `FREEAPI_CONFIG_PATH` | No | None | JSON config file applied idempotently after migrations on every boot. |
 | `FREEAPI_CONFIG_JSON` | No | None | Inline JSON config. Takes precedence over `FREEAPI_CONFIG_PATH`. |
 
-The `freellmapi-data` volume stores SQLite data at `/app/server/data`. Keep the same volume and `ENCRYPTION_KEY` when upgrading, otherwise existing encrypted provider keys cannot be decrypted.
+The `taotie-data` volume stores SQLite data at `/app/server/data`. Keep the same volume and `ENCRYPTION_KEY` when upgrading, otherwise existing encrypted provider keys cannot be decrypted.
 
-Example `freellmapi.config.json`:
+Example `taotie.config.json`:
 
 ```json
 {

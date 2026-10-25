@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
-import type { ChatMessage, ChatToolDefinition } from '@freellmapi/shared/types.js';
+import type { ChatMessage, ChatToolDefinition } from '@taotie/shared/types.js';
 import { z } from 'zod';
 import { COMPRESSION_MODES, type CompressionMode } from '../services/compression/types.js';
 import { compressRequest } from '../services/compression/pipeline.js';

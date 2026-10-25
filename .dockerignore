@@ -19,3 +19,6 @@ dist
 npm-debug.log*
 repo-assets
 free-ai-apis.pdf
+.turbo
+apps/desktop/dist-electron
+apps/desktop/client-dist

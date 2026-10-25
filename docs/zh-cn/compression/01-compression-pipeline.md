@@ -13,7 +13,7 @@
 在仪表盘 **设置 → 提示词压缩** 里选个模式，或用环境变量引导初始模式：
 
 ```env
-FREELLMAPI_COMPRESSION=lossless
+TAOTIE_COMPRESSION=lossless
 ```
 
 一旦仪表盘里保存过设置，存储的设置优先于环境变量。
@@ -70,8 +70,8 @@ X-FreeLLM-Compress: standard; saved~=1840
 
 额外的 JSON 过滤器定义可从下列位置加载：
 
-- `~/.freellmapi/filters/*.json` 供用户自有过滤器；
-- 项目里的 `.freellmapi/filters.json`，仅当**信任项目过滤器文件**启用时。
+- `~/.taotie/filters/*.json` 供用户自有过滤器；
+- 项目里的 `.taotie/filters.json`，仅当**信任项目过滤器文件**启用时。
 
 项目过滤器默认关闭，因为仓库可能不受信。
 

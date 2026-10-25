@@ -19,7 +19,7 @@
           theme === 'dark' || theme === 'light' ? theme : 'system'
         // Same idea for text direction; keep in sync with RTL_LOCALES in
         // src/i18n/locale-config.ts.
-        const locale = localStorage.getItem('freellmapi.locale')
+        const locale = localStorage.getItem('taotie.locale')
         if (locale && ['ar', 'he', 'fa', 'ur'].includes(locale)) {
           document.documentElement.dir = 'rtl'
         }

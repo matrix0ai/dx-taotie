@@ -21,7 +21,7 @@ import { z } from 'zod';
 // questions mid-session: which free models are usable right now and with
 // which parameters, how healthy the provider pool is, what the routing
 // strategy is, and how much quota the cache has saved — plus one control
-// knob (switching the routing strategy). The ask_freellmapi tool also lets
+// knob (switching the routing strategy). The ask_taotie tool also lets
 // ChatGPT and other MCP clients run a non-streaming inference through the same
 // /v1/chat/completions path as every OpenAI-compatible client.
 //
@@ -231,7 +231,7 @@ function setStrategy(args: Record<string, unknown>): unknown {
 const DEFAULT_MCP_INFERENCE_TIMEOUT_MS = 120_000;
 const MAX_MCP_INFERENCE_TIMEOUT_MS = 300_000;
 
-const askFreeLlmApiSchema = z.object({
+const askTaotieSchema = z.object({
   prompt: z.string().min(1).max(400_000),
   system: z.string().min(1).max(50_000).optional(),
   model: z.string().min(1).max(256).optional(),
@@ -280,14 +280,14 @@ function assistantText(payload: any): string {
     .join('');
 }
 
-async function askFreeLlmApi(args: Record<string, unknown>, req: Request, res: Response): Promise<unknown> {
-  const parsed = askFreeLlmApiSchema.safeParse(args);
+async function askTaotie(args: Record<string, unknown>, req: Request, res: Response): Promise<unknown> {
+  const parsed = askTaotieSchema.safeParse(args);
   if (!parsed.success) {
     const detail = parsed.error.errors
       .map(error => `${error.path.join('.') || 'arguments'}: ${error.message}`)
       .slice(0, 5)
       .join(', ');
-    throw new Error(`Invalid ask_freellmapi arguments: ${detail}`);
+    throw new Error(`Invalid ask_taotie arguments: ${detail}`);
   }
 
   const input = parsed.data;
@@ -425,7 +425,7 @@ interface McpTool {
 const READ_ONLY_LOCAL = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
 
 const TOOLS: Record<string, McpTool> = {
-  ask_freellmapi: {
+  ask_taotie: {
     title: 'Ask Taotie',
     description: 'Use this when the user explicitly wants a Taotie model to answer, analyze, rewrite, summarize, or generate text. Routes through the configured free-provider pool. Defaults to the server\'s MCP_INFERENCE_DEFAULT_MODEL (auto when unset). Returns the answer plus model, routing, cache, execution, and token-usage metadata.',
     inputSchema: {
@@ -459,7 +459,7 @@ const TOOLS: Record<string, McpTool> = {
       required: ['answer', 'requested_model', 'model', 'finish_reason', 'usage', 'routed_via', 'fallback_trail', 'cache', 'compression', 'execution_id'],
     },
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: true },
-    run: (args, req, res) => askFreeLlmApi(args, req, res),
+    run: (args, req, res) => askTaotie(args, req, res),
   },
   healthcheck: {
     title: 'Check Taotie readiness',
@@ -592,8 +592,8 @@ async function dispatchRpc(msg: JsonRpcRequest, id: number | string | null, req:
       return rpcResult(id, {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: { tools: {} },
-        serverInfo: { name: 'freellmapi', version: '1.0.0' },
-        instructions: 'Use ask_freellmapi when the user explicitly asks Taotie or one of its models to perform a text task. Use healthcheck before troubleshooting availability; list_models for model choice; provider_health, provider_list, usage_summary, cache_stats, compression_stats, quota_outlook, and routing_info for diagnostics. set_routing_strategy changes server state. web_search searches the web through the configured search providers. clear_cache flushes cached responses.',
+        serverInfo: { name: 'taotie', version: '1.0.0' },
+        instructions: 'Use ask_taotie when the user explicitly asks Taotie or one of its models to perform a text task. Use healthcheck before troubleshooting availability; list_models for model choice; provider_health, provider_list, usage_summary, cache_stats, compression_stats, quota_outlook, and routing_info for diagnostics. set_routing_strategy changes server state. web_search searches the web through the configured search providers. clear_cache flushes cached responses.',
       });
     }
     case 'ping':

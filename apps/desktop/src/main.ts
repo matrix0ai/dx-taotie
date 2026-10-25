@@ -19,8 +19,7 @@ const DEFAULT_PORT = 31415;
 // (the popover/dashboard glass) needs GPU compositing; with hardware
 // acceleration disabled, transparent windows render an opaque white.
 app.setName('Taotie');
-// Legacy dir name kept so existing installs keep their data after the Taotie rename.
-app.setPath('userData', path.join(app.getPath('appData'), 'FreeLLMAPI'));
+app.setPath('userData', path.join(app.getPath('appData'), 'Taotie'));
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();

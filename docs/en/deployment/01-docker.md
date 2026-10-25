@@ -26,8 +26,8 @@ Published tags: `latest` (default branch), `v*.*.*` (git release tags), and `sha
 Build shape ([Dockerfile](../../../Dockerfile)):
 
 - Three stages on the `node:20-bookworm-slim` base (`deps` → `build` → `runtime`); only already-built artifacts are copied into the runtime stage.
-- The runtime sets `NODE_ENV=production`, `PORT=3001`, and `FREELLMAPI_INSTALL_METHOD=docker`; the process is `node apps/server/dist/index.js`.
-- A `FREELLMAPI_COMMIT_SHA` ARG/ENV pair sits deliberately after all `COPY` layers: the SHA changes every commit, and placing it higher would invalidate the layer cache for the whole image on each build.
+- The runtime sets `NODE_ENV=production`, `PORT=3001`, and `TAOTIE_INSTALL_METHOD=docker`; the process is `node apps/server/dist/index.js`.
+- A `TAOTIE_COMMIT_SHA` ARG/ENV pair sits deliberately after all `COPY` layers: the SHA changes every commit, and placing it higher would invalidate the layer cache for the whole image on each build.
 - The runtime also copies `apps/desktop/package.json` (a 400-byte manifest) so a container install can name its own release version (#703).
 - `.dockerignore` keeps secrets and local state out of the build context: `.env`, `.env.*`, `*.db` (+ `-wal`/`-shm` sidecars), `.encryption-key`, and `apps/server/data` never enter an image.
 
@@ -37,7 +37,7 @@ Prerequisites: Docker, Docker Compose, OpenSSL. macOS/Linux:
 
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 
 # Generate an encryption key for at-rest key storage
 ENCRYPTION_KEY="$(openssl rand -hex 32)"
@@ -49,7 +49,7 @@ docker compose up -d
 Windows PowerShell variant and a curl one-liner bootstrap live in [docs/en/install/01-install.md#docker-compose](../install/01-install.md#docker-compose). Then follow the logs:
 
 ```bash
-docker compose logs -f freellmapi
+docker compose logs -f taotie
 ```
 
 Open http://localhost:3001, add provider keys on the **Keys** page, and grab your unified API key from that page's header — that key is what your OpenAI SDK points at.
@@ -66,7 +66,7 @@ Only do this on a trusted network — the proxy is single-user and guarded only 
 
 ## Volumes & persistence
 
-SQLite data lives in the named volume `freellmapi-data`, mounted at `/app/server/data`. Keep the same `.env` `ENCRYPTION_KEY` and the same volume when upgrading, because provider keys are encrypted at rest. If your host only persists one specific directory, point the database there with `FREEAPI_DB_PATH=/that/path/freellmapi.db`.
+SQLite data lives in the named volume `taotie-data`, mounted at `/app/server/data`. Keep the same `.env` `ENCRYPTION_KEY` and the same volume when upgrading, because provider keys are encrypted at rest. If your host only persists one specific directory, point the database there with `FREEAPI_DB_PATH=/that/path/taotie.db`.
 
 The Dockerfile declares **no** `VOLUME` for `/app/server/data` on purpose. Persistence is the deployment's job — the compose file maps the named volume there, and plain `docker run` takes `-v`. Declaring it in the image instead would create an ANONYMOUS volume on every container that doesn't override it: PaaS runtimes that build from the Dockerfile (Railway, Render, Coolify, Dokploy, CapRover) would then either refuse the image or silently hand each redeploy a fresh empty volume, and the declaration would also shadow a bind mount made at the same path.
 
@@ -103,5 +103,5 @@ Providers unreachable from the container, but fine from the host? A container ha
 To see which case you are hitting, ask the container directly:
 
 ```bash
-docker compose exec freellmapi node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
+docker compose exec taotie node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
 ```

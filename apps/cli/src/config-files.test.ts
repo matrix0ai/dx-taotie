@@ -15,22 +15,22 @@ afterEach(() => {
 
 describe('safe config writes', () => {
   it('writes a fresh env file without a leading blank line', () => {
-    const rendered = renderFile({ path: '/unused', format: 'env', content: 'FREELLMAPI_API_KEY=k\n' }, '');
-    expect(rendered).toBe('FREELLMAPI_API_KEY=k\n');
-    expect(renderFile({ path: '/unused', format: 'env', content: 'FREELLMAPI_API_KEY=k\n' }, rendered)).toBe(rendered);
+    const rendered = renderFile({ path: '/unused', format: 'env', content: 'TAOTIE_API_KEY=k\n' }, '');
+    expect(rendered).toBe('TAOTIE_API_KEY=k\n');
+    expect(renderFile({ path: '/unused', format: 'env', content: 'TAOTIE_API_KEY=k\n' }, rendered)).toBe(rendered);
   });
 
   it('appends a new env key without leaving a blank line before it', () => {
     const merged = renderFile(
-      { path: '/unused/.env', format: 'env', content: 'FREELLMAPI_API_KEY=k\n' },
+      { path: '/unused/.env', format: 'env', content: 'TAOTIE_API_KEY=k\n' },
       'DEEPSEEK_API_KEY=sk-keep\n',
     );
-    expect(merged).toBe('DEEPSEEK_API_KEY=sk-keep\nFREELLMAPI_API_KEY=k\n');
+    expect(merged).toBe('DEEPSEEK_API_KEY=sk-keep\nTAOTIE_API_KEY=k\n');
   });
 
   it('renders a fresh Continue config idempotently', () => {
     const generated = [
-      '# freellmapi:start',
+      '# taotie:start',
       'name: Taotie',
       'version: 1.0.0',
       'schema: v1',
@@ -38,7 +38,7 @@ describe('safe config writes', () => {
       '  - name: Taotie',
       '    provider: openai',
       '    model: coder',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const first = renderFile({
@@ -52,7 +52,7 @@ describe('safe config writes', () => {
       content: generated,
     }, first);
     expect(second).toBe(first);
-    expect(first).not.toContain('freellmapi:start');
+    expect(first).not.toContain('taotie:start');
     expect(first.match(/^models:$/gm)).toHaveLength(1);
   });
 
@@ -72,14 +72,14 @@ describe('safe config writes', () => {
     const rendered = renderFile({
       path: '/unused',
       format: 'json',
-      value: { provider: { freellmapi: true } },
+      value: { provider: { taotie: true } },
     }, existing);
     expect(rendered).toContain('// user configuration');
     expect(rendered).toContain('// keep the chosen theme');
     expect(rendered).toContain('/* keep the unrelated provider */');
     expect(parse(rendered)).toEqual({
       theme: 'dark',
-      provider: { other: true, freellmapi: true },
+      provider: { other: true, taotie: true },
     });
   });
 
@@ -98,7 +98,7 @@ describe('safe config writes', () => {
       '',
     ].join('\n');
     const generated = [
-      '# freellmapi:start',
+      '# taotie:start',
       'name: Taotie',
       'version: 1.0.0',
       'schema: v1',
@@ -106,7 +106,7 @@ describe('safe config writes', () => {
       '  - name: Taotie',
       '    provider: openai',
       '    model: coder',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const first = renderFile({
@@ -137,16 +137,16 @@ describe('safe config writes', () => {
       '  - name: Existing',
       '    provider: ollama',
       '    model: qwen',
-      '# freellmapi:start',
+      '# taotie:start',
       'models:',
       '  - name: Taotie',
       '    provider: openai',
       '    model: old',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const generated = [
-      '# freellmapi:start',
+      '# taotie:start',
       'name: Taotie',
       'version: 1.0.0',
       'schema: v1',
@@ -154,7 +154,7 @@ describe('safe config writes', () => {
       '  - name: Taotie',
       '    provider: openai',
       '    model: current',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const rendered = renderFile({
@@ -174,10 +174,10 @@ describe('safe config writes', () => {
   it('replaces generated YAML scalar keys without creating duplicates', () => {
     const existing = '# user config\nGOOSE_PROVIDER: old\nGOOSE_MODEL: old\nkeep: true\n';
     const generated = [
-      '# freellmapi:start',
-      'GOOSE_PROVIDER: freellmapi',
+      '# taotie:start',
+      'GOOSE_PROVIDER: taotie',
       'GOOSE_MODEL: coder',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const first = renderFile({
@@ -209,7 +209,7 @@ describe('safe config writes', () => {
       '    anthropic:',
       '      # keep me',
       '      apiKeyEnv: ANTHROPIC_API_KEY',
-      '    freellmapi:',
+      '    taotie:',
       '      baseURL: http://old:1/v1',
       '      models:',
       '        - id: stale',
@@ -226,14 +226,14 @@ describe('safe config writes', () => {
       value: {
         'llm-pi-ai': {
           providers: {
-            freellmapi: {
+            taotie: {
               baseURL: 'http://localhost:3001/v1',
               models: [{ id: 'auto' }],
             },
           },
         },
         'agent-default-model': {
-          provider: 'freellmapi',
+          provider: 'taotie',
           model: 'auto',
           reasoningEffort: undefined,
         },
@@ -246,7 +246,7 @@ describe('safe config writes', () => {
     expect(once).toContain('baseURL: http://localhost:3001/v1');
     expect(once).not.toContain('http://old:1/v1');
     expect(once).not.toContain('stale');
-    expect(once).toContain('provider: freellmapi');
+    expect(once).toContain('provider: taotie');
     expect(once).not.toContain('reasoningEffort');
     expect(once).toContain('other: { a: 1 }');
     expect(renderFile(file, once)).toBe(once);
@@ -278,7 +278,7 @@ describe('safe config writes', () => {
       'model = "old"',
       'model_provider = "old"',
       '',
-      '[model_providers.freellmapi]',
+      '[model_providers.taotie]',
       'name = "Old"',
       'base_url = "https://old.invalid/v1"',
       '',
@@ -287,14 +287,14 @@ describe('safe config writes', () => {
       '',
     ].join('\n');
     const generated = [
-      '# freellmapi:start',
+      '# taotie:start',
       'model = "coder"',
-      'model_provider = "freellmapi"',
+      'model_provider = "taotie"',
       '',
-      '[model_providers.freellmapi]',
+      '[model_providers.taotie]',
       'name = "Taotie"',
       'base_url = "http://localhost:3000/v1"',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const first = renderFile({
@@ -311,7 +311,7 @@ describe('safe config writes', () => {
     expect(first).toContain('# personal config');
     expect(first).toContain('[mcp_servers.personal]\ncommand = "keep-me"');
     expect(first.match(/^model =/gm)).toHaveLength(1);
-    expect(first.match(/^\[model_providers\.freellmapi\]$/gm)).toHaveLength(1);
+    expect(first.match(/^\[model_providers\.taotie\]$/gm)).toHaveLength(1);
   });
 
   it('keeps generated root TOML keys in the root region when the file ends in a table', () => {
@@ -325,14 +325,14 @@ describe('safe config writes', () => {
       '',
     ].join('\n');
     const generated = [
-      '# freellmapi:start',
+      '# taotie:start',
       'model = "coder"',
-      'model_provider = "freellmapi"',
+      'model_provider = "taotie"',
       '',
-      '[model_providers.freellmapi]',
+      '[model_providers.taotie]',
       'name = "Taotie"',
       'base_url = "http://localhost:3000/v1"',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const first = renderFile({
@@ -352,7 +352,7 @@ describe('safe config writes', () => {
     const lines = first.split('\n');
     const firstHeader = lines.findIndex(line => /^\[[^\]]+\]$/.test(line));
     const modelLine = lines.findIndex(line => line === 'model = "coder"');
-    const providerLine = lines.findIndex(line => line === 'model_provider = "freellmapi"');
+    const providerLine = lines.findIndex(line => line === 'model_provider = "taotie"');
     expect(firstHeader).toBeGreaterThan(-1);
     expect(modelLine).toBeGreaterThan(-1);
     expect(modelLine).toBeLessThan(firstHeader);
@@ -360,7 +360,7 @@ describe('safe config writes', () => {
     expect(providerLine).toBeLessThan(firstHeader);
     expect(first).toContain('sandbox_mode = "workspace-write"');
     expect(first).toContain('[mcp_servers.personal]\ncommand = "keep-me"\nargs = ["--serve"]');
-    expect(first).toContain('[model_providers.freellmapi]');
+    expect(first).toContain('[model_providers.taotie]');
   });
 
   it('only strips root TOML keys that the generated root region sets', () => {
@@ -373,12 +373,12 @@ describe('safe config writes', () => {
       '',
     ].join('\n');
     const generated = [
-      '# freellmapi:start',
+      '# taotie:start',
       'model = "coder"',
       '',
-      '[model_providers.freellmapi]',
+      '[model_providers.taotie]',
       'name = "Taotie"',
-      '# freellmapi:end',
+      '# taotie:end',
       '',
     ].join('\n');
     const first = renderFile({
@@ -394,7 +394,7 @@ describe('safe config writes', () => {
   });
 
   it('does not write any file when a later file in the batch fails to merge', () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'freellmapi-cli-'));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'taotie-cli-'));
     temporary.push(directory);
     const good = path.join(directory, 'good.json');
     const bad = path.join(directory, 'bad.json');
@@ -411,7 +411,7 @@ describe('safe config writes', () => {
     // A user with a DeepSeek provider already configured runs setup-atomcode:
     // `default_provider` must land in the root region (a key appended after
     // `[providers.deepseek]` would become that table's key), the deepseek
-    // table must survive, and a stale `[providers.freellmapi]` is replaced.
+    // table must survive, and a stale `[providers.taotie]` is replaced.
     const existing = [
       'default_provider = "deepseek"',
       'auto_update = true',
@@ -421,29 +421,29 @@ describe('safe config writes', () => {
       'api_key = "sk-keep"',
       'model = "deepseek-chat"',
       '',
-      '[providers.freellmapi]',
+      '[providers.taotie]',
       'type = "openai"',
       'model = "stale-model"',
       '',
     ].join('\n');
     const generated = [
-      'default_provider = "freellmapi"',
+      'default_provider = "taotie"',
       '',
-      '[providers.freellmapi]',
+      '[providers.taotie]',
       'type = "openai"',
       'base_url = "http://localhost:3000/v1"',
-      'api_key = "freellmapi-test-key"',
+      'api_key = "taotie-test-key"',
       'model = "fast-coder"',
       'context_window = 131072',
     ].join('\n');
     const merged = renderFile({ path: '/unused', format: 'toml', content: generated }, existing);
     const lines = merged.split('\n');
     const firstTable = lines.findIndex(line => line.startsWith('['));
-    expect(lines.slice(0, firstTable)).toContain('default_provider = "freellmapi"');
+    expect(lines.slice(0, firstTable)).toContain('default_provider = "taotie"');
     expect(lines.slice(0, firstTable)).toContain('auto_update = true');
     expect(merged.match(/^default_provider =/gm)).toHaveLength(1);
     expect(merged).toContain('[providers.deepseek]\ntype = "openai"\napi_key = "sk-keep"');
-    expect(merged.match(/^\[providers\.freellmapi\]$/gm)).toHaveLength(1);
+    expect(merged.match(/^\[providers\.taotie\]$/gm)).toHaveLength(1);
     expect(merged).not.toContain('stale-model');
     expect(merged).toContain('context_window = 131072');
     expect(renderFile({ path: '/unused', format: 'toml', content: generated }, merged)).toBe(merged);
@@ -451,7 +451,7 @@ describe('safe config writes', () => {
 
   it('merges a Reasonix config: replaces only the [[providers]] entry with the same name', () => {
     // Reasonix keeps every endpoint as a `[[providers]]` array entry. A rerun
-    // must swap the stale freellmapi entry (and its sub-table) for the new one
+    // must swap the stale taotie entry (and its sub-table) for the new one
     // and leave the deepseek entry, the [desktop] table and root keys alone.
     const existing = [
       'config_version = 1',
@@ -466,22 +466,22 @@ describe('safe config writes', () => {
       'api_key_env = "DEEPSEEK_API_KEY"',
       '',
       '[[providers]]',
-      "name = 'freellmapi'",
+      "name = 'taotie'",
       'base_url = "http://stale:9/v1"',
       '',
       '[providers.model_overrides]',
       'stale = { context_window = 1 }',
       '',
       '[[plugins]]',
-      'name = "freellmapi"',
+      'name = "taotie"',
       'command = "keep-me"',
       '',
     ].join('\n');
     const generated = [
-      'default_model = "freellmapi/auto"',
+      'default_model = "taotie/auto"',
       '',
       '[[providers]]',
-      'name = "freellmapi"',
+      'name = "taotie"',
       'kind = "openai"',
       'base_url = "http://localhost:3001/v1"',
       'models = ["auto"]',
@@ -489,12 +489,12 @@ describe('safe config writes', () => {
     const merged = renderFile({ path: '/unused', format: 'toml', content: generated }, existing);
     const lines = merged.split('\n');
     const firstTable = lines.findIndex(line => line.startsWith('['));
-    expect(lines.slice(0, firstTable)).toContain('default_model = "freellmapi/auto"');
+    expect(lines.slice(0, firstTable)).toContain('default_model = "taotie/auto"');
     expect(lines.slice(0, firstTable)).toContain('config_version = 1');
     expect(merged.match(/^default_model =/gm)).toHaveLength(1);
     expect(merged).toContain('[desktop]\nprovider_access = ["deepseek"]');
     expect(merged).toContain('name        = "deepseek"\nkind        = "openai"');
-    expect(merged).toContain('[[plugins]]\nname = "freellmapi"\ncommand = "keep-me"');
+    expect(merged).toContain('[[plugins]]\nname = "taotie"\ncommand = "keep-me"');
     expect(merged.match(/^\[\[providers\]\]$/gm)).toHaveLength(2);
     expect(merged).not.toContain('stale');
     expect(merged).toContain('base_url = "http://localhost:3001/v1"');
@@ -502,14 +502,14 @@ describe('safe config writes', () => {
   });
 
   it('creates a timestamped backup before replacing a real file', () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'freellmapi-cli-'));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'taotie-cli-'));
     temporary.push(directory);
     const target = path.join(directory, 'config.toml');
     fs.writeFileSync(target, 'user_setting = true\n');
     const result = applyGeneratedFile({
       path: target,
       format: 'toml',
-      content: '# freellmapi:start\nmodel = "auto"\n# freellmapi:end\n',
+      content: '# taotie:start\nmodel = "auto"\n# taotie:end\n',
     }, false);
     expect(result.backupPath).toBeTruthy();
     expect(fs.readFileSync(result.backupPath!, 'utf8')).toBe('user_setting = true\n');
@@ -518,7 +518,7 @@ describe('safe config writes', () => {
   });
 
   it('does not write in dry-run mode', () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'freellmapi-cli-'));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'taotie-cli-'));
     temporary.push(directory);
     const target = path.join(directory, 'new.json');
     const result = applyGeneratedFile({

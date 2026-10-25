@@ -1,4 +1,4 @@
-import type { ChatMessage } from '@freellmapi/shared/types.js';
+import type { ChatMessage } from '@taotie/shared/types.js';
 import { contentToString } from '../lib/content.js';
 
 export type ContextHandoffMode = 'off' | 'on_model_switch';
@@ -25,7 +25,7 @@ export const HANDOFF_MAX_TOKENS = Math.ceil((MAX_HANDOFF_CHARS + 400) / 4);
 const store = new Map<string, SessionContext>();
 
 export function getContextHandoffMode(): ContextHandoffMode {
-  const raw = process.env.FREELLMAPI_CONTEXT_HANDOFF?.trim().toLowerCase();
+  const raw = process.env.TAOTIE_CONTEXT_HANDOFF?.trim().toLowerCase();
   return raw === 'on_model_switch' ? 'on_model_switch' : 'off';
 }
 

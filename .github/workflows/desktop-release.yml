@@ -86,6 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '20'
@@ -121,30 +122,23 @@ jobs:
           echo "apps/desktop/package.json $VERSION matches tag $GITHUB_REF_NAME."
 
       - name: Install workspace dependencies
-        run: npm ci
-
-      # `npm ci` rather than `install`: install rewrites apps/desktop/package-lock.json
-      # in place, which would quietly repair a stale lockfile version before the
-      # lockfile-sync assertion in src/__tests__/version.test.ts ever sees it.
-      # ci installs the lockfile as committed, so that test is a real guard here.
-      - name: Install desktop dependencies
-        run: npm --prefix apps/desktop ci
+        run: pnpm install --frozen-lockfile
 
       # The per-platform window chrome (#703's menu-bar fix) lives in a branch
       # that never executes on a developer's mac. These run on both matrix
       # hosts, so the Windows expectations are asserted on Windows.
       - name: Run desktop tests
-        run: npm --prefix apps/desktop test
+        run: pnpm --filter taotie-desktop test
 
       - name: Build client + desktop bundles
         shell: bash
         run: |
-          npm run build -w apps/client
-          npm --prefix apps/desktop run build:all
+          pnpm --filter @taotie/client build
+          pnpm --filter taotie-desktop run build:all
           # Stage apps/client/dist into desktop/ so electron-builder's extraResources
           # source stays inside desktop/ (no `../`). Belt-and-suspenders with the
           # root-hiding below; also makes local `desktop:dist:win` work on Windows.
-          npm --prefix apps/desktop run stage:client
+          pnpm --filter taotie-desktop run stage:client
 
       - name: Validate macOS signing credentials
         id: maccreds
@@ -304,18 +298,18 @@ jobs:
             if [ -z "${!v:-}" ]; then unset "$v"; fi
           done
           # Run electron-builder with desktop/ as its own project root. Invoked
-          # from the monorepo root (e.g. via `npm --prefix apps/desktop run`), it walks
+          # from the monorepo root (e.g. via `pnpm --filter taotie-desktop run`), it walks
           # up, treats the repo root as the project, and on Windows pulls parent
           # files (.dockerignore, .env.example, …) into the asar — failing with
           # "<file> must be under …/desktop/". Running from desktop/ and hiding the
-          # root package.json (whose `workspaces` field triggers the upward scan)
+          # root package.json (whose workspace config triggers the upward scan)
           # makes desktop/ the detected project root.
           mv package.json "$RUNNER_TEMP/root-package.json"
           cd apps/desktop
           # --publish never: the publish provider in electron-builder.yml exists
           # so latest*.yml update metadata gets GENERATED, not so electron-builder
           # uploads. The "Attach installer to release" step below owns publishing.
-          npx --no-install electron-builder ${{ matrix.ebArgs }} --publish never
+          ./node_modules/.bin/electron-builder ${{ matrix.ebArgs }} --publish never
 
       - name: Smoke-test packaged macOS backend
         if: runner.os == 'macOS'
@@ -440,11 +434,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '20'
       - name: Install metadata tooling
-        run: npm --prefix apps/desktop ci --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts --filter taotie-desktop...
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: macos-installer-*

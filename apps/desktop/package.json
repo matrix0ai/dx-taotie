@@ -1,5 +1,5 @@
 {
-  "name": "freellmapi-desktop",
+  "name": "taotie-desktop",
   "version": "0.15.0",
   "description": "Taotie menu-bar app — local OpenAI-compatible LLM router",
   "author": {
@@ -15,14 +15,14 @@
     "bundle:server": "node scripts/bundle-server.mjs",
     "build:main": "esbuild src/main.ts --bundle --platform=node --format=esm --external:electron --external:electron-updater --external:./server.mjs --outfile=build/main.mjs",
     "build:preload": "esbuild src/preload.ts src/preload-popover.ts --bundle --platform=node --format=cjs --external:electron --outdir=build --out-extension:.js=.cjs",
-    "build:all": "npm run bundle:server && npm run build:main && npm run build:preload",
+    "build:all": "pnpm run bundle:server && pnpm run build:main && pnpm run build:preload",
     "stage:client": "node scripts/stage-client.mjs",
     "rebuild:native": "electron-rebuild -f -w better-sqlite3",
-    "dev": "npm run build:all && electron .",
-    "dist": "npm run build:all && npm run stage:client && electron-builder --mac --arm64 --publish never",
-    "dist:mac:x64": "npm run build:all && npm run stage:client && electron-builder --mac --x64 --publish never",
-    "dist:win": "npm run build:all && npm run stage:client && electron-builder --win --x64 --publish never",
-    "dist:linux": "npm run build:all && npm run stage:client && electron-builder --linux --x64 --publish never",
+    "dev": "pnpm run build:all && electron .",
+    "dist": "pnpm run build:all && pnpm run stage:client && electron-builder --mac --arm64 --publish never",
+    "dist:mac:x64": "pnpm run build:all && pnpm run stage:client && electron-builder --mac --x64 --publish never",
+    "dist:win": "pnpm run build:all && pnpm run stage:client && electron-builder --win --x64 --publish never",
+    "dist:linux": "pnpm run build:all && pnpm run stage:client && electron-builder --linux --x64 --publish never",
     "test": "vitest run"
   },
   "dependencies": {

@@ -49,7 +49,7 @@ async function downloadExport(format: ExportFormat, healthyOnly: boolean, passwo
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `freellmapi-keys.${ext}`
+  a.download = `taotie-keys.${ext}`
   a.click()
   URL.revokeObjectURL(url)
 }

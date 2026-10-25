@@ -21,6 +21,6 @@ For installation paths beyond Docker (one-liner script, local development, deskt
 | --- | --- |
 | Image | `ghcr.io/matrix0ai/dx-taotie:latest` |
 | Port | 3001 (published on `127.0.0.1` by default; `HOST_BIND=0.0.0.0` opens it to the LAN) |
-| Data volume | Named volume `freellmapi-data`, mounted at `/app/server/data` |
+| Data volume | Named volume `taotie-data`, mounted at `/app/server/data` |
 | Runtime user | `node` (non-root) |
 | Healthcheck | `GET /api/ping` every 30s via an in-container Node fetch |

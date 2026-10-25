@@ -4,7 +4,7 @@
 
 ## Package manifest
 
-`apps/desktop/package.json` `freellmapi-desktop@0.9.2` — Electron `38.8.6`, `better-sqlite3@12.10.0`, `electron-builder@25.1.8`, `esbuild@0.24.0`. Entry `build/main.mjs` (`type: module`). AppId `me.systembug.taotie`, publish `github:matrix0ai/dx-taotie` (`apps/desktop/electron-builder.yml`). `asar` + `client-dist` in `extraResources`; per-OS signing targets (mac `dmg`+`zip` `arm64`+`x64` signed/notarized/stapled via `refresh-mac-update-metadata.mjs`, win `nsis`+`zip` `x64`, linux `AppImage`+`deb`+`tar.xz`+`rpm` `x64` since #981 `d8fae97`).
+`apps/desktop/package.json` `taotie-desktop@0.9.2` — Electron `38.8.6`, `better-sqlite3@12.10.0`, `electron-builder@25.1.8`, `esbuild@0.24.0`. Entry `build/main.mjs` (`type: module`). AppId `me.systembug.taotie`, publish `github:matrix0ai/dx-taotie` (`apps/desktop/electron-builder.yml`). `asar` + `client-dist` in `extraResources`; per-OS signing targets (mac `dmg`+`zip` `arm64`+`x64` signed/notarized/stapled via `refresh-mac-update-metadata.mjs`, win `nsis`+`zip` `x64`, linux `AppImage`+`deb`+`tar.xz`+`rpm` `x64` since #981 `d8fae97`).
 
 ## Build pipeline
 
@@ -12,7 +12,7 @@
 bundle:server → build:main / build:preload → stage:client → electron-builder
 ```
 
-- `scripts/bundle-server.mjs` esbuild `define: { 'process.env.FREELLMAPI_COMMIT_SHA', 'process.env.FREELLMAPI_INSTALL_METHOD' }` from `GITHUB_SHA` (40-hex); mirrored into live `process.env` in `server-host.ts` so `routes/update.ts` resolves.
+- `scripts/bundle-server.mjs` esbuild `define: { 'process.env.TAOTIE_COMMIT_SHA', 'process.env.TAOTIE_INSTALL_METHOD' }` from `GITHUB_SHA` (40-hex); mirrored into live `process.env` in `server-host.ts` so `routes/update.ts` resolves.
 - `build/main.mjs` bundles `src/main.ts` (`--platform=node --format=esm --external:electron --external:./server.mjs`), `build/preload` for `preload.ts`/`preload-popover.ts`.
 - `scripts/stage-client.mjs` copies `apps/client/dist` → `build/client-dist` or `Resources/client-dist` in packaged app; dev override via `FREEAPI_REPO`.
 

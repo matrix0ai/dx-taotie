@@ -23,7 +23,7 @@ re-pull `:latest`).
 **Report a vulnerability**. That opens a private thread with the maintainer and
 keeps the details out of public issues.
 
-**Alternate:** email **support@taotie.conouch.io** with `[freellmapi security]` in the
+**Alternate:** email **support@taotie.conouch.io** with `[taotie security]` in the
 subject.
 
 Please do not open a public issue, PR, or discussion for a security bug until a
@@ -54,7 +54,7 @@ In scope:
 
 - The router server and its `/v1` proxy, `/api/*` admin routes, and `/mcp` endpoint.
 - Dashboard authentication — the email + password account (scrypt, session tokens)
-  and the unified `freellmapi-…` API key.
+  and the unified `taotie-…` API key.
 - Key handling: AES-256-GCM encryption at rest, `ENCRYPTION_KEY` usage, encrypted
   DB backups, key import/export.
 - The Electron desktop app and its local data directory.

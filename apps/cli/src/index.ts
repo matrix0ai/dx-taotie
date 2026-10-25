@@ -49,9 +49,9 @@ function parseTimeout(value: string): number {
 
 export function parseArgs(argv: string[]): { command?: string; options: CliOptions } {
   const options: CliOptions = {
-    url: process.env.FREELLMAPI_URL || 'http://localhost:3001',
-    apiKey: process.env.FREELLMAPI_API_KEY,
-    token: process.env.FREELLMAPI_DASHBOARD_TOKEN,
+    url: process.env.TAOTIE_URL || 'http://localhost:3001',
+    apiKey: process.env.TAOTIE_API_KEY,
+    token: process.env.TAOTIE_DASHBOARD_TOKEN,
     profile: 'default',
     dryRun: false,
     args: [],
@@ -112,12 +112,12 @@ async function promptForKey(provider = false): Promise<string> {
     throw new Error(
       provider
         ? 'No provider key supplied. Pass --key or use an interactive terminal for hidden input.'
-        : 'No API key supplied. Pass --api-key or set FREELLMAPI_API_KEY.',
+        : 'No API key supplied. Pass --api-key or set TAOTIE_API_KEY.',
     );
   }
   // Imported lazily, not statically: `node:readline/promises` only exists on
   // Node >=17.4, and a static import of it crashes the whole CLI at load time
-  // on older runtimes (#1283) — `npx freellmapi --help` died with
+  // on older runtimes (#1283) — `npx taotie --help` died with
   // ERR_UNKNOWN_BUILTIN_MODULE before main() or the engines check could say
   // anything useful. Deferring it means only the interactive key prompt needs
   // a modern Node; every other command degrades to the readable error below.
@@ -173,7 +173,7 @@ async function catalog(url: string, apiKey: string, availableOnly = true): Promi
     const reason = cause ?? (error instanceof Error ? error.message : String(error));
     throw new Error(
       `Could not reach the Taotie gateway at ${rootUrl(url)} (${reason}). `
-      + 'Check that the server is running, or point the CLI at it with --url or FREELLMAPI_URL.',
+      + 'Check that the server is running, or point the CLI at it with --url or TAOTIE_URL.',
     );
   }
   if (!response.ok) {
@@ -240,7 +240,7 @@ export function resolvePinnedModel(
   // to be told which roster the verdict below came from.
   if (rosters.degradedReason) {
     warn(
-      `freellmapi: could not fetch the unfiltered model catalog (${rosters.degradedReason}). `
+      `taotie: could not fetch the unfiltered model catalog (${rosters.degradedReason}). `
       + `Checking '${requested}' against the available-only roster instead — a model that `
       + 'exists but is out of quota may be reported as unknown.\n',
     );
@@ -252,7 +252,7 @@ export function resolvePinnedModel(
   // we should make silently.
   if (resolved.unavailable) {
     warn(
-      `freellmapi: '${resolved.id}' is registered but not currently available `
+      `taotie: '${resolved.id}' is registered but not currently available `
       + '(out of quota, cooling down, or its key is disabled). Launching anyway.\n',
     );
   }
@@ -264,7 +264,7 @@ function help(): string {
     'Taotie coding-agent setup and provider key management',
     '',
     'Usage:',
-    '  freellmapi <command> [--url URL] [--api-key KEY] [--profile NAME] [--model ID] [--dry-run]',
+    '  taotie <command> [--url URL] [--api-key KEY] [--profile NAME] [--model ID] [--dry-run]',
     '',
     'Commands:',
     ...tools.map(tool => `  ${tool.command.padEnd(17)} ${tool.name}`),
@@ -276,7 +276,7 @@ function help(): string {
     '  keys              Add, list, remove, or test provider keys (keys --help)',
     '',
     'Environment:',
-    '  FREELLMAPI_URL, FREELLMAPI_API_KEY, FREELLMAPI_DASHBOARD_TOKEN (keys only)',
+    '  TAOTIE_URL, TAOTIE_API_KEY, TAOTIE_DASHBOARD_TOKEN (keys only)',
   ].join('\n');
 }
 
@@ -371,7 +371,7 @@ export function claudeLaunchEnv(
     if (!fs.existsSync(directory)) {
       throw new Error(
         `Claude profile '${options.profile}' has no configuration directory at ${directory}. `
-        + `Create it with: freellmapi setup-claude --profile ${options.profile}`,
+        + `Create it with: taotie setup-claude --profile ${options.profile}`,
       );
     }
     env.CLAUDE_CONFIG_DIR = directory;
@@ -415,13 +415,13 @@ async function launchClaude(options: CliOptions): Promise<number> {
 
 export function codexArgs(url: string, selected: string): string[] {
   return [
-    '-c', 'model_provider="freellmapi"',
+    '-c', 'model_provider="taotie"',
     '-c', `model=${JSON.stringify(selected)}`,
-    '-c', 'model_providers.freellmapi.name="Taotie"',
-    '-c', `model_providers.freellmapi.base_url=${JSON.stringify(`${rootUrl(url)}/v1`)}`,
-    '-c', 'model_providers.freellmapi.wire_api="responses"',
-    '-c', 'model_providers.freellmapi.env_key="FREELLMAPI_API_KEY"',
-    '-c', 'model_providers.freellmapi.requires_openai_auth=false',
+    '-c', 'model_providers.taotie.name="Taotie"',
+    '-c', `model_providers.taotie.base_url=${JSON.stringify(`${rootUrl(url)}/v1`)}`,
+    '-c', 'model_providers.taotie.wire_api="responses"',
+    '-c', 'model_providers.taotie.env_key="TAOTIE_API_KEY"',
+    '-c', 'model_providers.taotie.requires_openai_auth=false',
   ];
 }
 
@@ -432,7 +432,7 @@ async function launchCodex(options: CliOptions): Promise<number> {
     resolvePinnedModel(options.model, rosters)
     ?? resolveLaunchModel(undefined, rosters.available, rosters.full)
   ).id;
-  const env = { ...process.env, FREELLMAPI_API_KEY: apiKey };
+  const env = { ...process.env, TAOTIE_API_KEY: apiKey };
   const args = codexArgs(options.url, selected);
   return runChild('codex', args, env);
 }
@@ -512,19 +512,19 @@ export function unsupportedNodeVersion(
 ): string | null {
   if (!version || !Number.isFinite(major)) return null; // Non-Node runtimes: don't guess.
   if (major >= 20) return null;
-  return `freellmapi requires Node.js 20 or newer (found ${version}). Install one from https://nodejs.org and re-run.`;
+  return `taotie requires Node.js 20 or newer (found ${version}). Install one from https://nodejs.org and re-run.`;
 }
 
 if (isDirectExecution()) {
   const unsupported = unsupportedNodeVersion();
   if (unsupported) {
-    process.stderr.write(`freellmapi: ${unsupported}\n`);
+    process.stderr.write(`taotie: ${unsupported}\n`);
     process.exitCode = 1;
   } else {
     main().then(
       code => { process.exitCode = code; },
       error => {
-        process.stderr.write(`freellmapi: ${error instanceof Error ? error.message : String(error)}\n`);
+        process.stderr.write(`taotie: ${error instanceof Error ? error.message : String(error)}\n`);
         process.exitCode = 1;
       },
     );

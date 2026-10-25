@@ -1,11 +1,11 @@
-# freellmapi
+# taotie
 
 Point your coding agent at a [Taotie](https://github.com/matrix0ai/dx-taotie)
 gateway in one command. The generators read the models your server is actually
 serving and write the config file each tool expects.
 
 ```bash
-npx freellmapi setup-claude --url http://localhost:3001 --api-key <your-key>
+npx taotie setup-claude --url http://localhost:3001 --api-key <your-key>
 ```
 
 No install step, no account. The unified API key comes from your Taotie
@@ -50,27 +50,27 @@ dashboard (or the tray popover in the desktop app).
 | `--model ID` | Pin a specific model instead of the catalog default |
 | `--dry-run` | Print the diff and write nothing |
 
-`FREELLMAPI_URL` and `FREELLMAPI_API_KEY` work in place of `--url` / `--api-key`.
+`TAOTIE_URL` and `TAOTIE_API_KEY` work in place of `--url` / `--api-key`.
 
 ## Provider keys
 
 The `keys` commands use a **dashboard session token**. Set
-`FREELLMAPI_DASHBOARD_TOKEN`, or pass `--token TOKEN` to override it. This is the
+`TAOTIE_DASHBOARD_TOKEN`, or pass `--token TOKEN` to override it. This is the
 session returned by dashboard sign-in (stored in the signed-in browser's local
-storage as `freellmapi_dashboard_token`). The unified `--api-key` /
-`FREELLMAPI_API_KEY` used by coding agents cannot authenticate these commands.
+storage as `taotie_dashboard_token`). The unified `--api-key` /
+`TAOTIE_API_KEY` used by coding agents cannot authenticate these commands.
 The CLI does not log in or persist the dashboard token.
 
 ```bash
-export FREELLMAPI_URL=http://localhost:3001
-export FREELLMAPI_DASHBOARD_TOKEN='<dashboard-session-token>'
+export TAOTIE_URL=http://localhost:3001
+export TAOTIE_DASHBOARD_TOKEN='<dashboard-session-token>'
 
-npx freellmapi keys add groq                 # hidden provider-key prompt
-npx freellmapi keys add groq --key '<key>'   # non-interactive alternative
-npx freellmapi keys list
-npx freellmapi keys test groq                # check every stored Groq key
-npx freellmapi keys test groq --id 7         # check one key
-npx freellmapi keys remove groq --id 7
+npx taotie keys add groq                 # hidden provider-key prompt
+npx taotie keys add groq --key '<key>'   # non-interactive alternative
+npx taotie keys list
+npx taotie keys test groq                # check every stored Groq key
+npx taotie keys test groq --id 7         # check one key
+npx taotie keys remove groq --id 7
 ```
 
 `keys list` prints each key's ID, platform, enabled chat model count,
@@ -90,7 +90,7 @@ checks, including its policy of disabling a key after repeated confirmed failure
 
 Keyless providers skip the prompt. Custom endpoints need a URL and model
 registration, so create them in the dashboard; existing custom keys can be
-listed, tested, and removed here. Requests accept `--url` / `FREELLMAPI_URL` and
+listed, tested, and removed here. Requests accept `--url` / `TAOTIE_URL` and
 `--timeout MS` (30,000 ms per request by default). `--dry-run` is not supported for
 `keys`; it is rejected before any request.
 

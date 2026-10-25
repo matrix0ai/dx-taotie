@@ -1,6 +1,6 @@
 # Taotie Desktop
 
-Lean Electron menu-bar app for [freellmapi](https://github.com/matrix0ai/dx-taotie):
+Lean Electron menu-bar app for [taotie](https://github.com/matrix0ai/dx-taotie):
 runs the whole router locally on `127.0.0.1:31415`, with a dark-glass tray
 popover (live 24h request chart, quick stats, copy URL/key) and the full
 dashboard in a native-feeling window.

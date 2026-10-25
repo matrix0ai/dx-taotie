@@ -10,7 +10,7 @@ Aggregate free tiers from dozens of providers, plus custom OpenAI-compatible cha
 [![GitHub stars](https://img.shields.io/github/stars/matrix0ai/dx-taotie?style=flat&logo=github&color=yellow)](https://github.com/matrix0ai/dx-taotie/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
-[![Docker image](https://img.shields.io/badge/ghcr.io-freellmapi-2496ED?logo=docker&logoColor=white)](https://github.com/matrix0ai/dx-taotie/pkgs/container/freellmapi)
+[![Docker image](https://img.shields.io/badge/ghcr.io-taotie-2496ED?logo=docker&logoColor=white)](https://github.com/matrix0ai/dx-taotie/pkgs/container/taotie)
 [![Ask DeepWiki](https://img.shields.io/badge/DeepWiki-Ask-blue)](https://deepwiki.com/matrix0ai/dx-taotie)
 
 **[taotie.conouch.io](https://taotie.conouch.io/?utm_source=github&utm_medium=readme&utm_campaign=repository&utm_content=readme_top)** · browse the full catalog: 474 model families, 635 free endpoints
@@ -21,7 +21,7 @@ Aggregate free tiers from dozens of providers, plus custom OpenAI-compatible cha
   <a href="https://github.com/matrix0ai/dx-taotie/releases/latest"><img src="repo-assets/badges/macos.svg" height="48" alt="Download for macOS"></a>
   <a href="https://github.com/matrix0ai/dx-taotie/releases/latest"><img src="repo-assets/badges/windows.svg" height="48" alt="Download for Windows"></a>
   <a href="docs/en/install/01-install.md#docker-compose"><img src="repo-assets/badges/docker.svg" height="48" alt="Self-host with Docker"></a>
-  <a href="https://play.google.com/store/apps/details?id=co.freellmapi.app"><img src="repo-assets/badges/play-store.svg" height="48" alt="Get it on Google Play"></a>
+  <a href="https://play.google.com/store/apps/details?id=co.taotie.app"><img src="repo-assets/badges/play-store.svg" height="48" alt="Get it on Google Play"></a>
   <a href="https://apps.apple.com/app/id6804648934"><img src="repo-assets/badges/app-store.svg" height="48" alt="Download on the App Store"></a>
 </p>
 
@@ -126,7 +126,7 @@ The full, always-current list lives at **[taotie.conouch.io/models](https://taot
 Most agents configure themselves with one command that reads your live catalog, backs up the existing config and merges into it:
 
 ```bash
-npx freellmapi setup-claude --url http://localhost:3001 --api-key <unified-key>
+npx taotie setup-claude --url http://localhost:3001 --api-key <unified-key>
 ```
 
 **[All supported agents and their setup commands →](docs/en/clients/02-supported-agents.md)** · [Per-tool recipes, MCP server and URL tokens →](docs/en/clients/01-agent-clients.md)
@@ -153,7 +153,7 @@ Based on public documentation, July 2026 — corrections welcome.
 - **Self-updating model catalog** — the router syncs a signed catalog from taotie.conouch.io twice a day: new models, quota changes, and provider quirk fixes land automatically. Free installs track the monthly snapshot, which each model joins 30 days after it lands in the live feed; premium routers get it same-day. [Premium →](#premium-live-catalog)
 - **Sticky sessions & context handoff** — conversations stay on one model for 30 minutes; an optional compact handoff note keeps the thread coherent when a mid-chat switch does happen. [Details →](docs/en/clients/01-agent-clients.md#context-handoff)
 - **Prompt compression (opt-in)** — a shared, fail-open request pipeline can deduplicate prompts, filter tool output, compact repeated JSON, and trim stale context before cache lookup and routing. [Details →](docs/en/compression/01-compression-pipeline.md)
-- **Encrypted keys, one token out** — provider keys are AES-256-GCM encrypted in SQLite and decrypted in-memory per request; your apps only ever see a single unified `freellmapi-…` bearer token.
+- **Encrypted keys, one token out** — provider keys are AES-256-GCM encrypted in SQLite and decrypted in-memory per request; your apps only ever see a single unified `taotie-…` bearer token.
 - **Admin dashboard & analytics** — React UI to manage keys, reorder the chain, run a playground, and read p50/p95/TTFT analytics over 24h–90d windows; login-gated, dark/light themes, [60 languages](#languages).
 - **ChatGPT-ready MCP server & interactive docs** — ChatGPT and other MCP clients can call Taotie inference, list usable models, inspect provider health/usage/cache/routing metadata, and manage the routing strategy over `/mcp`; a dependency-free OpenAPI viewer lives at `/v1/docs`. [ChatGPT and coding agents →](docs/en/clients/01-agent-clients.md#mcp-server)
 - **Ops niceties** — opt-in response cache, encrypted DB backups, periodic key health checks, bulk key import/export, declarative startup config. [Install & deploy →](docs/en/install/01-install.md)
@@ -163,7 +163,7 @@ The scope is deliberately narrow — see [what's not supported yet](docs/en/arch
 
 ## Quick start
 
-**One-liner** (Docker required — sets up `~/freellmapi`, generates an encryption key, pulls the image, and starts the container):
+**One-liner** (Docker required — sets up `~/taotie`, generates an encryption key, pulls the image, and starts the container):
 
 ```bash
 curl -fsSL https://taotie.conouch.io/install.sh | bash
@@ -189,16 +189,16 @@ For macOS 12 Monterey or later, choose **arm64 (Apple Silicon)** or **x64 (Intel
 
 ## Works with OpenAI-compatible clients
 
-Anything that can target an OpenAI-compatible base URL works: set it to `http://localhost:3001/v1` with the unified key from the dashboard. Every generator supports `--dry-run`; `npx freellmapi launch` (Claude Code) and `launch-codex` (Codex) keep credentials out of config files entirely. The router also doubles as an MCP server your agents can introspect mid-session.
+Anything that can target an OpenAI-compatible base URL works: set it to `http://localhost:3001/v1` with the unified key from the dashboard. Every generator supports `--dry-run`; `npx taotie launch` (Claude Code) and `launch-codex` (Codex) keep credentials out of config files entirely. The router also doubles as an MCP server your agents can introspect mid-session.
 
 **ChatGPT** connects to the same local router through a private Secure MCP Tunnel. The
-`ask_freellmapi` MCP tool routes a ChatGPT-requested task through `/v1/chat/completions` and
+`ask_taotie` MCP tool routes a ChatGPT-requested task through `/v1/chat/completions` and
 returns the answer with served-model, fallback, cache, execution, and token metadata. Base
 URL and bearer authentication live in the tunnel-client configuration; the default model is
 set with `MCP_INFERENCE_DEFAULT_MODEL` (`auto` when unset). No key belongs in Git or in the
 MCP URL. **[ChatGPT setup →](docs/en/clients/01-agent-clients.md#chatgpt-private-secure-mcp-tunnel)**
 
-Provider keys can be managed from the terminal too, with a dashboard session token (`FREELLMAPI_DASHBOARD_TOKEN` or `--token`): `npx freellmapi keys add|list|remove|test <platform>`, where `keys test` re-checks stored keys. See [apps/cli/README.md](apps/cli/README.md#provider-keys).
+Provider keys can be managed from the terminal too, with a dashboard session token (`TAOTIE_DASHBOARD_TOKEN` or `--token`): `npx taotie keys add|list|remove|test <platform>`, where `keys test` re-checks stored keys. See [apps/cli/README.md](apps/cli/README.md#provider-keys).
 
 Taotie is local-first and single-user by design. Your provider keys stay in your SQLite database, encrypted at rest, and requests go from your machine to the upstream providers you enabled.
 
@@ -269,7 +269,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="http://localhost:3001/v1",
-    api_key="freellmapi-your-unified-key",
+    api_key="taotie-your-unified-key",
 )
 
 resp = client.chat.completions.create(
@@ -318,7 +318,7 @@ One request in, the best free model out: the router picks the highest-priority m
 
 **Do I need a password?** Not for the desktop app — the dashboard signs itself in with a hidden local account, so there is nothing to set up and nothing to forget. Open it from the tray icon → **Open Dashboard**, or in any browser on the same computer (for example http://127.0.0.1:31415); both sign in on their own. Another device reaching the app over LAN access still sees the sign-in form. Server installs (Docker, one-liner, `npm run dev`) do have an email + password account.
 
-**I forgot the password on a server install.** Click **Forgot password?** on the login page. There is no email to send a link to, so the one-time code is printed to the server log — read it with `docker compose logs -f freellmapi` (or in the terminal running the server, or in the desktop log file), then enter it on the reset form. The code lasts 15 minutes.
+**I forgot the password on a server install.** Click **Forgot password?** on the login page. There is no email to send a link to, so the one-time code is printed to the server log — read it with `docker compose logs -f taotie` (or in the terminal running the server, or in the desktop log file), then enter it on the reset form. The code lasts 15 minutes.
 
 **Where are the logs?** In the container log for Docker, in the terminal for a source run, and in `<data dir>/logs/freeapi.log` for the desktop app — reachable from the tray menu's **Open Logs Folder**.
 

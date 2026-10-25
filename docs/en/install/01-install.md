@@ -17,13 +17,13 @@ Everything about getting Taotie running: the one-liner, Docker Compose, local de
 
 ## Quick start (one-liner)
 
-Docker required — sets up `~/freellmapi`, generates an encryption key, pulls the image, and starts the container:
+Docker required — sets up `~/taotie`, generates an encryption key, pulls the image, and starts the container:
 
 ```bash
 curl -fsSL https://taotie.conouch.io/install.sh | bash
 ```
 
-Prefer to read before you pipe to bash? [The script is here](https://taotie.conouch.io/install.sh). Re-running it is safe: your `.env` (and encryption key) is preserved and the container updates to `:latest`. Override the defaults with `FREELLMAPI_DIR`, `PORT`, or `HOST_BIND` env vars.
+Prefer to read before you pipe to bash? [The script is here](https://taotie.conouch.io/install.sh). Re-running it is safe: your `.env` (and encryption key) is preserved and the container updates to `:latest`. Override the defaults with `TAOTIE_DIR`, `PORT`, or `HOST_BIND` env vars.
 
 On Windows, the easiest path is the desktop **[`.exe` installer from Releases](https://github.com/matrix0ai/dx-taotie/releases/latest)** ([below](#desktop-app)); the Docker steps work in WSL or any bash shell.
 
@@ -42,7 +42,7 @@ Runs the API and dashboard together on port 3001 and persists SQLite in a named 
 *On macOS / Linux (Bash):*
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 
 # Generate an encryption key for at-rest key storage
 ENCRYPTION_KEY="$(openssl rand -hex 32)"
@@ -54,7 +54,7 @@ docker compose up -d
 *On Windows (PowerShell):*
 ```powershell
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 
 $Bytes = New-Object Byte[] 32
 [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($Bytes)
@@ -79,7 +79,7 @@ docker compose up -d
 > To see which of these you are hitting, ask the container directly:
 >
 > ```bash
-> docker compose exec freellmapi node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
+> docker compose exec taotie node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
 > ```
 
 ## Local development
@@ -89,7 +89,7 @@ docker compose up -d
 *On macOS / Linux (Bash):*
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 npm install
 ENCRYPTION_KEY="$(node -e 'console.log(require("crypto").randomBytes(32).toString("hex"))')"
 printf "ENCRYPTION_KEY=%s\nPORT=3001\n" "$ENCRYPTION_KEY" > .env
@@ -99,7 +99,7 @@ npm run dev
 *On Windows (PowerShell):*
 ```powershell
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 npm install
 $ENCRYPTION_KEY = node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 "ENCRYPTION_KEY=$ENCRYPTION_KEY`nPORT=3001" | Out-File -Encoding utf8 .env
@@ -160,7 +160,7 @@ node apps/server/dist/index.js     # server + dashboard both served on :3001
 ## Declarative startup config
 
 For repeatable Docker/server installs, Taotie can apply a JSON config on
-every boot. Set `FREEAPI_CONFIG_PATH=/path/to/freellmapi.config.json` or put the
+every boot. Set `FREEAPI_CONFIG_PATH=/path/to/taotie.config.json` or put the
 same JSON in `FREEAPI_CONFIG_JSON`. The config is idempotent: existing keys,
 custom providers, model edits, fallback rows, and routing settings are updated
 instead of duplicated.
@@ -240,7 +240,7 @@ The included `docker-compose.yml` is the recommended install path:
 
 ```bash
 docker compose up -d
-docker compose logs -f freellmapi
+docker compose logs -f taotie
 ```
 
 **Updating:** `docker compose pull && docker compose up -d` (your volume and `.env` carry over). To update from the dashboard instead, set `WATCHTOWER_TOKEN` in `.env` (e.g. `openssl rand -hex 32`) and start with the opt-in profile:
@@ -249,23 +249,23 @@ docker compose logs -f freellmapi
 docker compose --profile autoupdate up -d
 ```
 
-Settings → **Check for updates** then shows **Update now** when a newer release exists: a [Watchtower](https://github.com/nicholas-fedor/watchtower) sidecar pulls the image and recreates the `freellmapi` container, and the dashboard reloads when it is back. Watchtower runs with only its token-protected update endpoint, never updates on a schedule, publishes no port and only touches the `freellmapi` container — but it mounts the Docker socket, which is root-equivalent on the host, so the profile stays off unless you start it.
+Settings → **Check for updates** then shows **Update now** when a newer release exists: a [Watchtower](https://github.com/nicholas-fedor/watchtower) sidecar pulls the image and recreates the `taotie` container, and the dashboard reloads when it is back. Watchtower runs with only its token-protected update endpoint, never updates on a schedule, publishes no port and only touches the `taotie` container — but it mounts the Docker socket, which is root-equivalent on the host, so the profile stays off unless you start it.
 
 By default the container's port is bound to `127.0.0.1` (localhost only). To reach the dashboard/API from another machine on your network, publish it on all interfaces with `HOST_BIND=0.0.0.0 docker compose up -d` — only on a trusted LAN, since the proxy is single-user.
 
 Plain HTTP over a LAN address works as-is: the security headers that only apply to HTTPS (`upgrade-insecure-requests`, `Cross-Origin-Opener-Policy`, `Origin-Agent-Cluster`) are emitted only when the request actually arrived over TLS — or over loopback, which browsers already treat as a secure context. Behind an HTTPS reverse proxy they come back on automatically, as long as the proxy forwards `X-Forwarded-Proto`. `CSP_UPGRADE_INSECURE_REQUESTS=true|false` overrides the upgrade directive if your setup needs it.
 
-SQLite data is stored in the `freellmapi-data` volume at `/app/server/data`.
+SQLite data is stored in the `taotie-data` volume at `/app/server/data`.
 Keep the same `.env` `ENCRYPTION_KEY` and volume when upgrading, because
 provider keys are encrypted at rest. If your host only persists a specific
-directory, set `FREEAPI_DB_PATH=/that/path/freellmapi.db`.
+directory, set `FREEAPI_DB_PATH=/that/path/taotie.db`.
 
 On hosts with ephemeral disks, configure an encrypted backup target:
 
 ```env
-FREEAPI_DB_BACKUP_PATH=/app/server/data/freellmapi.db.backup
+FREEAPI_DB_BACKUP_PATH=/app/server/data/taotie.db.backup
 # or:
-FREEAPI_DB_BACKUP_URL=https://example.com/freellmapi.db.backup
+FREEAPI_DB_BACKUP_URL=https://example.com/taotie.db.backup
 FREEAPI_DB_BACKUP_TOKEN=optional-bearer-token
 FREEAPI_DB_BACKUP_KEY=64-char-hex-backup-key
 FREEAPI_DB_BACKUP_INTERVAL_MS=300000
@@ -314,7 +314,7 @@ build signs the dashboard in automatically with a hidden local account, so
 you're never prompted for credentials and never need one.
 
 The only credential you need is your **unified API key** — the
-`freellmapi-…` token your OpenAI/Anthropic client points at. Get it from:
+`taotie-…` token your OpenAI/Anthropic client points at. Get it from:
 
 - the tray popover — click the tray icon, then **Copy Key**, or
 - the dashboard **Keys** page header (tray → **Open Dashboard**).
@@ -370,9 +370,9 @@ rather than clicking repeatedly.
 
 | Install method | Where the log goes |
 |----------------|--------------------|
-| Docker Compose | `docker compose logs -f freellmapi` |
+| Docker Compose | `docker compose logs -f taotie` |
 | Plain Docker | `docker logs -f <container>` (`docker ps` lists the name) |
-| One-liner install | `cd ~/freellmapi && docker compose logs -f freellmapi` |
+| One-liner install | `cd ~/taotie && docker compose logs -f taotie` |
 | `npm run dev` / `node apps/server/dist/index.js` | the terminal the server is running in |
 | Desktop app | `<data dir>/logs/freeapi.log` — tray icon → right-click → **Open Logs Folder** |
 
@@ -396,7 +396,7 @@ the top.
 2. Remove the application:
    - **macOS** — drag `Taotie.app` from `/Applications` to the Trash.
    - **Windows** — *Settings → Apps → Installed apps → Taotie → Uninstall*.
-   - **Linux** — delete the AppImage, `sudo apt remove freellmapi` for the `.deb`, or `sudo dnf remove freellmapi` for the `.rpm`.
+   - **Linux** — delete the AppImage, `sudo apt remove taotie` for the `.deb`, or `sudo dnf remove taotie` for the `.rpm`.
 3. Delete the data directory to remove your keys, settings and logs for good:
    - **Windows** — `%APPDATA%\Taotie\`
    - **macOS** — `~/Library/Application Support/Taotie/`
@@ -405,9 +405,9 @@ the top.
 **Docker**
 
 ```bash
-docker compose down -v            # -v also drops the freellmapi-data volume
+docker compose down -v            # -v also drops the taotie-data volume
 docker image rm ghcr.io/matrix0ai/dx-taotie:latest
-rm -rf ~/freellmapi               # the one-liner's directory: .env + compose file
+rm -rf ~/taotie               # the one-liner's directory: .env + compose file
 ```
 
 Leave off `-v` if you want to keep the database for a later reinstall.

@@ -26,8 +26,8 @@ docker pull ghcr.io/matrix0ai/dx-taotie:latest   # 或固定到某个发布版�
 构建形态（[Dockerfile](../../../Dockerfile)）：
 
 - 基于 `node:20-bookworm-slim` 的三个阶段（`deps` → `build` → `runtime`）；只有已构建完成的产物会被复制进 runtime 阶段。
-- runtime 阶段设置 `NODE_ENV=production`、`PORT=3001` 和 `FREELLMAPI_INSTALL_METHOD=docker`；进程为 `node apps/server/dist/index.js`。
-- 一对 `FREELLMAPI_COMMIT_SHA` ARG/ENV 刻意放在所有 `COPY` 层之后：SHA 每次提交都会变，放得更高会让每次构建都使整个镜像的层缓存失效。
+- runtime 阶段设置 `NODE_ENV=production`、`PORT=3001` 和 `TAOTIE_INSTALL_METHOD=docker`；进程为 `node apps/server/dist/index.js`。
+- 一对 `TAOTIE_COMMIT_SHA` ARG/ENV 刻意放在所有 `COPY` 层之后：SHA 每次提交都会变，放得更高会让每次构建都使整个镜像的层缓存失效。
 - runtime 还会复制 `apps/desktop/package.json`（一个约 400 字节的清单），让容器安装能报出自己的发布版本（#703）。
 - `.dockerignore` 把秘密和本地状态挡在构建上下文之外：`.env`、`.env.*`、`*.db`（含 `-wal`/`-shm` 边车文件）、`.encryption-key` 以及 `apps/server/data` 永远不会进入镜像。
 
@@ -37,7 +37,7 @@ docker pull ghcr.io/matrix0ai/dx-taotie:latest   # 或固定到某个发布版�
 
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 
 # 生成用于静态存储密钥的加密密钥
 ENCRYPTION_KEY="$(openssl rand -hex 32)"
@@ -49,7 +49,7 @@ docker compose up -d
 Windows PowerShell 版本和 curl 一行命令引导见 [docs/zh-cn/install/01-install.md#docker-compose](../install/01-install.md#docker-compose)。然后跟踪日志：
 
 ```bash
-docker compose logs -f freellmapi
+docker compose logs -f taotie
 ```
 
 打开 http://localhost:3001 ，在「密钥」页添加提供方密钥，并从该页顶部拿到你的统一 API 密钥——你的 OpenAI SDK 要指向的就是它。
@@ -66,7 +66,7 @@ HOST_BIND=0.0.0.0 docker compose up -d
 
 ## 卷与持久化
 
-SQLite 数据存放在命名卷 `freellmapi-data` 中，挂载于 `/app/server/data`。升级时保持同一个 `.env` 的 `ENCRYPTION_KEY` 和同一个卷，因为提供方密钥是静态加密的。如果你的主机只有一个特定目录做了持久化，用 `FREEAPI_DB_PATH=/that/path/freellmapi.db` 把数据库指过去。
+SQLite 数据存放在命名卷 `taotie-data` 中，挂载于 `/app/server/data`。升级时保持同一个 `.env` 的 `ENCRYPTION_KEY` 和同一个卷，因为提供方密钥是静态加密的。如果你的主机只有一个特定目录做了持久化，用 `FREEAPI_DB_PATH=/that/path/taotie.db` 把数据库指过去。
 
 Dockerfile 有意不为 `/app/server/data` 声明 `VOLUME`。持久化是部署方的职责——Compose 文件在那里映射命名卷，普通 `docker run` 则用 `-v`。改在镜像里声明的话，每个没有覆盖它的容器都会创建一个匿名卷：从 Dockerfile 构建的 PaaS 运行时（Railway、Render、Coolify、Dokploy、CapRover）要么拒绝该镜像，要么悄悄给每次重新部署发一个全新的空卷；这条声明还会遮蔽挂载在同一路径的 bind mount。
 
@@ -103,5 +103,5 @@ runtime 阶段在 `EXPOSE 3001` 之前切换到 `USER node`。服务器数据目
 想分辨自己撞上的是哪种情况，直接问容器本身：
 
 ```bash
-docker compose exec freellmapi node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
+docker compose exec taotie node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
 ```

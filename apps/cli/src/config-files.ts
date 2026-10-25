@@ -98,14 +98,14 @@ function mergeYamlDocument(existing: string, value: Record<string, unknown>): st
 
 function markerPattern(): RegExp {
   return new RegExp(
-    `^[ \\t]*(?:#|//) freellmapi:start[\\s\\S]*?^[ \\t]*(?:#|//) freellmapi:end\\s*`,
+    `^[ \\t]*(?:#|//) taotie:start[\\s\\S]*?^[ \\t]*(?:#|//) taotie:end\\s*`,
     'm',
   );
 }
 
 function mergeMarked(existing: string, generated: string): string {
-  const start = generated.match(/^[ \t]*(?:#|\/\/) freellmapi:start$/m)?.[0];
-  const end = generated.match(/^[ \t]*(?:#|\/\/) freellmapi:end$/m)?.[0];
+  const start = generated.match(/^[ \t]*(?:#|\/\/) taotie:start$/m)?.[0];
+  const end = generated.match(/^[ \t]*(?:#|\/\/) taotie:end$/m)?.[0];
   if (!start || !end) return generated;
   const marked = markerPattern();
   if (marked.test(existing)) {
@@ -145,7 +145,7 @@ function continueModelLines(generated: string): string[] {
   const lines = generated.split(/\r?\n/);
   const modelsIndex = lines.findIndex(line => line === 'models:');
   const endIndex = lines.findIndex(
-    (line, index) => index > modelsIndex && line === '# freellmapi:end',
+    (line, index) => index > modelsIndex && line === '# taotie:end',
   );
   return lines.slice(modelsIndex + 1, endIndex < 0 ? undefined : endIndex);
 }
@@ -196,7 +196,7 @@ function mergeYaml(existing: string, generated: string): string {
     return mergeContinueYaml(withoutOldBlock, generated);
   }
   if (!existing.trim()) return generated;
-  if (/^# freellmapi:start$/m.test(existing)) return mergeMarked(existing, generated);
+  if (/^# taotie:start$/m.test(existing)) return mergeMarked(existing, generated);
   const withoutConflicts = removeYamlKeys(existing, generatedYamlKeys(generated));
   return mergeMarked(withoutConflicts, generated);
 }
@@ -240,7 +240,7 @@ function tomlRootKey(line: string): string | undefined {
 }
 
 function isTomlMarkerLine(line: string): boolean {
-  return /^[ \t]*# freellmapi:(?:start|end)$/.test(line);
+  return /^[ \t]*# taotie:(?:start|end)$/.test(line);
 }
 
 function trimBlankEdges(lines: string[]): string[] {
@@ -308,7 +308,7 @@ function mergeToml(existing: string, generated: string): string {
   }
 
   const wrap = (lines: string[]): string[] => (lines.length
-    ? ['# freellmapi:start', ...lines, '# freellmapi:end']
+    ? ['# taotie:start', ...lines, '# taotie:end']
     : []);
   const firstTable = kept.findIndex(isTomlHeader);
   const head = firstTable < 0 ? kept : kept.slice(0, firstTable);
@@ -396,7 +396,7 @@ function commitPlannedWrite(plan: PlannedWrite): ApplyResult {
     backupPath = `${file.path}.backup-${timestamp()}`;
     fs.copyFileSync(file.path, backupPath);
   }
-  const temporary = `${file.path}.freellmapi-${process.pid}.tmp`;
+  const temporary = `${file.path}.taotie-${process.pid}.tmp`;
   fs.writeFileSync(temporary, plan.rendered, { mode: file.sensitive ? 0o600 : 0o644 });
   fs.renameSync(temporary, file.path);
   if (file.sensitive) fs.chmodSync(file.path, 0o600);

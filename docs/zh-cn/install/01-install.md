@@ -16,13 +16,13 @@
 
 ## 快速开始
 
-需要 Docker。它会建好 `~/freellmapi`、生成加密密钥、拉取镜像并启动容器：
+需要 Docker。它会建好 `~/taotie`、生成加密密钥、拉取镜像并启动容器：
 
 ```bash
 curl -fsSL https://taotie.conouch.io/install.sh | bash
 ```
 
-不放心直接管道给 bash？[脚本在这里](https://taotie.conouch.io/install.sh)。重复执行是安全的：你的 `.env`（以及加密密钥）会被保留，容器会更新到 `:latest`。可以用 `FREELLMAPI_DIR`、`PORT` 或 `HOST_BIND` 环境变量覆盖默认值。
+不放心直接管道给 bash？[脚本在这里](https://taotie.conouch.io/install.sh)。重复执行是安全的：你的 `.env`（以及加密密钥）会被保留，容器会更新到 `:latest`。可以用 `TAOTIE_DIR`、`PORT` 或 `HOST_BIND` 环境变量覆盖默认值。
 
 在 Windows 上，最省事的方式是桌面版 **[Releases 里的 `.exe` 安装包](https://github.com/matrix0ai/dx-taotie/releases/latest)**（见[下文](#桌面应用)）；上面的 Docker 步骤在 WSL 或任意 bash shell 里同样可用。
 
@@ -41,7 +41,7 @@ curl -fsSL https://taotie.conouch.io/install.sh | bash
 *在 macOS / Linux 上（Bash）：*
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 
 # 生成用于静态存储密钥的加密密钥
 ENCRYPTION_KEY="$(openssl rand -hex 32)"
@@ -53,7 +53,7 @@ docker compose up -d
 *在 Windows 上（PowerShell）：*
 ```powershell
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 
 $Bytes = New-Object Byte[] 32
 [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($Bytes)
@@ -78,7 +78,7 @@ docker compose up -d
 > 想知道自己属于哪一种，直接问容器：
 >
 > ```bash
-> docker compose exec freellmapi node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
+> docker compose exec taotie node -e "fetch('https://generativelanguage.googleapis.com/').then(r=>console.log('ok',r.status)).catch(e=>console.log('fail',e.cause?.code||e.message))"
 > ```
 
 ## 本地开发
@@ -88,7 +88,7 @@ docker compose up -d
 *在 macOS / Linux 上（Bash）：*
 ```bash
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 npm install
 ENCRYPTION_KEY="$(node -e 'console.log(require("crypto").randomBytes(32).toString("hex"))')"
 printf "ENCRYPTION_KEY=%s\nPORT=3001\n" "$ENCRYPTION_KEY" > .env
@@ -98,7 +98,7 @@ npm run dev
 *在 Windows 上（PowerShell）：*
 ```powershell
 git clone https://github.com/matrix0ai/dx-taotie.git
-cd freellmapi
+cd taotie
 npm install
 $ENCRYPTION_KEY = node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 "ENCRYPTION_KEY=$ENCRYPTION_KEY`nPORT=3001" | Out-File -Encoding utf8 .env
@@ -143,7 +143,7 @@ node apps/server/dist/index.js     # 服务和仪表盘都在 :3001 上提供
 
 ## 声明式启动配置
 
-为了让 Docker 或服务器安装可以重复复现，Taotie 支持在每次启动时应用一份 JSON 配置。设置 `FREEAPI_CONFIG_PATH=/path/to/freellmapi.config.json`，或者把同样的 JSON 放进 `FREEAPI_CONFIG_JSON`。这份配置是幂等的：已存在的密钥、自定义提供方、模型改动、回退链条目和路由设置会被更新，而不是重复添加。
+为了让 Docker 或服务器安装可以重复复现，Taotie 支持在每次启动时应用一份 JSON 配置。设置 `FREEAPI_CONFIG_PATH=/path/to/taotie.config.json`，或者把同样的 JSON 放进 `FREEAPI_CONFIG_JSON`。这份配置是幂等的：已存在的密钥、自定义提供方、模型改动、回退链条目和路由设置会被更新，而不是重复添加。
 
 ```json
 {
@@ -197,7 +197,7 @@ docker pull ghcr.io/matrix0ai/dx-taotie:latest   # 也可以固定到某个版�
 
 ```bash
 docker compose up -d
-docker compose logs -f freellmapi
+docker compose logs -f taotie
 ```
 
 **更新：** 运行 `docker compose pull && docker compose up -d`（数据卷和 `.env` 会保留）。如果想直接在仪表盘里更新，请在 `.env` 中设置 `WATCHTOWER_TOKEN`（例如 `openssl rand -hex 32`），并用可选的 profile 启动：
@@ -206,20 +206,20 @@ docker compose logs -f freellmapi
 docker compose --profile autoupdate up -d
 ```
 
-之后在 设置 → **检查更新** 中，有新版本时会出现 **立即更新**：一个 [Watchtower](https://github.com/nicholas-fedor/watchtower) 辅助容器会拉取镜像并重建 `freellmapi` 容器，仪表盘在服务恢复后自动重新加载。Watchtower 只开启受令牌保护的更新接口，不会定时更新，不对外暴露端口，也只处理 `freellmapi` 容器；但它需要挂载 Docker socket，这相当于宿主机的 root 权限，所以除非你主动启动该 profile，否则它不会运行。
+之后在 设置 → **检查更新** 中，有新版本时会出现 **立即更新**：一个 [Watchtower](https://github.com/nicholas-fedor/watchtower) 辅助容器会拉取镜像并重建 `taotie` 容器，仪表盘在服务恢复后自动重新加载。Watchtower 只开启受令牌保护的更新接口，不会定时更新，不对外暴露端口，也只处理 `taotie` 容器；但它需要挂载 Docker socket，这相当于宿主机的 root 权限，所以除非你主动启动该 profile，否则它不会运行。
 
 容器端口默认绑定在 `127.0.0.1`（仅本机）。想从网络里的另一台机器访问仪表盘或 API，用 `HOST_BIND=0.0.0.0 docker compose up -d` 把它发布到所有网卡上。只在可信的局域网里这么做，因为这个代理是单用户的。
 
 用局域网地址走纯 HTTP 是可以直接工作的：那些只对 HTTPS 生效的安全响应头（`upgrade-insecure-requests`、`Cross-Origin-Opener-Policy`、`Origin-Agent-Cluster`）只有在请求确实经由 TLS 到达时才会发出，或者是在 loopback 上，因为浏览器本来就把 loopback 当作安全上下文。放在 HTTPS 反向代理后面时它们会自动恢复，只要代理转发了 `X-Forwarded-Proto`。如果你的部署有特殊需要，`CSP_UPGRADE_INSECURE_REQUESTS=true|false` 可以强制开关那条升级指令。
 
-SQLite 数据存放在 `freellmapi-data` 卷的 `/app/server/data` 下。升级时请保持 `.env` 里的 `ENCRYPTION_KEY` 和这个卷不变，因为提供方密钥是加密存储的。如果你的宿主机只持久化某个特定目录，可以设置 `FREEAPI_DB_PATH=/that/path/freellmapi.db`。
+SQLite 数据存放在 `taotie-data` 卷的 `/app/server/data` 下。升级时请保持 `.env` 里的 `ENCRYPTION_KEY` 和这个卷不变，因为提供方密钥是加密存储的。如果你的宿主机只持久化某个特定目录，可以设置 `FREEAPI_DB_PATH=/that/path/taotie.db`。
 
 在磁盘不持久的宿主机上，配置一个加密备份目标：
 
 ```env
-FREEAPI_DB_BACKUP_PATH=/app/server/data/freellmapi.db.backup
+FREEAPI_DB_BACKUP_PATH=/app/server/data/taotie.db.backup
 # 或者：
-FREEAPI_DB_BACKUP_URL=https://example.com/freellmapi.db.backup
+FREEAPI_DB_BACKUP_URL=https://example.com/taotie.db.backup
 FREEAPI_DB_BACKUP_TOKEN=optional-bearer-token
 FREEAPI_DB_BACKUP_KEY=64-char-hex-backup-key
 FREEAPI_DB_BACKUP_INTERVAL_MS=300000
@@ -258,7 +258,7 @@ npm run desktop:dist:win      # Windows → "apps/desktop/dist-electron/Taotie-S
 
 桌面应用 **不需要设置用户名或密码**。服务器版会用邮箱加密码的账号把仪表盘挡在登录后面，而桌面版不同：它用一个隐藏的本地账号自动登录仪表盘，所以你永远不会被要求输入凭据，也不需要有一个。
 
-你唯一需要的凭据是那把 **统一 API 密钥**，也就是你的 OpenAI/Anthropic 客户端要指向的 `freellmapi-…` 令牌。可以从这两个地方拿到：
+你唯一需要的凭据是那把 **统一 API 密钥**，也就是你的 OpenAI/Anthropic 客户端要指向的 `taotie-…` 令牌。可以从这两个地方拿到：
 
 - 托盘悬浮窗：点击托盘图标，然后点 **复制密钥**；或者
 - 仪表盘 **密钥** 页的顶部（托盘 → **打开仪表盘**）。

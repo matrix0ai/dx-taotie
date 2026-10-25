@@ -19,7 +19,7 @@ type DesktopWindow = Window & {
 }
 
 const FRESH = 'fresh-session-token'
-const TOKEN_KEY = 'freellmapi_dashboard_token'
+const TOKEN_KEY = 'taotie_dashboard_token'
 
 let root: Root
 let container: HTMLDivElement

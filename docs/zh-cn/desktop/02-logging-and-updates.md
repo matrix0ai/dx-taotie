@@ -31,7 +31,7 @@ installFileLogger(); // 在 createApp / 服务端启动之前
 
 ### 构建标识
 
-`scripts/bundle-server.mjs` `define: { 'process.env.FREELLMAPI_COMMIT_SHA': JSON.stringify(GITHUB_SHA), 'process.env.FREELLMAPI_INSTALL_METHOD': '"desktop"' }` —— 构建时戳记的 40 位十六进制 SHA，在 `server-host.ts` 中镜像进运行时的 `process.env`，以便 `apps/server/src/routes/update.ts` 解析运行中提交 vs `GET /api/update` 可用版本。`FREEAPI_VERSION` 取自 `app.getVersion()`（`0.9.2`）。
+`scripts/bundle-server.mjs` `define: { 'process.env.TAOTIE_COMMIT_SHA': JSON.stringify(GITHUB_SHA), 'process.env.TAOTIE_INSTALL_METHOD': '"desktop"' }` —— 构建时戳记的 40 位十六进制 SHA，在 `server-host.ts` 中镜像进运行时的 `process.env`，以便 `apps/server/src/routes/update.ts` 解析运行中提交 vs `GET /api/update` 可用版本。`FREEAPI_VERSION` 取自 `app.getVersion()`（`0.9.2`）。
 
 ### 仪表盘内检查器
 

@@ -55,7 +55,7 @@ describe('MCP server (/mcp, stateless Streamable HTTP)', () => {
     expect(status).toBe(200);
     expect(body.result.protocolVersion).toBe('2025-06-18');
     expect(body.result.capabilities.tools).toBeDefined();
-    expect(body.result.serverInfo.name).toBe('freellmapi');
+    expect(body.result.serverInfo.name).toBe('taotie');
 
     const unknown = await rpc({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '1999-01-01' } });
     expect(unknown.body.result.protocolVersion).toBe('2025-06-18');
@@ -132,7 +132,7 @@ describe('MCP server (/mcp, stateless Streamable HTTP)', () => {
     const { body } = await rpc({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
     const names = body.result.tools.map((t: any) => t.name).sort();
     expect(names).toEqual([
-      'ask_freellmapi',
+      'ask_taotie',
       'cache_stats',
       'clear_cache',
       'compression_stats',
@@ -157,7 +157,7 @@ describe('MCP server (/mcp, stateless Streamable HTTP)', () => {
       expect(typeof tool.annotations.readOnlyHint).toBe('boolean');
       expect(typeof tool.annotations.openWorldHint).toBe('boolean');
     }
-    const ask = body.result.tools.find((tool: any) => tool.name === 'ask_freellmapi');
+    const ask = body.result.tools.find((tool: any) => tool.name === 'ask_taotie');
     expect(ask.inputSchema.required).toEqual(['prompt']);
     expect(ask.outputSchema.required).toContain('usage');
     expect(ask.annotations).toEqual({ readOnlyHint: true, destructiveHint: false, openWorldHint: true });
@@ -206,21 +206,21 @@ describe('MCP server (/mcp, stateless Streamable HTTP)', () => {
     }
   });
 
-  it('validates ask_freellmapi arguments as a tool-level error', async () => {
+  it('validates ask_taotie arguments as a tool-level error', async () => {
     const { body } = await rpc({
       jsonrpc: '2.0', id: 70, method: 'tools/call',
-      params: { name: 'ask_freellmapi', arguments: { prompt: '', timeout_ms: 10 } },
+      params: { name: 'ask_taotie', arguments: { prompt: '', timeout_ms: 10 } },
     });
     expect(body.error).toBeUndefined();
     expect(body.result.isError).toBe(true);
-    expect(body.result.content[0].text).toContain('Invalid ask_freellmapi arguments');
+    expect(body.result.content[0].text).toContain('Invalid ask_taotie arguments');
   });
 
   it('returns model errors as sanitized tool-level failures', async () => {
     const { body } = await rpc({
       jsonrpc: '2.0', id: 72, method: 'tools/call',
       params: {
-        name: 'ask_freellmapi',
+        name: 'ask_taotie',
         arguments: { prompt: 'This request must not reach a provider.', model: 'definitely-not-a-real-model' },
       },
     });
@@ -231,7 +231,7 @@ describe('MCP server (/mcp, stateless Streamable HTTP)', () => {
     expect(body.result.content[0].text).toContain('is not in the catalog');
   });
 
-  it('runs ask_freellmapi through the OpenAI-compatible route and returns routing/token metadata', async () => {
+  it('runs ask_taotie through the OpenAI-compatible route and returns routing/token metadata', async () => {
     const db = getDb();
     const encrypted = encrypt('test-provider-key');
     const inserted = db.prepare(`
@@ -263,7 +263,7 @@ describe('MCP server (/mcp, stateless Streamable HTTP)', () => {
       const { body } = await rpc({
         jsonrpc: '2.0', id: 71, method: 'tools/call',
         params: {
-          name: 'ask_freellmapi',
+          name: 'ask_taotie',
           arguments: { prompt: 'Answer this through Taotie.', temperature: 0, max_tokens: 64 },
         },
       });

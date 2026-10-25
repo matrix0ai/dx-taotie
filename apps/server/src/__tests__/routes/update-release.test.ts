@@ -155,7 +155,7 @@ describe('GET /api/update/release', () => {
   it('stays disabled when the deployment kill switch is set, opt-in or not', async () => {
     const fetchMock = vi.fn();
     const { app } = createTestApp({
-      env: { FREELLMAPI_UPDATE_CHECK: 'off' },
+      env: { TAOTIE_UPDATE_CHECK: 'off' },
       fetch: fetchMock,
       autoCheckEnabled: () => true,
     });

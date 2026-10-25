@@ -260,7 +260,7 @@ startCatalogSync(scheduler: Scheduler)
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `CATALOG_BASE_URL` | `https://api.freellmapi.co` | Catalog service endpoint |
+| `CATALOG_BASE_URL` | `https://api.taotie.conouch.io` | Catalog service endpoint |
 | `CATALOG_PUBKEY` | Pinned Ed25519 key | Override for self-hosted catalog |
 | `CATALOG_SYNC_DISABLED` | `0` | Kill switch (`1` = disabled) |
 

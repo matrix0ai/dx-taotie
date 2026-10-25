@@ -5,12 +5,17 @@ Contributors are very welcome. This project is a local-first aggregator for free
 ## Development loop
 
 ```bash
-npm install
-npm run dev             # server on :3001, dashboard on :5173, both with HMR
-npm run db:migration:up # apply all the migrations to your local database
-npm test                # server vitest; also runs client tests if present
-npm run build           # compile server and dashboard
+pnpm install
+pnpm dev                     # server on :3001, dashboard on :5203, both with HMR
+pnpm db:migration:up # apply all the migrations to your local database
+pnpm test                # server vitest; also runs client tests if present
+pnpm build               # compile server and dashboard
 ```
+
+Desktop packaging (`pnpm desktop:dist`, `electron-builder`) rebuilds the shared
+`better-sqlite3` for Electron, so server tests then fail with
+`NODE_MODULE_VERSION` errors. Restore the Node build with
+`cd node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 && npx prebuild-install`.
 
 For a repeatable local setup, run the bootstrap script for your shell. It only
 installs dependencies when `package-lock.json` has changed and creates `.env`
@@ -26,7 +31,7 @@ when it is absent:
 
 Every PR should:
 
-- Include a test, and keep the existing suite green (`npm test`).
+- Include a test, and keep the existing suite green (`pnpm test`).
 - Match the `.editorconfig` and tsconfig defaults already in the repo.
 - Stay scoped to one change. Smaller PRs get reviewed and merged faster.
 - Avoid adding paid or card-gated services. This catalog only lists tiers that are genuinely free to start using without a credit card.
@@ -39,15 +44,15 @@ Schema changes must use file-per-migration files under
 Control database migrations with ([db/README.md](apps/server/src/db/README.md)):
 
 ```bash
-npm run db:migration:create --name=add_embedding_index
-npm run db:migration:up
-npm run db:migration:down
+pnpm db:migration:create --name=add_embedding_index
+pnpm db:migration:up
+pnpm db:migration:down
 ```
 
 ## Translations
 
 The dashboard ships 60 locales. `en.json` is the source of truth and every other file mirrors
-its keys, so run `npm run check:i18n` from `client/` before opening a PR. See
+its keys, so run `pnpm --filter @taotie/client check:i18n` before opening a PR. See
 [docs/TRANSLATION.md](docs/TRANSLATION.md) for the full rules and the settled Chinese
 terminology.
 

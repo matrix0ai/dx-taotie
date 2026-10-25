@@ -1,7 +1,7 @@
 name: CLI release
 
-# Publishes the `freellmapi` CLI to npm. Closes #671 — the README and
-# docs/clients/01-agent-clients.md have always documented `npx freellmapi setup-claude`, but the
+# Publishes the `taotie` CLI to npm. Closes #671 — the README and
+# docs/clients/01-agent-clients.md have always documented `npx taotie setup-claude`, but the
 # package was never pushed to the registry, so every one of those commands died
 # with npm E404.
 #
@@ -23,7 +23,7 @@ name: CLI release
 #
 # One-time setup on npmjs.com (Package settings → Trusted Publisher):
 #   Organization or user: tashfeenahmed
-#   Repository:           freellmapi
+#   Repository:           taotie
 #   Workflow filename:    cli-release.yml
 # Trusted publishing cannot bootstrap a package that does not exist yet — npm
 # has no package settings page to configure until the first version is up — so
@@ -51,14 +51,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Resolve version
         id: version
@@ -68,12 +69,12 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           # `npm view` exits non-zero for an unpublished name/version; an empty
           # result is the signal to publish, not an error.
-          PUBLISHED=$(npm view "freellmapi@$VERSION" version 2>/dev/null || true)
+          PUBLISHED=$(npm view "taotie@$VERSION" version 2>/dev/null || true)
           if [ -n "$PUBLISHED" ]; then
-            echo "freellmapi@$VERSION is already on the registry — nothing to do."
+            echo "taotie@$VERSION is already on the registry — nothing to do."
             echo "should-publish=false" >> "$GITHUB_OUTPUT"
           else
-            echo "freellmapi@$VERSION is not published yet."
+            echo "taotie@$VERSION is not published yet."
             echo "should-publish=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -82,8 +83,8 @@ jobs:
       - name: Build and test the CLI
         if: steps.version.outputs.should-publish == 'true'
         run: |
-          npm run build -w apps/cli
-          npm run test -w apps/cli
+          pnpm --filter taotie build
+          pnpm --filter taotie test
 
       - name: Smoke-test the packed tarball
         if: steps.version.outputs.should-publish == 'true'
@@ -96,21 +97,22 @@ jobs:
           mkdir -p "$WORKDIR" && cd "$WORKDIR"
           npm init -y >/dev/null
           npm install "$RUNNER_TEMP/$TARBALL" >/dev/null
-          npx freellmapi --help
-          npx freellmapi list >/dev/null
+          npx taotie --help
+          npx taotie list >/dev/null
 
       # No NODE_AUTH_TOKEN: the OIDC credential comes from id-token: write.
       # Provenance is attached automatically under trusted publishing.
       - name: Publish
         if: steps.version.outputs.should-publish == 'true'
-        run: npm publish --access public -w apps/cli
+        working-directory: apps/cli
+        run: npm publish --access public
 
       - name: Summary
         if: always()
         run: |
           V="${{ steps.version.outputs.version }}"
           if [ "${{ steps.version.outputs.should-publish }}" = "true" ]; then
-            echo "Published freellmapi@$V" >> "$GITHUB_STEP_SUMMARY"
+            echo "Published taotie@$V" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "freellmapi@$V is already on the registry — skipped." >> "$GITHUB_STEP_SUMMARY"
+            echo "taotie@$V is already on the registry — skipped." >> "$GITHUB_STEP_SUMMARY"
           fi

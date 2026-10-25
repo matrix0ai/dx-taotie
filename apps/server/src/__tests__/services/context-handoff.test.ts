@@ -17,11 +17,11 @@ const messages = [userMsg, assistantMsg];
 
 beforeEach(() => {
   _clearStoreForTesting();
-  delete process.env.FREELLMAPI_CONTEXT_HANDOFF;
+  delete process.env.TAOTIE_CONTEXT_HANDOFF;
 });
 
 afterEach(() => {
-  delete process.env.FREELLMAPI_CONTEXT_HANDOFF;
+  delete process.env.TAOTIE_CONTEXT_HANDOFF;
 });
 
 describe('getContextHandoffMode', () => {
@@ -30,12 +30,12 @@ describe('getContextHandoffMode', () => {
   });
 
   it('reads on_model_switch', () => {
-    process.env.FREELLMAPI_CONTEXT_HANDOFF = 'on_model_switch';
+    process.env.TAOTIE_CONTEXT_HANDOFF = 'on_model_switch';
     expect(getContextHandoffMode()).toBe('on_model_switch');
   });
 
   it('treats unknown value as off', () => {
-    process.env.FREELLMAPI_CONTEXT_HANDOFF = 'always';
+    process.env.TAOTIE_CONTEXT_HANDOFF = 'always';
     expect(getContextHandoffMode()).toBe('off');
   });
 });

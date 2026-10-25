@@ -1,8 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "freellmapi/auto",
+  "model": "taotie/auto",
   "provider": {
-    "freellmapi": {
+    "taotie": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Taotie (local)",
       "options": {

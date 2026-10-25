@@ -1,6 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <!-- Taotie tray glyph: black on transparent; macOS tints it for light/dark. -->
-  <path d="M8 16 L27 24 M56 16 L37 24" stroke="#000" stroke-width="6" stroke-linecap="round"/>
-  <circle cx="22.5" cy="31" r="6.5" fill="#000"/><circle cx="41.5" cy="31" r="6.5" fill="#000"/>
-  <path d="M10 41 H54 L48 57 H16 Z M17 41 L21 48 L25 41 L29 48 L33 41 L37 48 L41 41 L45 48 L49 41 Z" fill="#000" fill-rule="evenodd"/>
+  <g fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M27,22 C23,11 11,8 8,17 C6,23 12,27 16,23 M37,22 C41,11 53,8 56,17 C58,23 52,27 48,23" stroke-width="6"/>
+    <path d="M15,43 H49 L45,56 H19 Z" stroke-width="5"/>
+  </g>
+  <path d="M12,31 L18,25 L28,25 L31,31 L26,37 L17,37 Z M52,31 L46,25 L36,25 L33,31 L38,37 L47,37 Z" fill="#000"/>
+  <path d="M18,43 L25,43 L21.5,52 Z M27,43 L31,43 L29,50 Z M46,43 L39,43 L42.5,52 Z M37,43 L33,43 L35,50 Z" fill="#000"/>
 </svg>

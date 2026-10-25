@@ -1,10 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2b25"/><stop offset="1" stop-color="#0b1210"/></linearGradient></defs>
-  <!-- Taotie mark: a gluttonous beast face, the maw that swallows every free tier. -->
-  <rect width="64" height="64" rx="14" fill="url(#g)"/>
-  <path d="M9 19 L27 26 M55 19 L37 26" stroke="#e8b04a" stroke-width="4.5" stroke-linecap="round"/>
-  <circle cx="22.5" cy="30" r="5.5" fill="#f4efe6"/><circle cx="41.5" cy="30" r="5.5" fill="#f4efe6"/>
-  <circle cx="24" cy="30.5" r="2.4" fill="#0b1210"/><circle cx="40" cy="30.5" r="2.4" fill="#0b1210"/>
-  <path d="M11 40 H53 L47 54 H17 Z" fill="#e8b04a"/>
-  <path d="M17 40 L21 47 L25 40 L29 47 L33 40 L37 47 L41 40 L45 47 L49 40 Z" fill="#f4efe6"/>
+  <!-- Taotie mark: simplified bronze-rubbing beast mask — horns, angular eyes, fanged mouth. -->
+  <rect width="64" height="64" rx="14" fill="#0b0a09"/>
+  <g fill="none" stroke="#f4ead2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M27,22 C23,12 12,9 9,17 C7,22 12,26 16,23 M37,22 C41,12 52,9 55,17 C57,22 52,26 48,23" stroke-width="3.6"/>
+    <path d="M32,12 V35" stroke-width="3"/>
+    <path d="M12,31 L18,25.5 L28,25.5 L30.5,31 L26,36.5 L17,36.5 Z M52,31 L46,25.5 L36,25.5 L33.5,31 L38,36.5 L47,36.5 Z" stroke-width="2.6"/>
+    <path d="M15,43 H49 L45,55 H19 Z" stroke-width="2.8"/>
+  </g>
+  <g fill="#f4ead2">
+    <circle cx="24.5" cy="31" r="3.4"/><circle cx="39.5" cy="31" r="3.4"/>
+    <path d="M18,43.5 L24.5,43.5 L21.5,51 Z M26,43.5 L30.5,43.5 L28,49 Z M46,43.5 L39.5,43.5 L42.5,51 Z M38,43.5 L33.5,43.5 L36,49 Z"/>
+  </g>
 </svg>

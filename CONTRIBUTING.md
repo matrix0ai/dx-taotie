@@ -18,7 +18,7 @@ desktop app keeps its own `better-sqlite3` build for Electron, so `pnpm dev`
 database in `~/.taotie/freeapi.db`.
 
 For a repeatable local setup, run the bootstrap script for your shell. It only
-installs dependencies when `package-lock.json` has changed and creates `.env`
+installs dependencies when `pnpm-lock.yaml` has changed and creates `.env`
 when it is absent:
 
 ```powershell

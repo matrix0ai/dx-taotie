@@ -56,5 +56,8 @@
   },
   "optionalDependencies": {
     "better-sqlite3": "^12.10.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

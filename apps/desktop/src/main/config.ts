@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { app } from 'electron';
 
@@ -23,6 +24,13 @@ export interface DesktopConfig {
   // Windows user the app is running; the tray icon starts out hidden in the
   // overflow flyout there (#1353).
   launchDashboardShown?: boolean;
+}
+
+// Where the embedded server keeps its database. The server writes backups next
+// to the DB (<dir>/backups), so they live here too. Config and logs stay under
+// Electron's per-app userData directory.
+export function dataDir(): string {
+  return path.join(os.homedir(), '.taotie');
 }
 
 function configPath(): string {

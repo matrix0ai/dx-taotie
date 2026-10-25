@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('../../../server/src/env.js', () => ({}));
+vi.mock('../../../../server/src/env.js', () => ({}));
 
 const { trustSystemCertificates } = await import('../server-host.js');
 

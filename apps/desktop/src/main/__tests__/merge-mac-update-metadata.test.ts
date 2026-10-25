@@ -4,9 +4,9 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 // @ts-expect-error -- plain .mjs build script, no types
-import { mergeMacUpdateMetadata } from '../../scripts/merge-mac-update-metadata.mjs';
+import { mergeMacUpdateMetadata } from '../../../scripts/merge-mac-update-metadata.mjs';
 // @ts-expect-error -- plain .mjs build script, no types
-import { hashFile, rewriteUpdateMetadata } from '../../scripts/refresh-mac-update-metadata.mjs';
+import { hashFile, rewriteUpdateMetadata } from '../../../scripts/refresh-mac-update-metadata.mjs';
 
 const yaml = createRequire(import.meta.url)('js-yaml');
 

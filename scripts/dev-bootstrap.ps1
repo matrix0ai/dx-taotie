@@ -46,8 +46,8 @@ if (-not (Test-Path -LiteralPath $packageJson) -or -not (Test-Path -LiteralPath 
 }
 
 $nodeVersion = Get-CommandVersion -Command 'node' -Argument '--version'
-if ($nodeVersion -lt [Version]'20.18.0' -or $nodeVersion -ge [Version]'25.0.0') {
-    throw "Node.js >=20.18.0 and <25.0.0 is required; found $nodeVersion."
+if ($nodeVersion -lt [Version]'22.12.0' -or $nodeVersion -ge [Version]'23.0.0') {
+    throw "Node.js >=22.12.0 and <23.0.0 is required; found $nodeVersion."
 }
 
 $pnpmVersion = Get-CommandVersion -Command 'pnpm' -Argument '--version'

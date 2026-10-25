@@ -31,14 +31,14 @@ const compare = (left, right) => {
   }
   return 0;
 };
-const nodeOk = compare(nodeVersion, [20, 18, 0]) >= 0 && nodeVersion[0] < 25;
+const nodeOk = compare(nodeVersion, [22, 12, 0]) >= 0 && nodeVersion[0] < 23;
 const pnpmOk = compare(pnpmVersion, [10, 0, 0]) >= 0;
 process.stdout.write(nodeOk && pnpmOk ? 'yes' : 'no');
 NODE
 )"
 
 if [[ "$version_is_supported" != "yes" ]]; then
-  echo "Node.js >=20.18.0 and <25.0.0 plus pnpm >=10.0.0 are required; found Node.js $node_version and pnpm $pnpm_version." >&2
+  echo "Node.js >=22.12.0 and <23.0.0 plus pnpm >=10.0.0 are required; found Node.js $node_version and pnpm $pnpm_version." >&2
   exit 1
 fi
 

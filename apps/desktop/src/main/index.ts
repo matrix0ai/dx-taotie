@@ -1,8 +1,7 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { app, dialog, ipcMain, clipboard, nativeTheme, screen, shell, type Tray } from 'electron';
-import { startServer, ensureSessionToken, getUnifiedApiKey, isAutoUpdateCheckEnabled, backupBeforeUpdate, outboundProxyUrl } from './server.mjs';
-import { loadConfig, saveConfig } from './config.js';
+import { startServer, ensureSessionToken, getUnifiedApiKey, isAutoUpdateCheckEnabled, backupBeforeUpdate, outboundProxyUrl } from './server-host.js';
+import { loadConfig, saveConfig, dataDir } from './config.js';
 import { installFileLogger } from './logger.js';
 import { buildTray, refreshTrayLocale } from './tray.js';
 import { trayIsInMenuBar } from './tray-visibility.js';
@@ -12,7 +11,6 @@ import { todayStats, hourlyRequests, successRateToday } from './stats.js';
 import { normalizeLocale, nativeStrings, type NativeLocale } from './i18n.js';
 import { initUpdater, getUpdateState, checkForUpdates, downloadUpdate, installUpdate, checkFromTray } from './updater.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PORT = 31415;
 
 // Lean posture: one instance, menu-bar only. GPU stays ON — vibrancy
@@ -255,11 +253,11 @@ if (!app.requestSingleInstanceLock()) {
     applyDockVisibility(loadConfig().showInDock ?? true);
 
     const cfg = loadConfig();
-    const dbPath = path.join(app.getPath('userData'), 'freeapi.db');
+    const dbPath = path.join(dataDir(), 'freeapi.db');
     // Packaged: apps/client/dist ships in extraResources (Resources/client-dist).
     // Dev: use this repo's own apps/client/dist (apps/desktop/ lives in the monorepo;
     // FREEAPI_REPO can still point at a different checkout if ever needed).
-    const repoRoot = process.env.FREEAPI_REPO ?? path.resolve(__dirname, '../../..');
+    const repoRoot = process.env.FREEAPI_REPO ?? path.resolve(__dirname, '../../../..');
     const clientDist = app.isPackaged
       ? path.join(process.resourcesPath, 'client-dist')
       : path.join(repoRoot, 'apps/client/dist');

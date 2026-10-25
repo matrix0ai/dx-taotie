@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 
 const yaml = createRequire(import.meta.url)('js-yaml');
 const here = dirname(fileURLToPath(import.meta.url));
-const desktopRoot = resolve(here, '../..');
+const desktopRoot = resolve(here, '../../..');
 const hookRel = './scripts/after-sign-notarize.mjs';
 const hook = await import(pathToFileURL(resolve(desktopRoot, hookRel)).href);
 

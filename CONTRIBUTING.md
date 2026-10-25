@@ -12,10 +12,10 @@ pnpm test                # server vitest; also runs client tests if present
 pnpm build               # compile server and dashboard
 ```
 
-Desktop packaging (`pnpm desktop:dist`, `electron-builder`) rebuilds the shared
-`better-sqlite3` for Electron, so server tests then fail with
-`NODE_MODULE_VERSION` errors. Restore the Node build with
-`cd node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 && npx prebuild-install`.
+Node is pinned to the version in `.nvmrc` (and Volta) for every build. The
+desktop app keeps its own `better-sqlite3` build for Electron, so `pnpm dev`
+(web) and `pnpm desktop:dev` can run side by side. The desktop app stores its
+database in `~/.taotie/freeapi.db`.
 
 For a repeatable local setup, run the bootstrap script for your shell. It only
 installs dependencies when `package-lock.json` has changed and creates `.env`

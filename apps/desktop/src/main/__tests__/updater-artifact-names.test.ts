@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 // "Taotie.Setup.0.13.4.exe" vs latest.yml's "Taotie-Setup-0.13.4.exe").
 
 const yaml = createRequire(import.meta.url)('js-yaml');
-const desktopRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const desktopRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const config = yaml.load(readFileSync(join(desktopRoot, 'electron-builder.yml'), 'utf8')) as Record<string, any>;
 
 function expand(template: string): string {

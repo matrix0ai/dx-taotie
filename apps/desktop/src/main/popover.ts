@@ -1,8 +1,6 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { BrowserWindow, type Tray } from 'electron';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const WIDTH = 316;
 const HEIGHT = 348;
@@ -44,7 +42,7 @@ function createPopover(): BrowserWindow {
           backgroundMaterial: 'acrylic' as const,
         }),
     webPreferences: {
-      preload: path.join(__dirname, 'preload-popover.cjs'),
+      preload: path.join(__dirname, '../preload/popover.cjs'),
       contextIsolation: true,
       sandbox: false,
       nodeIntegration: false,
@@ -62,7 +60,13 @@ function createPopover(): BrowserWindow {
   // Dock icon off get that back, exactly as before.
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
 
-  win.loadFile(path.join(__dirname, '../renderer/popover.html')).then(() => {
+  // electron-vite serves the renderer from its dev server while developing and
+  // from the built files otherwise.
+  const rendererUrl = process.env['ELECTRON_RENDERER_URL'];
+  const loaded = rendererUrl
+    ? win.loadURL(`${rendererUrl}/popover/index.html`)
+    : win.loadFile(path.join(__dirname, '../renderer/popover/index.html'));
+  loaded.then(() => {
     if (process.platform !== 'darwin') {
       win.webContents.executeJavaScript("document.body.classList.add('no-vibrancy')");
     }

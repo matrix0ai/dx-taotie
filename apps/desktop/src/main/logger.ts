@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import util from 'node:util';
 import { app, shell } from 'electron';
+import { dataDir } from './config.js';
 
 const LOG_NAME = 'freeapi.log';
 // Two files, 1 MB each: enough history to cover a reset or a bad boot, small
@@ -125,13 +126,13 @@ export function openLogsFolder(): void {
 }
 
 // Tray → "Open Backups Folder". The server writes dumps to <db dir>/backups
-// (server/src/services/backups.ts dataDir()) and main.ts puts the DB at
-// <userData>/freeapi.db, so this is where they land — the dashboard's Backups
+// (server/src/services/backups.ts dataDir()) and index.ts puts the DB at
+// ~/.taotie/freeapi.db, so this is where they land — the dashboard's Backups
 // panel only ever shows paths relative to that directory, which a desktop
 // user has no other way to locate.
 export function openBackupsFolder(): void {
   try {
-    const dir = path.join(app.getPath('userData'), 'backups');
+    const dir = path.join(dataDir(), 'backups');
     fs.mkdirSync(dir, { recursive: true });
     void shell.openPath(dir);
   } catch (err) {

@@ -1,31 +1,31 @@
-// Bundled by scripts/bundle-server.mjs into build/server.mjs (ESM, only
-// better-sqlite3 external). This is the ONLY module allowed to touch server
-// internals: the db singleton lives inside this bundle, so anything stateful
-// (auth bootstrap, getDb) must be exported from here rather than imported
-// from server/src by the main bundle (which would get a second, empty copy).
+// Bundled into the main process by electron-vite (ESM; only the native and
+// updater dependencies stay external). This is the ONLY module allowed to
+// touch server internals: anything stateful (auth bootstrap, getDb) must be
+// exported from here rather than imported from apps/server/src elsewhere in
+// main, so there is a single copy of the db singleton.
 //
-// The server sources live in this same repo (../../server). Keep these
-// relative imports in sync with the repo-root default in main.ts.
-import '../../server/src/env.js';
+// The server sources live in this same repo (apps/server). Keep these
+// relative imports in sync with the repo-root default in index.ts.
+import '../../../server/src/env.js';
 import tls from 'node:tls';
 import type { Server } from 'node:http';
-import { createApp } from '../../server/src/app.js';
-import { initDb, getDb, getUnifiedApiKey } from '../../server/src/db/index.js';
-import { restoreProxySettings, flushProxyCache, getProxyMode, getProxyUrl, isProxyActive } from '../../server/src/lib/proxy.js';
-import { startHealthChecker, checkAllKeys } from '../../server/src/services/health.js';
-import { startCatalogSync } from '../../server/src/services/catalog-sync.js';
-import { startCooldownProbe } from '../../server/src/services/cooldown-probe.js';
-import { startCustomModelSync } from '../../server/src/services/custom-model-sync.js';
-import { startBuiltinModelDiscovery } from '../../server/src/services/builtin-model-discovery.js';
-import { startBackupScheduler, createBackup } from '../../server/src/services/backups.js';
-import { isAutoUpdateCheckEnabled } from '../../server/src/routes/update.js';
-import { cleanupExpiredCooldowns } from '../../server/src/services/ratelimit.js';
-import { loadCacheFromDb } from '../../server/src/services/cache.js';
-import { startWakeDetect } from '../../server/src/lib/wake-detect.js';
-import { installProcessSafetyNet } from '../../server/src/lib/process-safety-net.js';
-import { installLogRedaction } from '../../server/src/lib/log-redaction.js';
-import { desktopSessionToken } from '../../server/src/services/auth.js';
-import { NodeScheduler } from '../../server/src/lib/scheduler.js';
+import { createApp } from '../../../server/src/app.js';
+import { initDb, getDb, getUnifiedApiKey } from '../../../server/src/db/index.js';
+import { restoreProxySettings, flushProxyCache, getProxyMode, getProxyUrl, isProxyActive } from '../../../server/src/lib/proxy.js';
+import { startHealthChecker, checkAllKeys } from '../../../server/src/services/health.js';
+import { startCatalogSync } from '../../../server/src/services/catalog-sync.js';
+import { startCooldownProbe } from '../../../server/src/services/cooldown-probe.js';
+import { startCustomModelSync } from '../../../server/src/services/custom-model-sync.js';
+import { startBuiltinModelDiscovery } from '../../../server/src/services/builtin-model-discovery.js';
+import { startBackupScheduler, createBackup } from '../../../server/src/services/backups.js';
+import { isAutoUpdateCheckEnabled } from '../../../server/src/routes/update.js';
+import { cleanupExpiredCooldowns } from '../../../server/src/services/ratelimit.js';
+import { loadCacheFromDb } from '../../../server/src/services/cache.js';
+import { startWakeDetect } from '../../../server/src/lib/wake-detect.js';
+import { installProcessSafetyNet } from '../../../server/src/lib/process-safety-net.js';
+import { installLogRedaction } from '../../../server/src/lib/log-redaction.js';
+import { desktopSessionToken } from '../../../server/src/services/auth.js';
+import { NodeScheduler } from '../../../server/src/lib/scheduler.js';
 
 export { getDb, getUnifiedApiKey, isAutoUpdateCheckEnabled };
 
@@ -103,7 +103,7 @@ export async function startServer(opts: StartOptions): Promise<ServerHandle> {
   // A late provider socket reset (undici emits with no listener) must down the
   // request, not the whole menu-bar app.
   installProcessSafetyNet();
-  // bundle-server.mjs stamps the build identity via esbuild `define`, which
+  // electron.vite.config.ts stamps the build identity via `define`, which
   // rewrites only the exact `process.env.X` member expressions in this bundle.
   // routes/update.ts reads the values through a plain env object reference, so
   // mirror the inlined literals into the real process.env — without this the
@@ -125,7 +125,18 @@ export async function startServer(opts: StartOptions): Promise<ServerHandle> {
   // and only for requests arriving over loopback — with LAN access on we bind
   // 0.0.0.0, and a remote viewer must still enter the password.
   process.env.FREEAPI_DESKTOP = '1';
-  initDb(opts.dbPath);
+  // The desktop app owns its database and migrates it on every launch. Under
+  // `electron-vite dev` NODE_ENV is 'development', where initDb only checks
+  // for an initialised DB and exits asking for `db:migration:up` — a workflow
+  // for the standalone server, not for an embedded one.
+  const nodeEnv = process.env.NODE_ENV;
+  if (nodeEnv === 'development') delete process.env.NODE_ENV;
+  try {
+    initDb(opts.dbPath);
+  } finally {
+    if (nodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = nodeEnv;
+  }
   // One sweep at boot, while the DB is quiet — expired cooldown rows are only
   // collected lazily per route and would otherwise accumulate forever.
   const expiredCooldowns = cleanupExpiredCooldowns();

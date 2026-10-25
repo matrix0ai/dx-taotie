@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 const yaml = createRequire(import.meta.url)('js-yaml');
 const here = dirname(fileURLToPath(import.meta.url));
-const desktopRoot = resolve(here, '../..');
+const desktopRoot = resolve(here, '../../..');
 const builderConfigPath = join(desktopRoot, 'electron-builder.yml');
 const afterPackRel = './scripts/after-pack-linux-sandbox.mjs';
 const afterPackPath = resolve(desktopRoot, afterPackRel);

@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { Tray, Menu, app, nativeImage } from 'electron';
 import { togglePopover } from './popover.js';
 import { openDashboard } from './window.js';
@@ -8,7 +7,6 @@ import { dt, type NativeLocale } from './i18n.js';
 import { trayMenuOffersPopover, trayPlatform } from './tray-platform.js';
 import type { UpdateState } from './update-support.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let tray: Tray | null = null;
 
@@ -30,7 +28,7 @@ export function buildTray(
   onUpdateClick: () => void,
 ): Tray {
   const platform = trayPlatform(process.platform);
-  const iconPath = path.join(__dirname, '../assets', platform.iconFile);
+  const iconPath = path.join(__dirname, '../../resources', platform.iconFile);
   const icon = nativeImage.createFromPath(iconPath);
   if (icon.isEmpty()) console.warn(`[desktop] tray icon did not load from ${iconPath}`);
   // Auto light/dark tint in the macOS menu bar. Elsewhere it is meaningless,
@@ -67,7 +65,7 @@ export function buildTray(
       // #824: the password-reset code is printed to the log and nowhere else,
       // so the folder holding it needs to be reachable without a terminal.
       { label: dt(locale, 'openLogs'), click: () => openLogsFolder() },
-      // Scheduled/manual backups land in <userData>/backups; the dashboard
+      // Scheduled/manual backups land in ~/.taotie/backups; the dashboard
       // only shows relative paths, so the tray is the discovery point.
       { label: dt(locale, 'openBackups'), click: () => openBackupsFolder() },
       { type: 'separator' },

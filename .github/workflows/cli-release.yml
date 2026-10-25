@@ -29,8 +29,8 @@ name: CLI release
 # has no package settings page to configure until the first version is up — so
 # 0.3.0 was published manually. Every version after it goes through here.
 #
-# Requires npm >= 11.5.1 and Node >= 22.14.0 for OIDC, hence Node 24 below
-# (still inside the repo's engines range of >=20.18 <25).
+# Requires npm >= 11.5.1 and Node >= 22.14.0 for OIDC. Node is the repo's single
+# pinned version (.nvmrc); the bundled npm is too old, so it is upgraded below.
 
 on:
   workflow_dispatch:
@@ -54,9 +54,12 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@^11.5.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

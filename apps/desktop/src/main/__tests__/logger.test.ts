@@ -15,7 +15,7 @@ vi.mock('electron', () => ({
 }));
 
 const { createFileSink, installFileLogger, logFilePath, logsDir } = await import('../logger.js');
-const { generateResetCode } = await import('../../../server/src/lib/reset-code.js');
+const { generateResetCode } = await import('../../../../server/src/lib/reset-code.js');
 
 afterAll(() => {
   // The tee keeps its file handle open until process exit, and Windows refuses

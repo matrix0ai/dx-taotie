@@ -1,9 +1,7 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow } from 'electron';
 import { platformChrome } from './window-chrome.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let dashboardWindow: BrowserWindow | null = null;
 
@@ -30,7 +28,7 @@ export function openDashboard(port: number, token: string): void {
     title: 'Taotie',
     ...platformChrome(process.platform),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: path.join(__dirname, '../preload/index.cjs'),
       contextIsolation: true,
       sandbox: false,
       nodeIntegration: false,

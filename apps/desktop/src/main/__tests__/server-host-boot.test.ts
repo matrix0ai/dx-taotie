@@ -15,9 +15,9 @@ import { EventEmitter } from 'node:events';
 
 const calls: string[] = [];
 
-vi.mock('../../../server/src/env.js', () => ({}));
+vi.mock('../../../../server/src/env.js', () => ({}));
 
-vi.mock('../../../server/src/db/index.js', () => ({
+vi.mock('../../../../server/src/db/index.js', () => ({
   initDb: vi.fn(() => {
     calls.push('initDb');
   }),
@@ -25,73 +25,73 @@ vi.mock('../../../server/src/db/index.js', () => ({
   getUnifiedApiKey: vi.fn(),
 }));
 
-vi.mock('../../../server/src/lib/proxy.js', () => ({
+vi.mock('../../../../server/src/lib/proxy.js', () => ({
   restoreProxySettings: vi.fn(() => {
     calls.push('restoreProxySettings');
   }),
   flushProxyCache: vi.fn(),
 }));
 
-vi.mock('../../../server/src/lib/log-redaction.js', () => ({
+vi.mock('../../../../server/src/lib/log-redaction.js', () => ({
   installLogRedaction: vi.fn(() => {
     calls.push('installLogRedaction');
     return () => undefined;
   }),
 }));
 
-vi.mock('../../../server/src/lib/process-safety-net.js', () => ({
+vi.mock('../../../../server/src/lib/process-safety-net.js', () => ({
   installProcessSafetyNet: vi.fn(() => {
     calls.push('installProcessSafetyNet');
   }),
 }));
 
-vi.mock('../../../server/src/services/ratelimit.js', () => ({
+vi.mock('../../../../server/src/services/ratelimit.js', () => ({
   cleanupExpiredCooldowns: vi.fn(() => {
     calls.push('cleanupExpiredCooldowns');
     return 0;
   }),
 }));
 
-vi.mock('../../../server/src/services/cache.js', () => ({
+vi.mock('../../../../server/src/services/cache.js', () => ({
   loadCacheFromDb: vi.fn(() => {
     calls.push('loadCacheFromDb');
   }),
 }));
 
-vi.mock('../../../server/src/services/cooldown-probe.js', () => ({
+vi.mock('../../../../server/src/services/cooldown-probe.js', () => ({
   startCooldownProbe: vi.fn(() => {
     calls.push('startCooldownProbe');
   }),
 }));
 
-vi.mock('../../../server/src/services/backups.js', () => ({
+vi.mock('../../../../server/src/services/backups.js', () => ({
   startBackupScheduler: vi.fn(() => {
     calls.push('startBackupScheduler');
     return () => undefined;
   }),
 }));
 
-vi.mock('../../../server/src/services/custom-model-sync.js', () => ({
+vi.mock('../../../../server/src/services/custom-model-sync.js', () => ({
   startCustomModelSync: vi.fn(() => {
     calls.push('startCustomModelSync');
     return null;
   }),
 }));
 
-vi.mock('../../../server/src/services/builtin-model-discovery.js', () => ({
+vi.mock('../../../../server/src/services/builtin-model-discovery.js', () => ({
   startBuiltinModelDiscovery: vi.fn(() => {
     calls.push('startBuiltinModelDiscovery');
     return null;
   }),
 }));
 
-vi.mock('../../../server/src/lib/wake-detect.js', () => ({
+vi.mock('../../../../server/src/lib/wake-detect.js', () => ({
   startWakeDetect: vi.fn(() => {
     calls.push('startWakeDetect');
   }),
 }));
 
-vi.mock('../../../server/src/app.js', () => ({
+vi.mock('../../../../server/src/app.js', () => ({
   createApp: vi.fn(() => {
     calls.push('createApp');
     return {
@@ -105,26 +105,26 @@ vi.mock('../../../server/src/app.js', () => ({
   }),
 }));
 
-vi.mock('../../../server/src/services/health.js', () => ({
+vi.mock('../../../../server/src/services/health.js', () => ({
   startHealthChecker: vi.fn(() => {
     calls.push('startHealthChecker');
   }),
   checkAllKeys: vi.fn(async () => ({})),
 }));
 
-vi.mock('../../../server/src/services/catalog-sync.js', () => ({
+vi.mock('../../../../server/src/services/catalog-sync.js', () => ({
   startCatalogSync: vi.fn(() => {
     calls.push('startCatalogSync');
   }),
 }));
 
-vi.mock('../../../server/src/services/auth.js', () => ({
+vi.mock('../../../../server/src/services/auth.js', () => ({
   userCount: vi.fn(() => 1),
   createUser: vi.fn(),
   createSession: vi.fn(() => 'token'),
 }));
 
-vi.mock('../../../server/src/lib/scheduler.js', () => ({
+vi.mock('../../../../server/src/lib/scheduler.js', () => ({
   NodeScheduler: class {},
 }));
 
@@ -188,7 +188,7 @@ describe('desktop server boot sequence (#949)', () => {
   // of trusting anyone to update both places.
   it('mirrors every startup step server/src/index.ts performs (minus the documented env-only skips)', async () => {
     const indexSrc = fs.readFileSync(
-      fileURLToPath(new URL('../../../server/src/index.ts', import.meta.url)),
+      fileURLToPath(new URL('../../../../server/src/index.ts', import.meta.url)),
       'utf8',
     );
     const withoutComments = indexSrc

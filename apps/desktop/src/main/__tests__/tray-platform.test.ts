@@ -11,8 +11,8 @@ import { shouldOpenDashboardOnLaunch, trayMenuOffersPopover, trayPlatform } from
 // runs on the mac this repo is developed on, so it is asserted here.
 
 const yaml = createRequire(import.meta.url)('js-yaml');
-const desktopRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const assets = join(desktopRoot, 'assets');
+const desktopRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+const assets = join(desktopRoot, 'resources');
 
 // ICONDIR + ICONDIRENTRY widths (0 means 256).
 function icoSizes(buf: Buffer): number[] {
@@ -45,15 +45,15 @@ describe('tray per platform (#1353)', () => {
     expect(linux.templateImage).toBe(false);
   });
 
-  it('ships every tray icon it names inside the packaged assets', () => {
+  it('ships every tray icon it names inside the packaged resources', () => {
     for (const platform of ['darwin', 'win32', 'linux'] as const) {
       expect(existsSync(join(assets, trayPlatform(platform).iconFile))).toBe(true);
     }
-    // tray.ts resolves ../assets from build/, so assets/ must be packed.
+    // tray.ts resolves ../../resources from out/main/, so resources/ must be packed.
     const config = yaml.load(readFileSync(join(desktopRoot, 'electron-builder.yml'), 'utf8')) as {
       files?: string[];
     };
-    expect(config.files).toContain('assets/**/*');
+    expect(config.files).toContain('resources/**/*');
   });
 
   it('ships a multi-size Windows .ico covering 100% to 400% DPI', () => {

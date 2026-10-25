@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Regenerates the non-macOS tray icons from assets/appicon_1024.png (#1353).
+// Regenerates the non-macOS tray icons from build/icon.png (#1353).
 //
 // The macOS tray uses trayTemplate.png, a black-on-transparent template image
 // that the menu bar tints for light/dark. Windows and Linux do not tint, so
@@ -7,8 +7,8 @@
 // multi-size .ico anyway. The app icon (dark tile, light dot, grey arc) reads
 // on both dark and light taskbars, so the tray icons are cut from it:
 //
-//   assets/tray.ico  Windows, 16/20/24/32/40/48/64 px (100% to 400% DPI)
-//   assets/tray.png  Linux, 32 px (panels scale it to their 22-24 px slot)
+//   resources/tray.ico  Windows, 16/20/24/32/40/48/64 px (100% to 400% DPI)
+//   resources/tray.png  Linux, 32 px (panels scale it to their 22-24 px slot)
 //
 // The outputs are committed; run this only when the app icon changes:
 //   node desktop/scripts/make-tray-icons.mjs
@@ -19,9 +19,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-const assets = path.join(path.dirname(fileURLToPath(import.meta.url)), '../assets');
-const SOURCE = path.join(assets, 'appicon_1024.png');
-// appicon_1024.png is a 824 px tile inset 100 px on every side; a tray slot is
+const here = path.dirname(fileURLToPath(import.meta.url));
+const resources = path.join(here, '../resources');
+const SOURCE = path.join(here, '../build/icon.png');
+// build/icon.png is a 824 px tile inset 100 px on every side; a tray slot is
 // tiny, so drop the transparent margin and let the tile fill it.
 const TILE = { left: 100, top: 100, width: 824, height: 824 };
 const ICO_SIZES = [16, 20, 24, 32, 40, 48, 64];
@@ -92,10 +93,10 @@ async function buildIco() {
   return Buffer.concat([dir, ...images]);
 }
 
-fs.writeFileSync(path.join(assets, 'tray.ico'), await buildIco());
+fs.writeFileSync(path.join(resources, 'tray.ico'), await buildIco());
 await sharp(SOURCE)
   .extract(TILE)
   .resize(LINUX_SIZE, LINUX_SIZE, { kernel: 'lanczos3' })
   .png({ compressionLevel: 9 })
-  .toFile(path.join(assets, 'tray.png'));
-console.log(`wrote assets/tray.ico (${ICO_SIZES.join('/')} px) and assets/tray.png (${LINUX_SIZE} px)`);
+  .toFile(path.join(resources, 'tray.png'));
+console.log(`wrote resources/tray.ico (${ICO_SIZES.join('/')} px) and resources/tray.png (${LINUX_SIZE} px)`);

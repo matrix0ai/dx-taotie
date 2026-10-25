@@ -16,7 +16,7 @@ import { describe, it, expect } from 'vitest';
 // there is no lockfile stamp to compare against.
 
 const here = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(readFileSync(resolve(here, '../../package.json'), 'utf8')) as {
+const pkg = JSON.parse(readFileSync(resolve(here, '../../../package.json'), 'utf8')) as {
   name: string;
   version: string;
 };

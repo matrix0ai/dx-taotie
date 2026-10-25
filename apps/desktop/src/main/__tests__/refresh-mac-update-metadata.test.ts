@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 // @ts-expect-error -- plain .mjs build script, no types
-import { rewriteUpdateMetadata, describesFile } from '../../scripts/refresh-mac-update-metadata.mjs';
+import { rewriteUpdateMetadata, describesFile } from '../../../scripts/refresh-mac-update-metadata.mjs';
 
 // Stapling the notarization ticket rewrites the DMG after electron-builder has
 // already hashed it, so latest-mac.yml has to be re-stamped or electron-updater

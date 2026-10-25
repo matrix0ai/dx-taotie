@@ -1,7 +1,7 @@
 {
   "name": "taotie-desktop",
   "version": "0.15.0",
-  "description": "Taotie menu-bar app — local OpenAI-compatible LLM router",
+  "description": "Taotie menu-bar app \u2014 local OpenAI-compatible LLM router",
   "author": {
     "name": "tashfeenahmed",
     "email": "tashfene@gmail.com",
@@ -10,34 +10,37 @@
   "homepage": "https://taotie.conouch.io/",
   "private": true,
   "type": "module",
-  "main": "build/main.mjs",
+  "main": "./out/main/index.mjs",
   "scripts": {
-    "bundle:server": "node scripts/bundle-server.mjs",
-    "build:main": "esbuild src/main.ts --bundle --platform=node --format=esm --external:electron --external:electron-updater --external:./server.mjs --outfile=build/main.mjs",
-    "build:preload": "esbuild src/preload.ts src/preload-popover.ts --bundle --platform=node --format=cjs --external:electron --outdir=build --out-extension:.js=.cjs",
-    "build:all": "pnpm run bundle:server && pnpm run build:main && pnpm run build:preload",
+    "dev": "electron-rebuild -w better-sqlite3 && electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
     "stage:client": "node scripts/stage-client.mjs",
     "rebuild:native": "electron-rebuild -f -w better-sqlite3",
-    "dev": "pnpm run build:all && electron .",
-    "dist": "pnpm run build:all && pnpm run stage:client && electron-builder --mac --arm64 --publish never",
-    "dist:mac:x64": "pnpm run build:all && pnpm run stage:client && electron-builder --mac --x64 --publish never",
-    "dist:win": "pnpm run build:all && pnpm run stage:client && electron-builder --win --x64 --publish never",
-    "dist:linux": "pnpm run build:all && pnpm run stage:client && electron-builder --linux --x64 --publish never",
+    "dist": "pnpm build && pnpm stage:client && electron-builder --mac --arm64 --publish never",
+    "dist:mac:x64": "pnpm build && pnpm stage:client && electron-builder --mac --x64 --publish never",
+    "dist:win": "pnpm build && pnpm stage:client && electron-builder --win --x64 --publish never",
+    "dist:linux": "pnpm build && pnpm stage:client && electron-builder --linux --x64 --publish never",
     "test": "vitest run"
   },
   "dependencies": {
-    "better-sqlite3": "^12.10.0",
+    "better-sqlite3": "12.10.0",
     "electron-updater": "^6.8.9"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.7.0",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.15.3",
     "electron": "^38.8.6",
     "electron-builder": "^25.1.8",
-    "esbuild": "^0.24.0",
+    "electron-vite": "6.0.0",
     "js-yaml": "^4.2.0",
     "typescript": "^5.8.0",
+    "vite": "8.2.2",
     "vitest": "^3.2.4"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

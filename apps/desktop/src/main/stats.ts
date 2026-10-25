@@ -1,4 +1,4 @@
-import { getDb } from './server.mjs';
+import { getDb } from './server-host.js';
 
 export interface TodayStats {
   requests: number;

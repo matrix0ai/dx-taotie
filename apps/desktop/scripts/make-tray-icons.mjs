@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Regenerates the non-macOS tray icons from build/icon.png (#1353).
+// Regenerates the non-macOS tray icons from build/tray-source.png (#1353).
 //
 // The macOS tray uses trayTemplate.png, a black-on-transparent template image
 // that the menu bar tints for light/dark. Windows and Linux do not tint, so
@@ -21,8 +21,8 @@ import sharp from 'sharp';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const resources = path.join(here, '../resources');
-const SOURCE = path.join(here, '../build/icon.png');
-// build/icon.png is a 824 px tile inset 100 px on every side; a tray slot is
+const SOURCE = path.join(here, '../build/tray-source.png');
+// build/tray-source.png is a 824 px tile inset 100 px on every side; a tray slot is
 // tiny, so drop the transparent margin and let the tile fill it.
 const TILE = { left: 100, top: 100, width: 824, height: 824 };
 const ICO_SIZES = [16, 20, 24, 32, 40, 48, 64];

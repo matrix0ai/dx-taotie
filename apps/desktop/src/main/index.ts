@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { app, dialog, ipcMain, clipboard, nativeTheme, screen, shell, type Tray } from 'electron';
 import { startServer, ensureSessionToken, getUnifiedApiKey, isAutoUpdateCheckEnabled, backupBeforeUpdate, outboundProxyUrl } from './server-host.js';
+import { appIcon } from './app-icon.js';
 import { loadConfig, saveConfig, dataDir } from './config.js';
 import { installFileLogger } from './logger.js';
 import { buildTray, refreshTrayLocale } from './tray.js';
@@ -250,6 +251,8 @@ if (!app.requestSingleInstanceLock()) {
   }
 
   app.whenReady().then(async () => {
+    // Dev runs the stock Electron binary, whose Dock icon is Electron's.
+    if (!app.isPackaged) app.dock?.setIcon(appIcon());
     applyDockVisibility(loadConfig().showInDock ?? true);
 
     const cfg = loadConfig();

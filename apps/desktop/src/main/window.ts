@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { app, BrowserWindow } from 'electron';
+import { appIconPath } from './app-icon.js';
 import { platformChrome } from './window-chrome.js';
 
 
@@ -26,6 +27,7 @@ export function openDashboard(port: number, token: string): void {
     minWidth: 720,
     minHeight: 480,
     title: 'Taotie',
+    icon: appIconPath,
     ...platformChrome(process.platform),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.cjs'),

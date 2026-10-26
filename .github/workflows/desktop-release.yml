@@ -114,9 +114,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          VERSION=$(node -p "require('./desktop/package.json').version")
+          VERSION=$(node -p "require('./apps/desktop/package.json').version")
           if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
-            echo "::error file=apps/desktop/package.json::apps/desktop/package.json is $VERSION, so electron-builder would stamp the artifacts v$VERSION, but the tag is $GITHUB_REF_NAME. Set apps/desktop/package.json and apps/desktop/package-lock.json to ${GITHUB_REF_NAME#v}, then move the tag."
+            echo "::error file=apps/desktop/package.json::apps/desktop/package.json is $VERSION, so electron-builder would stamp the artifacts v$VERSION, but the tag is $GITHUB_REF_NAME. Set apps/desktop/package.json to ${GITHUB_REF_NAME#v}, then move the tag."
             exit 1
           fi
           echo "apps/desktop/package.json $VERSION matches tag $GITHUB_REF_NAME."

@@ -2,7 +2,7 @@
 
 # 架构与内部实现
 
-[← 返回 README](../../../README.zh-cn.md) · [文档索引](../README.md) · [深入解析域](OVERVIEW.md)
+[← 返回 README](../../../README.md) · [文档索引](../README.md) · [深入解析域](OVERVIEW.md)
 
 Taotie 是一个自托管的、兼容 OpenAI 的网关，把约 34 家提供方的免费额度叠加在一个 `taotie-…` Bearer 令牌之后。一个 Express 代理暴露 `/v1/chat/completions`（以及 `/v1/responses`、`/v1/messages`、`/v1/completions`、`/v1/embeddings` 和 `/v1/models`）；每次请求时，路由器挑选一个状态健康、且未触及任何限流的最佳模型，在内存中解密其上游密钥，再把响应流式传回。
 
@@ -59,7 +59,7 @@ Taotie 是一个自托管的、兼容 OpenAI 的网关，把约 34 家提供方�
 - **`n > 1`**（单次请求返回多个补全）
 - **按用户计费 / 多租户鉴权** —— 设计上就是单用户
 
-非常欢迎添加上述任一功能的 PR。见[参与贡献](../../../README.zh-cn.md#参与贡献)。
+非常欢迎添加上述任一功能的 PR。见[参与贡献](../../../README.md)。
 
 ## 局限性
 

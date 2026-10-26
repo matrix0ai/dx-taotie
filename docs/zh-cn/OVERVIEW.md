@@ -33,7 +33,7 @@
 ## 其他入口
 
 - [README.md](README.md) —— 中文文档入口页。
-- [../../README.zh-cn.md](../../README.zh-cn.md) —— 项目总览（中文 README）。
+- [../../README.md](../../README.md) —— 项目总览（中文 README）。
 - [../OVERVIEW.md](../OVERVIEW.md) —— `docs/` 目录总索引。
 
 另见：[English](../en/OVERVIEW.md) · [翻译指南](../TRANSLATION.md)

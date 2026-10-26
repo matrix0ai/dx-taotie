@@ -15,8 +15,6 @@ Aggregate free tiers from dozens of providers, plus custom OpenAI-compatible cha
 
 **[taotie.conouch.io](https://taotie.conouch.io/?utm_source=github&utm_medium=readme&utm_campaign=repository&utm_content=readme_top)** · browse the full catalog: 474 model families, 635 free endpoints
 
-**English** · [简体中文](README.zh-cn.md) · [Русский](README.ru.md)
-
 <p align="center">
   <a href="https://github.com/matrix0ai/dx-taotie/releases/latest"><img src="repo-assets/badges/macos.svg" height="48" alt="Download for macOS"></a>
   <a href="https://github.com/matrix0ai/dx-taotie/releases/latest"><img src="repo-assets/badges/windows.svg" height="48" alt="Download for Windows"></a>

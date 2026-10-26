@@ -158,7 +158,7 @@ Based on public documentation, July 2026 — corrections welcome.
 - **Admin dashboard & analytics** — React UI to manage keys, reorder the chain, run a playground, and read p50/p95/TTFT analytics over 24h–90d windows; login-gated, dark/light themes, [60 languages](#languages).
 - **ChatGPT-ready MCP server & interactive docs** — ChatGPT and other MCP clients can call Taotie inference, list usable models, inspect provider health/usage/cache/routing metadata, and manage the routing strategy over `/mcp`; a dependency-free OpenAPI viewer lives at `/v1/docs`. [ChatGPT and coding agents →](docs/en/clients/01-agent-clients.md#mcp-server)
 - **Ops niceties** — opt-in response cache, encrypted DB backups, periodic key health checks, bulk key import/export, declarative startup config. [Install & deploy →](docs/en/install/01-install.md)
-- **Runs anywhere Node 20+ runs** — Windows, macOS, Linux servers, or a small ARM SBC (Raspberry Pi included). ~40 MB RSS at idle behind PM2 / systemd / whatever supervisor you prefer.
+- **Runs anywhere Node 22 runs** — Windows, macOS, Linux servers, or a small ARM SBC (Raspberry Pi included). ~40 MB RSS at idle behind PM2 / systemd / whatever supervisor you prefer.
 
 The scope is deliberately narrow — see [what's not supported yet](docs/en/architecture/00-high-level-index.md#not-yet-supported).
 
@@ -168,10 +168,10 @@ The scope is deliberately narrow — see [what's not supported yet](docs/en/arch
 |---|---|---|---|
 | Where it runs | Your machine or any Docker host | A VPS, home server, Raspberry Pi: anything with Node 22 | Your own Mac / Windows PC |
 | Who runs the server | The container | `node` under PM2 / systemd / a reverse proxy | The app itself: it embeds the server and listens on `127.0.0.1` only |
-| Dashboard login | **Required**: email + password, created on first visit | **Required**: same | **None**: the dashboard signs itself in on this computer |
+| Dashboard login | **Required**: email + password, created on first visit | **Required**: same | **None on the same computer**: the dashboard signs itself in. Another device that reaches it over LAN access still sees the sign-in form |
 | Credential you hand to clients | Unified API key | Unified API key | Unified API key (tray popover) |
 | Data | `taotie-data` volume | `apps/server/data/` (or `FREEAPI_DB_PATH`) | `~/.taotie/` |
-| Reachable from other devices | Yes (port 3001) | Yes, put TLS in front | No, local only |
+| Reachable from other devices | Yes (port 3001) | Yes, put TLS in front | No by default (`127.0.0.1` only); only if you turn on LAN access |
 
 Pick **Docker** or **self-host** when the router should be shared or always on: the login protects the dashboard, and the API key protects `/v1`. Pick the **desktop app** when it is only for you on your own computer: nothing to set up, and nothing is exposed to the network.
 

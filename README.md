@@ -42,6 +42,7 @@ Your router updates its own model catalog from a signed feed: new free models, q
 - [Compatible CLIs & coding agents](#compatible-clis--coding-agents)
 - [How it compares](#how-it-compares)
 - [Features](#features)
+- [Ways to run](#ways-to-run)
 - [Quick start](#quick-start)
 - [Desktop app](#desktop-app)
 - [Works with OpenAI-compatible clients](#works-with-openai-compatible-clients)
@@ -161,6 +162,19 @@ Based on public documentation, July 2026 — corrections welcome.
 
 The scope is deliberately narrow — see [what's not supported yet](docs/en/architecture/00-high-level-index.md#not-yet-supported).
 
+## Ways to run
+
+| | Docker | Self-host (VPS / server) | Desktop app |
+|---|---|---|---|
+| Where it runs | Your machine or any Docker host | A VPS, home server, Raspberry Pi: anything with Node 22 | Your own Mac / Windows PC |
+| Who runs the server | The container | `node` under PM2 / systemd / a reverse proxy | The app itself: it embeds the server and listens on `127.0.0.1` only |
+| Dashboard login | **Required**: email + password, created on first visit | **Required**: same | **None**: the dashboard signs itself in on this computer |
+| Credential you hand to clients | Unified API key | Unified API key | Unified API key (tray popover) |
+| Data | `taotie-data` volume | `apps/server/data/` (or `FREEAPI_DB_PATH`) | `~/.taotie/` |
+| Reachable from other devices | Yes (port 3001) | Yes, put TLS in front | No, local only |
+
+Pick **Docker** or **self-host** when the router should be shared or always on: the login protects the dashboard, and the API key protects `/v1`. Pick the **desktop app** when it is only for you on your own computer: nothing to set up, and nothing is exposed to the network.
+
 ## Quick start
 
 **One-liner** (Docker required — sets up `~/taotie`, generates an encryption key, pulls the image, and starts the container):
@@ -179,11 +193,11 @@ Everything else — Docker Compose, local development, declarative startup confi
 
 ## Desktop app
 
-A native menu-bar app lives in [`desktop/`](./desktop): the entire router + dashboard running locally from your tray, with a glass popover showing live request stats.
+A native menu-bar app lives in [`apps/desktop/`](./apps/desktop): the entire router + dashboard running locally from your tray, with its own embedded server, with a glass popover showing live request stats.
 
 ![Taotie desktop app](repo-assets/desktop.png)
 
-**[Download from Releases](https://github.com/matrix0ai/dx-taotie/releases/latest)** — the macOS `.dmg` and the Windows `.exe` installer are attached to every release. No account or password to set up: the only credential you need is the unified API key from the tray popover. Build-from-source steps and where your data lives: [docs/en/install/01-install.md#desktop-app](docs/en/install/01-install.md#desktop-app).
+**[Download from Releases](https://github.com/matrix0ai/dx-taotie/releases/latest)** — the macOS `.dmg` and the Windows `.exe` installer are attached to every release. No account or password to set up (no login, and no separate server to run): the only credential you need is the unified API key from the tray popover. Build-from-source steps and where your data lives: [docs/en/install/01-install.md#desktop-app](docs/en/install/01-install.md#desktop-app).
 
 For macOS 12 Monterey or later, choose **arm64 (Apple Silicon)** or **x64 (Intel)**. Both Mac builds also include a ZIP download.
 

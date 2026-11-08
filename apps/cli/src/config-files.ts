@@ -6,7 +6,7 @@ import {
   parse,
   type ParseError,
 } from 'jsonc-parser';
-import { Document, isMap, parseDocument } from 'yaml';
+import { Document, isMap, isSeq, parseDocument, type YAMLSeq } from 'yaml';
 import type { GeneratedFile } from './types.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -92,6 +92,51 @@ function mergeYamlDocument(existing: string, value: Record<string, unknown>): st
     }
   };
   applyPatch(value);
+  const rendered = doc.toString({ lineWidth: 0 });
+  return rendered.endsWith('\n') ? rendered : `${rendered}\n`;
+}
+
+function mergeYamlSequence(existing: string, entries: Record<string, unknown>[]): string {
+  const doc = existing.trim() ? parseDocument(existing) : new Document([]);
+  if (doc.errors.length) {
+    throw new Error(`Existing YAML cannot be parsed safely: ${doc.errors[0].message}`);
+  }
+  if (doc.contents !== null && !isSeq(doc.contents)) {
+    throw new Error('Existing YAML is not a sequence at the top level');
+  }
+  if (!isSeq(doc.contents)) doc.contents = doc.createNode([]);
+  const sequence = doc.contents as YAMLSeq;
+  for (const entry of entries) {
+    const id = entry.id;
+    if (typeof id !== 'string') throw new Error('Generated YAML sequence entry has no string id');
+    const matches = sequence.items
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }) => isMap(item) && item.get('id') === id);
+    if (matches.length > 1) throw new Error(`Existing YAML has duplicate '${id}' entries`);
+    if (matches.length === 0) {
+      sequence.add(entry);
+      continue;
+    }
+    const index = matches[0].index;
+    const generated = entry as Record<string, unknown>;
+    for (const [key, value] of Object.entries(generated)) {
+      const current = doc.getIn([index, key], true);
+      if (key === 'config' && isRecord(value) && isMap(current)) {
+        for (const [configKey, configValue] of Object.entries(value)) {
+          const configNode = doc.getIn([index, key, configKey], true);
+          if (configKey === 'providers' && isRecord(configValue) && isMap(configNode)) {
+            for (const [provider, route] of Object.entries(configValue)) {
+              doc.setIn([index, key, configKey, provider], route);
+            }
+          } else {
+            doc.setIn([index, key, configKey], configValue);
+          }
+        }
+      } else {
+        doc.setIn([index, key], value);
+      }
+    }
+  }
   const rendered = doc.toString({ lineWidth: 0 });
   return rendered.endsWith('\n') ? rendered : `${rendered}\n`;
 }
@@ -348,6 +393,7 @@ function mergeEnv(existing: string, generated: string): string {
 export function renderFile(file: GeneratedFile, existing = ''): string {
   if (file.format === 'json') return mergeJson(existing, file.value ?? {});
   if (file.format === 'env') return mergeEnv(existing, file.content ?? '');
+  if (file.format === 'yaml-sequence') return mergeYamlSequence(existing, file.entries ?? []);
   if (file.format === 'yaml') {
     return file.value
       ? mergeYamlDocument(existing, file.value)

@@ -1,6 +1,6 @@
 # RFC 0007: Default catalog and Premium endpoints to freellmapi.co
 
-**Status:** Draft
+**Status:** Implemented
 
 ## Summary
 
@@ -37,5 +37,6 @@ Point the default model-catalog sync and the Premium page links at the upstream 
 - An unauthenticated `GET https://api.freellmapi.co/v1/latest` returns HTTP 200 with a signature that verifies against `PINNED_CATALOG_PUBKEY` (verified 2026-11-08: tier `monthly`, version `2026.11.07.3db98c`, 450 models, 136 quirks).
 - `catalog-sync.test.ts` and `declarative-config.test.ts` pass (70 tests on 2026-11-07).
 - The Premium page's pricing and manage links use `freellmapi.co`.
-- Not yet verified: a full sync applied to a database from the new default, and key activation with a purchased `fla_` key.
-- Open: the Premium terms are upstream's. Confirm with the project owner that routing Taotie users to a third-party paid service is intended.
+- Decided by the project owner (2026-11-08): Taotie does not maintain a catalog, and the upstream FreeLLMAPI service is the intended source.
+- Not verified: a full sync applied to a database from the new default, and key activation with a purchased `fla_` key.
+- Shipped in commit `3ae585f4`.

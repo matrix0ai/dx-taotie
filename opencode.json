@@ -6,7 +6,8 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Taotie (local)",
       "options": {
-        "baseURL": "http://127.0.0.1:3001/v1"
+        "baseURL": "http://127.0.0.1:3001/v1",
+        "apiKey": "taotie-945f8f3251abbffa0419a14c0568f5a789313e4b9b5ae058"
       },
       "models": {
         "auto": {

@@ -7,6 +7,7 @@ import spawn from 'cross-spawn';
 import { Writable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import { applyGeneratedFiles, printDryRunDiff } from './config-files.js';
+import { detectDshTuiProfile } from './dsh-profile.js';
 import { getTool, tools } from './tools.js';
 import { resolveLaunchModel, type ResolvedModel } from './models.js';
 import { DOCTOR_TOOLS, diagnose, exitCodeFor, formatReport, type ToolReport } from './doctor.js';
@@ -17,6 +18,7 @@ interface CliOptions extends KeyCommandOptions {
   apiKey?: string;
   profile: string;
   model?: string;
+  dshProfile?: string;
 }
 
 function rootUrl(url: string): string {
@@ -80,7 +82,7 @@ export function parseArgs(argv: string[]): { command?: string; options: CliOptio
     const value = inline ?? argv[index + 1];
     if (
       flag === '--url' || flag === '--api-key' || flag === '--profile'
-      || flag === '--model' || flag === '--timeout'
+      || flag === '--model' || flag === '--dsh-profile' || flag === '--timeout'
       || flag === '--token' || flag === '--key' || flag === '--id'
     ) {
       if (inline === undefined) index += 1;
@@ -90,6 +92,7 @@ export function parseArgs(argv: string[]): { command?: string; options: CliOptio
       if (flag === '--url') options.url = value;
       else if (flag === '--api-key') options.apiKey = value;
       else if (flag === '--profile') options.profile = validateProfile(value);
+      else if (flag === '--dsh-profile') options.dshProfile = validateProfile(value);
       else if (flag === '--timeout') options.timeoutMs = parseTimeout(value);
       else if (flag === '--token') options.token = value;
       else if (flag === '--key') options.key = value;
@@ -265,6 +268,7 @@ function help(): string {
     '',
     'Usage:',
     '  taotie <command> [--url URL] [--api-key KEY] [--profile NAME] [--model ID] [--dry-run]',
+    '  taotie setup-dsh [--dsh-profile NAME]',
     '',
     'Commands:',
     ...tools.map(tool => `  ${tool.command.padEnd(17)} ${tool.name}`),
@@ -283,6 +287,9 @@ function help(): string {
 async function setup(command: string, options: CliOptions): Promise<void> {
   const tool = getTool(command.replace(/^setup-/, ''));
   if (!tool) throw new Error(`Unknown setup command '${command}'`);
+  const dshTuiProfile = command === 'setup-dsh'
+    ? detectDshTuiProfile(os.homedir(), options.dshProfile)
+    : undefined;
   const apiKey = options.apiKey ?? await promptForKey();
   const rosters = await catalogs(options.url, apiKey);
   // --model was parsed but never reached the generators, so `setup-x --model y`
@@ -297,6 +304,7 @@ async function setup(command: string, options: CliOptions): Promise<void> {
     models: rosters.available,
     homeDir: os.homedir(),
     requestedModelId,
+    dshTuiPatchPath: dshTuiProfile?.patchPath,
   };
   const generation = tool.generate(context);
 

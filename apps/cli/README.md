@@ -6,6 +6,7 @@ serving and write the config file each tool expects.
 
 ```bash
 npx taotie setup-claude --url http://localhost:3001 --api-key <your-key>
+npx taotie setup-dsh --url http://localhost:3001 --api-key <your-key>
 ```
 
 No install step, no account. The unified API key comes from your Taotie
@@ -47,10 +48,18 @@ dashboard (or the tray popover in the desktop app).
 | `--url URL` | Gateway base URL (default `http://localhost:3001`) |
 | `--api-key KEY` | Unified API key |
 | `--profile NAME` | Name the generated profile/provider entry |
+| `--dsh-profile NAME` | Select DSH TUI profile for `setup-dsh` when several are installed |
 | `--model ID` | Pin a specific model instead of the catalog default |
 | `--dry-run` | Print the diff and write nothing |
 
 `TAOTIE_URL` and `TAOTIE_API_KEY` work in place of `--url` / `--api-key`.
+
+`setup-dsh` detects an installed DSH TUI profile by its bundle manifest and
+writes Taotie into that profile's `cordis.patch.yml`. One matching profile is
+selected automatically; use `--dsh-profile NAME` when multiple profiles match.
+With no DSH TUI profile, setup keeps writing legacy `$DSH_HOME/settings.yaml`.
+Run `taotie setup-dsh --dry-run` to preview changes. The DSH TUI command itself
+must be installed separately; start it with `dsh-tui`.
 
 ## Provider keys
 

@@ -1,6 +1,6 @@
 # RFC 0006: Pin Node 24 and move desktop to Electron 45
 
-**Status:** Draft
+**Status:** Implemented
 
 ## Summary
 
@@ -44,4 +44,8 @@ Pin the repository to Node 24.22.2, move the desktop app from Electron 38.8.6 to
 - `pnpm --filter taotie-desktop typecheck` passes and `pnpm --filter taotie-desktop test` passes (70 passed, 1 skipped on 2026-11-07).
 - `pnpm build` exits 0 (verified 2026-11-07).
 - `pnpm desktop:dev` starts and logs `Taotie running on http://127.0.0.1:31415`.
-- Not yet verified: server and CLI test suites; packaged builds (`desktop:dist*`), the updater and macOS notarize flow on Electron 45.
+- Full suites on Node 24.22.2 (2026-11-08): client 405/406 on the first run, with the one failure a 5 s timeout under load that passes alone (3/3); CLI 168 passed, 1 skipped; server 4147 passed, 5 skipped, 1 failed. The server failure is the `compression.test.ts` 100 KB performance-budget test, which depends on machine load: it also failed once under Node 22 at load average ~60 and passed on other runs.
+- `scripts/dev-bootstrap.sh` accepts Node 24 and `dev-bootstrap.test.mjs` passes (2/2).
+- `smoke-mac-package.mjs` now checks `prebuilds/darwin-<arch>.node`. The script itself was not run.
+- Not verified: packaged builds (`desktop:dist*`), the auto-updater and the macOS notarize flow on Electron 45. Follow-ups: remove the stale `rebuild:native` script and the `apps/desktop/README.md` rebuild notes; review the `better-sqlite3` rebuild steps in `.github/workflows/desktop-release.yml`.
+- Shipped in commit `3ae585f4`.

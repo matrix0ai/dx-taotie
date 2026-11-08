@@ -3,7 +3,7 @@
 ## Active
 
 - [ ] Implement RFC 0002: Taotie App Operator Experience (Umbrella) (RFC 0002)
-  - [ ] Implement RFC 0003: Configurable Server and Web UI Ports (child of 0002) (RFC 0003)
+  - [x] Implement RFC 0003: Configurable Server and Web UI Ports (child of 0002) (RFC 0003)
   - [ ] Implement RFC 0004: Configure Local Agents from Taotie Desktop (child of 0002) (RFC 0004)
   - [ ] Implement RFC 0005: Live Request and Routing Monitor (child of 0002) (RFC 0005)
 

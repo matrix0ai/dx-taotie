@@ -26,7 +26,7 @@ Provider routing behavior, gateway protocol changes, agent installation or upgra
 |-----|---------|
 | [0005](0005-live-request-routing-monitor.md) | Live Request and Routing Monitor |
 | [0004](0004-desktop-agent-autoconfiguration.md) | Configure Local Agents from Taotie Desktop |
-| [0003](0003-configurable-app-ports.md) | Configurable Server and Web UI Ports |
+| [0003](rejected/0003-configurable-app-ports.md) | Configurable Server and Web UI Ports |
 
 ## Acceptance
 

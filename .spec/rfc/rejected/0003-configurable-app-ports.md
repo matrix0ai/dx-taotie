@@ -1,8 +1,8 @@
 # RFC 0003: Configurable Server and Web UI Ports (child of 0002)
 
-**Status:** Draft
+**Status:** Rejected
 
-**Parent:** [0002](0002-taotie-app-operator-workflow.md)
+**Parent:** [0002](../0002-taotie-app-operator-workflow.md)
 
 ## Summary
 

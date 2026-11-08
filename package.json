@@ -2,7 +2,7 @@
   "name": "@taotie/monorepo",
   "private": true,
   "scripts": {
-    "dev": "pnpm desktop:dev",
+    "dev": "concurrently --kill-others-on-fail --names server,client \"pnpm --filter @taotie/server dev\" \"pnpm --filter @taotie/client dev\"",
     "dev:lan": "concurrently --kill-others-on-fail --names server,client \"pnpm --filter @taotie/server dev\" \"pnpm --filter @taotie/client dev --host\"",
     "test": "pnpm test:bootstrap && pnpm test:hooks && turbo run test",
     "test:bootstrap": "node --test scripts/dev-bootstrap.test.mjs",

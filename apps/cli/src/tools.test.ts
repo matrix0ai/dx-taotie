@@ -370,21 +370,6 @@ describe('tool generators', () => {
     expect(value['agent-default-model']).toBeUndefined();
   });
 
-  it('writes the DSH TUI provider into the profile patch sequence', () => {
-    const dsh = tools.find(tool => tool.id === 'dsh')!;
-    const [patch] = dsh.generate({
-      ...context,
-      dshTuiPatchPath: '/home/tester/.dsh/profiles/dsh-tui/cordis.patch.yml',
-    }).files;
-    expect(patch.path).toBe('/home/tester/.dsh/profiles/dsh-tui/cordis.patch.yml');
-    expect(patch.format).toBe('yaml-sequence');
-    expect(patch.entries).toMatchObject([{
-      id: 'llm-pi-ai',
-      config: { providers: { taotie: { api: 'openai-completions', apiKeyEnv: 'TAOTIE_API_KEY' } } },
-    }]);
-    expect((patch.entries?.[0] as any).config['agent-default-model']).toBeUndefined();
-  });
-
   it('writes MiMo Code a custom provider its own schema accepts', () => {
     const mimo = tools.find(tool => tool.id === 'mimo')!;
     const [config] = mimo.generate(context).files;

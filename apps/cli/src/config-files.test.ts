@@ -56,32 +56,6 @@ describe('safe config writes', () => {
     expect(first.match(/^models:$/gm)).toHaveLength(1);
   });
 
-  it('merges DSH TUI routes by plugin id and preserves other patches and providers', () => {
-    const generated = {
-      path: '/unused/cordis.patch.yml',
-      format: 'yaml-sequence' as const,
-      entries: [{ id: 'llm-pi-ai', config: { providers: { taotie: { baseURL: 'http://localhost:3001/v1' } } } }],
-    };
-    const existing = [
-      '- id: dsh-tui',
-      '  config:',
-      '    theme: dark',
-      '- id: llm-pi-ai',
-      '  config:',
-      '    providers:',
-      '      other:',
-      '        baseURL: https://example.test/v1',
-      '',
-    ].join('\n');
-    const first = renderFile(generated, existing);
-    const second = renderFile(generated, first);
-    expect(first).toContain('id: dsh-tui');
-    expect(first).toContain('theme: dark');
-    expect(first).toContain('other:');
-    expect(first).toContain('taotie:');
-    expect(second).toBe(first);
-  });
-
   it('deep-merges JSONC and retains inline and leading comments', () => {
     const existing = [
       '// user configuration',

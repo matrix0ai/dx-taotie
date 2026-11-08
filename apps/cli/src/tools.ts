@@ -568,38 +568,39 @@ function dsh(ctx: GenerateContext): Generation {
       contextWindow: contextWindow(entry),
       maxTokens: outputLimit(entry),
     }));
-  const routeConfig = {
-    displayName: ctx.profile === 'default' ? 'Taotie' : `Taotie (${ctx.profile})`,
-    apiKeyEnv: 'TAOTIE_API_KEY',
-    api: 'openai-completions',
-    baseURL: v1Url(ctx.url),
-    models: entries,
-  };
-  const settingsFile = ctx.dshTuiPatchPath
-    ? {
-      path: ctx.dshTuiPatchPath,
-      format: 'yaml-sequence' as const,
-      entries: [{ id: 'llm-pi-ai', config: { providers: { [route]: routeConfig } } }],
-    }
-    : {
-      path: path.join(home, 'settings.yaml'),
-      format: 'yaml' as const,
-      value: {
-        'llm-pi-ai': { providers: { [route]: routeConfig } },
-        ...(ctx.profile === 'default'
-          ? {
-            'agent-default-model': {
-              provider: route,
-              model: model.id,
-              reasoningEffort: undefined,
-            },
-          }
-          : {}),
-      },
-    };
   return {
     files: [
-      settingsFile,
+      {
+        path: path.join(home, 'settings.yaml'),
+        format: 'yaml',
+        value: {
+          'llm-pi-ai': {
+            providers: {
+              [route]: {
+                displayName: ctx.profile === 'default' ? 'Taotie' : `Taotie (${ctx.profile})`,
+                apiKeyEnv: 'TAOTIE_API_KEY',
+                api: 'openai-completions',
+                baseURL: v1Url(ctx.url),
+                models: entries,
+              },
+            },
+          },
+          // The default model is only claimed for the default profile; a
+          // named route is an extra option in the picker, not a takeover.
+          // A previous default's `reasoningEffort` must go with it: DSH
+          // refuses a request naming a level the selected model cannot
+          // take, and a hand-declared model declares none.
+          ...(ctx.profile === 'default'
+            ? {
+              'agent-default-model': {
+                provider: route,
+                model: model.id,
+                reasoningEffort: undefined,
+              },
+            }
+            : {}),
+        },
+      },
       {
         path: path.join(home, '.env'),
         format: 'env',
@@ -608,9 +609,7 @@ function dsh(ctx: GenerateContext): Generation {
       },
     ],
     notes: [
-      ctx.dshTuiPatchPath
-        ? `Start the DSH terminal UI with: dsh-tui — ${route}/${model.id} is available in its model picker.`
-        : `Start DeepSeek Harness with: npx @deepseek-ai/dsh web — ${route}/${model.id} is ${ctx.profile === 'default' ? 'the default model' : 'in the model picker'}.`,
+      `Start DeepSeek Harness with: npx @deepseek-ai/dsh web — ${route}/${model.id} is ${ctx.profile === 'default' ? 'the default model' : 'in the model picker'}.`,
       'One-shot check: npx @deepseek-ai/dsh --profile headless "Say hello"',
       'Settings are hot-reloaded, so a running dsh picks this up on its next request.',
       `Models are declared text-only; give a vision model \`input: [text, image]\` under ${route}.models in settings.yaml to send it images.`,

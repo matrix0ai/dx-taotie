@@ -101,33 +101,33 @@ Considered/rejected: 直接运行 `birdify`；命令仍指向 Volta shim。
 
 ### Reorganize applications under apps and shared code under packages
 Status: discussed
-Touches: `apps/*`, `packages/shared/*`, `server/*`, `client/*`, `cli/*`, `desktop/*`
+Touches: `apps/*`, `packages/shared/*`
 
-将服务端、客户端、CLI 和桌面应用归入 apps/，将 shared/ 归入 packages/shared/，以采用 pnpm monorepo 布局。
+Application directories were moved under apps and shared code under packages/shared to establish the monorepo layout.
 
 ### Preserve container data path during source reorganization
 Status: discussed
-Touches: `docker-compose.yml`, `Dockerfile`
+Touches: `Dockerfile`
 
-The agent preserved `/app/server/data`, the `freellmapi-data` volume, service name, and `freeapi.db` filename across the source reorganization. Reusing these identifiers allows existing container data to remain available after rebuilding.
+The image reads source from apps while retaining /app/server/data inside the container, preserving compatibility with existing data volumes.
 
 ### Render generated icons from SVG
 Status: discussed
 Touches: `gen-icons.mjs`
 
-图标生成器改为使用 sharp 渲染 SVG，避免原有手绘逻辑覆盖新图标。
+The icon generator now renders from SVG through sharp because its previous hand-drawn shapes would overwrite the new brand artwork.
 
 ### Rename product branding to Taotie
 Status: discussed
-Touches: `**/*`
+Touches: `README*`, `docs/*`, `.env.example`, `.github/RELEASE_TEMPLATE.md`, `apps/desktop/package.json`, `apps/server/src/*`
 
-显示名称、favicon、桌面图标和托盘图标统一改为 Taotie，以保持产品品牌呈现一致。
+Brand references and the premium site default were updated to Taotie; the site URL remains overridable through PREMIUM_SITE_URL.
 
 ### Set Taotie bundle identifier
 Status: discussed
-Touches: `desktop/*`
+Touches: `apps/desktop/*`
 
-桌面应用 Bundle ID 改为 me.systembug.taotie，以匹配新的产品标识。
+The desktop bundle identifier was changed to me.systembug.taotie to match the rebranded application.
 
 ### Update workflow paths after directory reorganization
 Status: discussed
@@ -137,51 +137,51 @@ Touches: `.github/workflows/*`
 
 ### Repair documentation links after directory reorganization
 Status: discussed
-Touches: `README*`, `CONTRIBUTING.md`, `SECURITY.md`, `GLOSSARY.md`
+Touches: `docs/*`, `README*`
 
-目录搬迁后修复失效文档链接，保持文档导航可用。
+Documentation links were repaired after the directory move, addressing 108 broken links.
 
 ### Keep historical changelog unchanged
 Status: discussed
-Touches: `CHANGELOG*`
+Touches: `CHANGELOG`
 
-保留历史 changelog 内容，避免重写既有发布记录。
+Historical changelog content was restored after an unintended edit so the reorganization would not rewrite release history.
 
 ### Register frontend and backend ports
 Status: discussed
 Touches: `spark/port.md`
 
-登记前端 Vite 端口 5203 和后端监听端口 3001。前端端口登记用于避免与其他项目发生冲突。
+The port registry records Vite on 5203 and the backend on 3001 so local services have stable assignments.
 
 ### Point origin remote to Taotie repository
 Status: discussed
 Touches: `.git/config`
 
-将 origin 指向 matrix0ai/dx-taotie，使仓库远程地址与新的项目归属一致。
+The origin remote now targets the repository path selected for the rebranded project. No push was performed.
 
 ### Update project registry repository path
 Status: discussed
 Touches: `spark/project.md`
 
-同步更新项目登记中的 Git 路径，使其与新的仓库路径一致。
+The project registry Git path was aligned with the configured origin remote.
 
 ### Do not change existing domain links
 Status: discussed
-Touches: `**/*`
+Touches: `apps/server/src/lib/catalog-sync.ts`
 
-保留现有 freellmapi.co 链接，因为新域名尚未确定。
+The catalog synchronization API default remains unchanged because it points to the sync backend rather than the website; changing it without a replacement endpoint could break synchronization.
 
 ### Leave branding screenshots for later recapture
 Status: discussed
-Touches: `repo-assets/github-hero.png`, `repo-assets/*`
+Touches: `repo-assets/*`
 
-现有截图仍展示旧品牌，需要重新生成后才能反映 Taotie 外观。
+Existing repository screenshots still show the old branding and remain to be recaptured.
 
 ### Apply the registered Vite port in client configuration
 Status: discussed
 Touches: `apps/client/vite.config.ts`
 
-端口登记为 5203，但 Vite 配置尚未应用该端口和 strictPort；客户端当前仍使用默认端口 5173。
+Vite now uses port 5203 with strictPort enabled, matching the port registry and avoiding collisions with another local service.
 
 ### Close RFCs 0006 and 0007 as Implemented
 Status: discussed
@@ -302,3 +302,57 @@ Status: discussed
 Touches: `~/Library/pnpm/dsh`, `~/.npm-global/bin/dsh`
 
 The TUI requires the `dsh` engine to load its profile bundle. The agent installed the current engine globally, but its version was incompatible with the installed TUI bundle, so profile loading still failed.
+
+### Close RFC 0001 after committing and pushing its implementation
+Status: directed
+Touches: `.spec/rfc/0001-dsh-tui-profile-setup.md`, `apps/cli/*`
+
+The RFC was marked Implemented only after its acceptance behavior passed and its code was committed and pushed. This keeps the recorded lifecycle status aligned with the repository state.
+
+### Validate DSH profile setup against a temporary home
+Status: discussed
+Touches: `apps/cli/src/dsh-profile.ts`, `apps/cli/src/dsh-profile.test.ts`
+
+Acceptance checks used a temporary DSH home to exercise detection, dry-run, writes, permissions, and dumped configuration without changing the real DSH home. A fake catalog server covered the request path after the live provider check returned HTTP 401.
+
+### Commit only the intended CLI implementation files
+Status: discussed
+Touches: `apps/cli/*`, `.audit`, `package.json`
+
+The commit included the tracked implementation changes and the two new profile files while excluding untracked agent and tool configuration. This kept the RFC commit scoped to the CLI work.
+
+### Pin DSH to a version supported by the TUI plugin
+Status: discussed
+Touches: `~/.dsh/profiles/dsh-tui/package.json`
+
+The installed TUI plugin version accepts only a specific set of engine boot-package versions, and the installed engine falls outside that set. Downgrading the engine to a listed compatible release was recommended while leaving the plugin unchanged; this change was not performed.
+
+### Keep the DSH API key in its DSH environment file
+Status: discussed
+Touches: `~/.dsh/.env`, `~/.dsh/profiles/dsh-tui/cordis.patch.yml`, `~/.zshrc`
+
+The provider configuration reads its API key through an environment variable, and DSH loads that variable from its own environment file. Keeping the key there limits its availability to DSH; the shell configuration was left unchanged. A local models endpoint request returned HTTP 200.
+
+### Leave PM2 uninstalled
+Status: directed
+Touches: `~/.volta/bin`
+
+PM2 appeared among commands from the retired Volta installation, but no current need to manage background processes was established. It was therefore excluded from restoration.
+
+### Retain the Volta directory pending safe cleanup
+Status: discussed
+Touches: `~/.volta`, `~/.zshrc`, `~/.profile`
+
+Volta startup configuration was removed from the shell files, while the Volta directory was retained because deleting it is irreversible and running processes may still depend on it.
+
+### Do not merge upstream
+Status: discussed
+Touches: `.git/config`
+
+The upstream repository was not merged because the directory reorganization would produce extensive conflicts. Future upstream synchronization remains unsupported by this change.
+
+### Work on main directly
+Status: directed
+Touches: `.git/HEAD`
+
+The reorganization and rebrand were completed on main rather than a feature branch.

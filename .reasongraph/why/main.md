@@ -65,17 +65,17 @@ Touches: `package.json`
 
 The root development command maps to the existing desktop development flow so it opens the Electron app instead of starting the web app. The existing desktop script remains the implementation entry point.
 
-### Use Node 24 through fnm
+### Use fnm Node 24
 Status: directed
-Touches: `.nvmrc`, `package.json`
+Touches: `~/.zshrc`, `~/.profile`
 
-Project runtime configuration was changed to Node 24, with fnm used for local runtime selection after Volta was removed. Node 24.22.2 successfully loaded the SQLite native module and served the desktop API.
+The agent chose fnm to support per-project Node versions, with Node 24 as the default and Node 22 also installed. Shell startup configuration initializes fnm and removes Volta entries. The `~/.volta` directory itself was left in place.
 
 ### Keep existing saved API keys until coordinated rotation
 Status: discussed
-Touches: `~/.dsh/.env`, `~/.zshrc`
+Touches: `~/.dsh/.env`
 
-The agent kept the existing local API key in dsh's environment file, which dsh reads at startup, instead of moving it into shell-wide configuration. A request to the local models endpoint returned HTTP 200, confirming the saved key worked.
+The agent found the configured local API key in the dsh environment file and confirmed it worked against the local endpoint. The key was left unchanged.
 
 ### Use Birdify for project mapping checks
 Status: discussed
@@ -89,7 +89,7 @@ Considered/rejected: 复用现有地图；仓库中没有可复用地图。
 Status: discussed
 Touches: `~/.dsh/profiles/dsh-tui/cordis.patch.yml`
 
-The profile patch holds provider settings, including the OpenAI-compatible API type and base URL. The configured local endpoint was already present, so the agent left it unchanged.
+The agent identified the profile patch as the place for OpenAI-compatible provider settings, including the base URL, model definitions, and environment-variable name for the API key. The configured local endpoint and key were confirmed to work; the key value is omitted.
 
 ### Use fnm Node 24 to fetch Birdify CLI
 Status: agent-initiated — transcript does not show this approach being discussed
@@ -290,3 +290,15 @@ Status: discussed
 Touches: `.spec/*`
 
 Local `main` contains unpushed commit `0ea49acc`; it was left unpushed. The working tree retains 11 modified, unstaged files.
+
+### Link the profile-installed dsh-tui commands into the user bin
+Status: discussed
+Touches: `~/.local/bin/dsh-tui`, `~/.local/bin/dst`, `~/.dsh/profiles/dsh-tui/node_modules/.bin/*`
+
+Global installation of the TUI package failed because an upstream dependency version could not be resolved. The agent linked the profile-installed `dsh-tui` and `dst` executables into the user bin so they could be found on PATH.
+
+### Install the dsh engine globally
+Status: discussed
+Touches: `~/Library/pnpm/dsh`, `~/.npm-global/bin/dsh`
+
+The TUI requires the `dsh` engine to load its profile bundle. The agent installed the current engine globally, but its version was incompatible with the installed TUI bundle, so profile loading still failed.

@@ -26,3 +26,10 @@ update-hermes.sh
 # Monetization planning — private, never committed
 monetization/
 .turbo/
+
+# IssueGraph / Dolt files (added by issuegraph init)
+.dolt/
+.issuegraph-credential-key
+.issuegraph/proxieddb/
+*.gate.lock*
+.graphify/

@@ -8,9 +8,11 @@ export interface CatalogModel {
 
 export interface GeneratedFile {
   path: string;
-  format: 'json' | 'toml' | 'yaml' | 'env';
+  format: 'json' | 'toml' | 'yaml' | 'yaml-sequence' | 'env';
   /** Structured patch, deep-merged into the existing document (json, yaml). */
   value?: Record<string, unknown>;
+  /** YAML sequence entries merged into an existing entry selected by id. */
+  entries?: Record<string, unknown>[];
   /** Literal text, merged as a marked `# taotie:start/end` block (toml, yaml, env). */
   content?: string;
   sensitive?: boolean;
@@ -25,6 +27,8 @@ export interface GenerateContext {
   /** An explicit `--model`. Overrides each generator's default-model
    *  heuristic; validated against the unfiltered catalog by the caller. */
   requestedModelId?: string;
+  /** Selected DSH TUI profile patch path; absent means legacy DSH config. */
+  dshTuiPatchPath?: string;
 }
 
 export interface Generation {

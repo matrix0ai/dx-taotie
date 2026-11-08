@@ -75,6 +75,112 @@ Project runtime configuration was changed to Node 24, with fnm used for local ru
 
 ### Keep existing saved API keys until coordinated rotation
 Status: discussed
-Touches: `apps/server/src/db/index.ts`
+Touches: `~/.dsh/.env`, `~/.zshrc`
 
-The server returns previously saved unified keys unchanged, while newly generated keys use the Taotie prefix. Changing the stored key would break existing DSH and agent connections, so the existing key was not rotated without updating those clients.
+The agent kept the existing local API key in dsh's environment file, which dsh reads at startup, instead of moving it into shell-wide configuration. A request to the local models endpoint returned HTTP 200, confirming the saved key worked.
+
+### Use Birdify for project mapping checks
+Status: discussed
+Touches: `.birdify/*`, `architecture JSON`
+
+现有仓库没有可复用的 Birdify 地图或架构 JSON，因此代理决定基于当前根目录构建地图并核对约束。该工作不修改业务代码或 RFC 状态。
+
+Considered/rejected: 复用现有地图；仓库中没有可复用地图。
+
+### Configure OpenAI-compatible providers in the dsh profile patch
+Status: discussed
+Touches: `~/.dsh/profiles/dsh-tui/cordis.patch.yml`
+
+The profile patch holds provider settings, including the OpenAI-compatible API type and base URL. The configured local endpoint was already present, so the agent left it unchanged.
+
+### Use fnm Node 24 to fetch Birdify CLI
+Status: agent-initiated — transcript does not show this approach being discussed
+Touches: `Birdify CLI invocation`
+
+代理避开仍指向 Volta shim 的 `birdify` 命令，改用 fnm Node 24 下的 `npx` 获取 CLI。下载尚未返回，因此执行结果未确认。
+
+Considered/rejected: 直接运行 `birdify`；命令仍指向 Volta shim。
+
+### Reorganize applications under apps and shared code under packages
+Status: discussed
+Touches: `apps/*`, `packages/shared/*`, `server/*`, `client/*`, `cli/*`, `desktop/*`
+
+将服务端、客户端、CLI 和桌面应用归入 apps/，将 shared/ 归入 packages/shared/，以采用 pnpm monorepo 布局。
+
+### Preserve container data path during source reorganization
+Status: discussed
+Touches: `Dockerfile`
+
+Docker 构建从 apps/ 读取源码，同时保留容器内 /app/server/data 路径，避免破坏已有数据卷。
+
+### Render generated icons from SVG
+Status: discussed
+Touches: `gen-icons.mjs`
+
+图标生成器改为使用 sharp 渲染 SVG，避免原有手绘逻辑覆盖新图标。
+
+### Rename product branding to Taotie
+Status: discussed
+Touches: `**/*`
+
+显示名称、favicon、桌面图标和托盘图标统一改为 Taotie，以保持产品品牌呈现一致。
+
+### Set Taotie bundle identifier
+Status: discussed
+Touches: `desktop/*`
+
+桌面应用 Bundle ID 改为 me.systembug.taotie，以匹配新的产品标识。
+
+### Update workflow paths after directory reorganization
+Status: discussed
+Touches: `.github/workflows/*`
+
+工作流中的路径引用随目录搬迁更新，使发布和 Docker 流程继续指向新的 apps/ 与 packages/ 布局。
+
+### Repair documentation links after directory reorganization
+Status: discussed
+Touches: `README*`, `CONTRIBUTING.md`, `SECURITY.md`, `GLOSSARY.md`
+
+目录搬迁后修复失效文档链接，保持文档导航可用。
+
+### Keep historical changelog unchanged
+Status: discussed
+Touches: `CHANGELOG*`
+
+保留历史 changelog 内容，避免重写既有发布记录。
+
+### Register frontend and backend ports
+Status: discussed
+Touches: `spark/port.md`
+
+登记前端 Vite 端口 5203 和后端监听端口 3001。前端端口登记用于避免与其他项目发生冲突。
+
+### Point origin remote to Taotie repository
+Status: discussed
+Touches: `.git/config`
+
+将 origin 指向 matrix0ai/dx-taotie，使仓库远程地址与新的项目归属一致。
+
+### Update project registry repository path
+Status: discussed
+Touches: `spark/project.md`
+
+同步更新项目登记中的 Git 路径，使其与新的仓库路径一致。
+
+### Do not change existing domain links
+Status: discussed
+Touches: `**/*`
+
+保留现有 freellmapi.co 链接，因为新域名尚未确定。
+
+### Leave branding screenshots for later recapture
+Status: discussed
+Touches: `repo-assets/github-hero.png`, `repo-assets/*`
+
+现有截图仍展示旧品牌，需要重新生成后才能反映 Taotie 外观。
+
+### Apply the registered Vite port in client configuration
+Status: discussed
+Touches: `apps/client/vite.config.ts`
+
+端口登记为 5203，但 Vite 配置尚未应用该端口和 strictPort；客户端当前仍使用默认端口 5173。

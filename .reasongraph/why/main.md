@@ -263,21 +263,21 @@ The agent kept a Compose `build:` configuration so `docker compose up --build` c
 
 ### Remove mistakenly committed files in a follow-up commit
 Status: discussed
-Touches: `.spec/*`, `.claude/settings.json`
+Touches: `.spec/`, `apps/cli/`, `opencode.json`, `.github/RELEASE_TEMPLATE.md`, `package.json`, `AGENTS.md`, `CLAUDE.md`, `.claude/settings.json`, `.codex/*`, `.cursor/*`, `.audit/*`
 
-The cleanup removes the 38 extra files from the repository index while leaving their on-disk copies intact. Existing files are restored in the index to their prior commit versions, preserving working-tree edits.
+A follow-up commit restored the tree to the intended implementation plus RFC changes, while preserving working-tree edits. The earlier commit still contains unrelated files in repository history.
 
 ### Leave IssueGraph hooks and configuration enabled
-Status: discussed
-Touches: `.claude/settings.json`
+Status: directed
+Touches: `.git/hooks/*`, `.issuegraph/*`, `.codex/*`
 
-The hook configuration remains untouched because disabling IssueGraph was not approved. Its role in re-staging files remains unconfirmed.
+The hooks and configuration remain enabled because disabling IssueGraph was not authorized.
 
 ### Commit cleanup without bypassing hooks
 Status: discussed
-Touches: `.spec/*`, `.claude/settings.json`
+Touches: `.spec/`, `.git/hooks/*`
 
-A policy hook blocked `--no-verify`, so the cleanup was committed normally. The resulting tree was checked before push.
+The cleanup was committed through normal hooks after a policy hook blocked the bypass option.
 
 ### Push and verify the cleanup commit
 Status: discussed
@@ -305,21 +305,21 @@ The TUI requires the `dsh` engine to load its profile bundle. The agent installe
 
 ### Close RFC 0001 after committing and pushing its implementation
 Status: directed
-Touches: `.spec/rfc/0001-dsh-tui-profile-setup.md`, `apps/cli/*`
+Touches: `.spec/rfc/0001*`, `.spec/rfc/completed/`
 
-The RFC was marked Implemented only after its acceptance behavior passed and its code was committed and pushed. This keeps the recorded lifecycle status aligned with the repository state.
+RFC 0001 was archived as Implemented after its implementation commit was pushed and acceptance checks were completed.
 
 ### Validate DSH profile setup against a temporary home
 Status: discussed
-Touches: `apps/cli/src/dsh-profile.ts`, `apps/cli/src/dsh-profile.test.ts`
+Touches: `apps/cli/`
 
-Acceptance checks used a temporary DSH home to exercise detection, dry-run, writes, permissions, and dumped configuration without changing the real DSH home. A fake catalog server covered the request path after the live provider check returned HTTP 401.
+Validation used a temporary profile and throwaway catalog server, avoiding changes to the real DSH home and keeping the API key out of the patch. The CLI suite passed 168 tests, with 1 skipped.
 
 ### Commit only the intended CLI implementation files
-Status: discussed
-Touches: `apps/cli/*`, `.audit`, `package.json`
+Status: directed
+Touches: `apps/cli/`
 
-The commit included the tracked implementation changes and the two new profile files while excluding untracked agent and tool configuration. This kept the RFC commit scoped to the CLI work.
+The implementation commit contains the 15 intended CLI files and no unrelated files.
 
 ### Pin DSH to a version supported by the TUI plugin
 Status: discussed

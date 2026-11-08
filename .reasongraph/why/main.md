@@ -179,9 +179,9 @@ Existing repository screenshots still show the old branding and remain to be rec
 
 ### Apply the registered Vite port in client configuration
 Status: discussed
-Touches: `apps/client/vite.config.ts`
+Touches: `apps/client/vite.config.ts`, `CONTRIBUTING.md`
 
-Vite now uses port 5203 with strictPort enabled, matching the port registry and avoiding collisions with another local service.
+The client reads `VITE_PORT` for its development-server port and keeps 5203 as the default. This preserves existing local startup behavior while allowing the dashboard port to change independently from backend `PORT`. The value is validated as an integer from 1 to 65535, and invalid values fail with an explicit error.
 
 ### Close RFCs 0006 and 0007 as Implemented
 Status: discussed
@@ -356,3 +356,39 @@ Status: directed
 Touches: `.git/HEAD`
 
 The reorganization and rebrand were completed on main rather than a feature branch.
+
+### Document separate backend and Vite development ports
+Status: discussed
+Touches: `CONTRIBUTING.md`
+
+The development guide uses the current `pnpm dev:lan` command and documents `PORT` and `VITE_PORT` overrides. This keeps instructions aligned with the current root script and makes the two port settings clear.
+
+### Generate Birdify architecture map and HTML
+Status: directed
+Touches: `.birdify/architecture.json`, `.birdify/*.html`
+
+The map records relationships among the desktop host, dashboard, HTTP API, routes, request history, CLI, and upstream services. The HTML artifact provides a rendered view of that architecture.
+
+### Use cached Birdify CLI when npx stalls
+Status: discussed
+Touches: `.birdify/*`
+
+The `npx` validation command stalled, so the agent chose a cached CLI entry point to validate the generated map and avoid waiting on `npx`.
+
+### Reject RFC 0003 and archive it
+Status: directed
+Touches: `.spec/**`
+
+The agent moved RFC 0003 to `rejected/` and updated its tracking records to reflect rejection. The change was committed with only four `.spec` files staged.
+
+### Revert configurable port changes
+Status: directed
+Touches: `apps/client/vite.config.ts`, `CONTRIBUTING.md`
+
+The agent restored both files to `HEAD`, removing the configurable port change and leaving the client Vite port fixed at 5203.
+
+### Use the Taotie brand mark for development app icons
+Status: discussed
+Touches: `apps/desktop/scripts/gen-icons.mjs`, `apps/desktop/src/main/window.ts`, `apps/desktop/src/main/index.ts`
+
+The agent treated the existing Taotie beast-face mark as the source for a regenerated application icon set. Development mode needs explicit Dock and window icon setup so Electron displays the same branding during development.

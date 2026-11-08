@@ -364,10 +364,12 @@ Touches: `CONTRIBUTING.md`
 The development guide uses the current `pnpm dev:lan` command and documents `PORT` and `VITE_PORT` overrides. This keeps instructions aligned with the current root script and makes the two port settings clear.
 
 ### Generate Birdify architecture map and HTML
-Status: directed
-Touches: `.birdify/architecture.json`, `.birdify/*.html`
+Status: discussed
+Touches: `.birdify/architecture.html`, `.birdify/architecture.json`
 
-The map records relationships among the desktop host, dashboard, HTTP API, routes, request history, CLI, and upstream services. The HTML artifact provides a rendered view of that architecture.
+生成架构地图 HTML 和 JSON，覆盖桌面宿主、Dashboard、服务端 API、路由、请求历史、CLI 与上游模型服务。校验结果为 7 个模块、9 条关系。
+
+Risk: 约束图和浏览器内视觉检查尚未完成。
 
 ### Use cached Birdify CLI when npx stalls
 Status: discussed
@@ -392,3 +394,33 @@ Status: discussed
 Touches: `apps/desktop/scripts/gen-icons.mjs`, `apps/desktop/src/main/window.ts`, `apps/desktop/src/main/index.ts`
 
 The agent treated the existing Taotie beast-face mark as the source for a regenerated application icon set. Development mode needs explicit Dock and window icon setup so Electron displays the same branding during development.
+
+### Expose desktop agent setup through a narrow IPC
+Status: discussed
+Touches: `apps/desktop/src/main/agent-config.ts`, `apps/desktop/src/main/index.ts`, `apps/desktop/src/preload/index.ts`
+
+The planned setup flow accepts only a tool ID over IPC and keeps configuration work in the desktop main process. This limits the renderer bridge to one operation and avoids exposing credentials in its result.
+
+### Keep browser setup as command copy
+Status: discussed
+Touches: `apps/client/src/pages/AgentsPage.tsx`
+
+The planned configuration button appears only when the desktop bridge exists and the tool supports file configuration. Browser users keep the existing command-copy flow.
+
+### Reuse the CLI tool generator and config writer
+Status: discussed
+Touches: `apps/cli/src/tools.ts`, `apps/cli/src/config-files.ts`, `apps/desktop/src/main/agent-config.ts`
+
+The proposed desktop flow reuses existing tool generation and file-writing logic, including its merge and backup behavior. Importing these modules avoids duplicating configuration rules or changing the CLI.
+
+### Defer profile and model selection in desktop setup
+Status: discussed
+Touches: `apps/desktop/src/main/agent-config.ts`
+
+The proposed IPC accepts only a tool ID and uses the CLI's default profile and model settings. No explicit rationale beyond keeping the initial flow narrow was established.
+
+### Reuse the existing client UI for desktop and web
+Status: discussed
+Touches: `apps/client/src/pages/AgentsPage.tsx`, `apps/client/src/components/ui/button.tsx`, `apps/desktop/src/preload/index.ts`
+
+The desktop main window serves the same client build as the web app, so the planned button belongs in the existing Agents page and can use the existing button component. A desktop preload bridge provides the runtime distinction without adding a shared UI package.

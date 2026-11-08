@@ -27,7 +27,7 @@ function statusPayload() {
     license: getCachedLicenseStatus(),
     catalog: getSyncState(),
     // Where "Go Premium" / "recover key" links point. Overridable for forks.
-    siteUrl: (process.env.PREMIUM_SITE_URL ?? 'https://taotie.conouch.io').replace(/\/$/, ''),
+    siteUrl: (process.env.PREMIUM_SITE_URL ?? 'https://freellmapi.co').replace(/\/$/, ''),
   };
 }
 

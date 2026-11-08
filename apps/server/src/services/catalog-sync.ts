@@ -40,7 +40,7 @@ const MEDIA_MODALITIES = new Set(['image', 'audio']);
  * app version added via migrations.
  */
 
-const DEFAULT_BASE_URL = 'https://api.taotie.conouch.io';
+const DEFAULT_BASE_URL = 'https://api.freellmapi.co';
 
 // The Ed25519 public key the production catalog is signed with. The private
 // half was generated on the catalog host and has never left it. Self-hosters

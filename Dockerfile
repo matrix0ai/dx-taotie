@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # Keep in sync with .nvmrc.
-ARG NODE_IMAGE=node:22.23.3-bookworm-slim
+ARG NODE_IMAGE=node:24.22.2-bookworm-slim
 
 FROM ${NODE_IMAGE} AS deps
 WORKDIR /app

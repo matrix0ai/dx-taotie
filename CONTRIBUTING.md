@@ -12,18 +12,14 @@ pnpm test                # server vitest; also runs client tests if present
 pnpm build               # compile server and dashboard
 ```
 
-Node is pinned to the version in `.nvmrc` (and Volta) for every build. The
+Node is pinned to the version in `.nvmrc` for every build. The
 desktop app keeps its own `better-sqlite3` build for Electron, so `pnpm dev`
 (web) and `pnpm desktop:dev` can run side by side. The desktop app stores its
 database in `~/.taotie/freeapi.db`.
 
-For a repeatable local setup, run the bootstrap script for your shell. It only
+For a repeatable local setup, run the bootstrap script. It only
 installs dependencies when `pnpm-lock.yaml` has changed and creates `.env`
 when it is absent:
-
-```powershell
-.\scripts\dev-bootstrap.ps1
-```
 
 ```bash
 ./scripts/dev-bootstrap.sh

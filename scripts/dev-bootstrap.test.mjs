@@ -9,18 +9,6 @@ import assert from 'node:assert/strict';
 
 const execFile = promisify(execFileCallback);
 const projectRoot = resolve(import.meta.dirname, '..');
-const powershell = process.platform === 'win32' ? 'powershell.exe' : null;
-
-// Windows PowerShell 5.1 launched from a PowerShell 7 shell inherits PS7's
-// PSModulePath and then cannot load its own built-in modules (#1392). Drop the
-// variable so powershell.exe rebuilds its default, as it does from cmd.exe.
-function runPowerShell(args) {
-  const env = Object.fromEntries(
-    Object.entries(process.env).filter(([name]) => name.toLowerCase() !== 'psmodulepath'),
-  );
-  return execFile(powershell, args, { env });
-}
-
 async function makeFixture(t) {
   const fixture = await mkdtemp(join(tmpdir(), 'taotie-bootstrap-'));
   const lockfile = join(fixture, 'pnpm-lock.yaml');
@@ -61,33 +49,9 @@ async function assertMissingStampInstalls(runBootstrap, t) {
   );
 }
 
-test('PowerShell bootstrap creates and preserves .env', { skip: powershell === null }, async (t) => {
-  await assertEnvIsCreatedAndPreserved(
-    (fixture) => runPowerShell([
-      '-NoProfile',
-      '-ExecutionPolicy', 'Bypass',
-      '-File', join(projectRoot, 'scripts', 'dev-bootstrap.ps1'),
-      '-ProjectRoot', fixture,
-    ]),
-    t,
-  );
-});
-
 test('Bash bootstrap creates and preserves .env', { skip: process.platform === 'win32' }, async (t) => {
   await assertEnvIsCreatedAndPreserved(
     (fixture) => execFile('bash', [join(projectRoot, 'scripts', 'dev-bootstrap.sh'), '--project-root', fixture]),
-    t,
-  );
-});
-
-test('PowerShell bootstrap installs when the lockfile stamp is missing', { skip: powershell === null }, async (t) => {
-  await assertMissingStampInstalls(
-    (fixture) => runPowerShell([
-      '-NoProfile',
-      '-ExecutionPolicy', 'Bypass',
-      '-File', join(projectRoot, 'scripts', 'dev-bootstrap.ps1'),
-      '-ProjectRoot', fixture,
-    ]),
     t,
   );
 });

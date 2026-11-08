@@ -14,7 +14,7 @@ assert.equal(process.platform, 'darwin');
 assert.ok(process.versions.electron, 'Must run under the packaged Electron executable');
 assert.equal(process.arch, expectedArch);
 const resources = resolve(appPath, 'Contents/Resources');
-const sqliteBinary = join(resources, 'app.asar.unpacked/node_modules/better-sqlite3/build/Release/better_sqlite3.node');
+const sqliteBinary = join(resources, 'app.asar.unpacked/node_modules/better-sqlite3/prebuilds/darwin-' + expectedArch + '.node');
 const nativeArch = expectedArch === 'x64' ? 'x86_64' : 'arm64';
 for (const binary of [process.execPath, sqliteBinary]) {
   assert.equal(execFileSync('lipo', ['-archs', binary], { encoding: 'utf8' }).trim(), nativeArch);

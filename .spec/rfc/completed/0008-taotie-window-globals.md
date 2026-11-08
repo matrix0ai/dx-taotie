@@ -1,6 +1,6 @@
 # RFC 0008: Rename desktop window globals from __FREEAPI_* to __TAOTIE_*
 
-**Status:** Draft
+**Status:** Implemented
 
 ## Summary
 
@@ -35,3 +35,5 @@ Mechanical replacement of the five identifiers in:
 - `git grep -c "__TAOTIE_"` finds the same 36 references.
 - Client and desktop test suites pass, including `auth-gate.desktop.test.tsx`; the client typechecks and builds.
 - The desktop app starts and serves the dashboard.
+
+Verification (2026-11-08, commit `06cafa98`, on `origin/main`): `git grep "__FREEAPI_"` outside `.spec/` returns 0; `__TAOTIE_*` appears 36 times across the 10 files. Client build succeeded; `auth-gate.desktop.test.tsx` and the update components' tests passed (6/6); desktop typecheck and the desktop suite passed (70 passed, 1 skipped). The desktop app started on `http://127.0.0.1:31415`, served a new client bundle (`index-DlmnJ51k.js`) that contains the five `__TAOTIE_*__` names and no `__FREEAPI_` text, and the built preload (`out/preload/index.cjs`) defines the same five names. Not exercised: signing in through the real window by hand, and a packaged build.

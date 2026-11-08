@@ -1,6 +1,6 @@
 # RFC 0001: Auto-detect and configure DSH TUI profiles
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 
@@ -58,3 +58,5 @@ Continue storing `TAOTIE_API_KEY` in `$DSH_HOME/.env` with existing merge, backu
 - Malformed YAML, invalid matching profile manifests, missing explicit profile, and ambiguous detection fail before writing either profile config or credentials.
 - `--dry-run` shows both profile and credential changes without modifying files; secret values never appear in output; sensitive files remain mode `0600`.
 - Focused CLI tests pass, and manual DSH `--dump-config` confirms the provider route in the selected TUI profile.
+
+Verification (2026-11-08, commit `052cc971`): CLI suite 168 passed, 1 skipped. Manual run against a temporary copy of a real `dsh-tui` profile and a local fake catalog (never `~/.dsh`): `--dry-run` printed the diff and left the patch unchanged; the real run updated `cordis.patch.yml`, wrote `.env` at mode `0600`, and kept the API key out of the patch; `dsh --profile dsh-tui --dump-config` showed the `taotie` provider with the new `baseURL` and model. Not exercised by hand: the multi-profile ambiguity and missing-explicit-profile failure paths (covered by unit tests only), and `index.test.ts`, which the Design section lists but which has no new cases.

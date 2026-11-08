@@ -20,14 +20,14 @@ const PASSWORD_MIN = 8
 // seeded session is gone (expired after a month of uptime, or cleared by a
 // 401) it asks the shell for a fresh one through the preload bridge.
 type DesktopWindow = Window & {
-  __FREEAPI_DESKTOP__?: boolean
-  __FREEAPI_SESSION__?: () => Promise<string>
+  __TAOTIE_DESKTOP__?: boolean
+  __TAOTIE_SESSION__?: () => Promise<string>
 }
 function desktopSessionBridge(): (() => Promise<string>) | null {
   if (typeof window === 'undefined') return null
   const w = window as DesktopWindow
-  return w.__FREEAPI_DESKTOP__ === true && typeof w.__FREEAPI_SESSION__ === 'function'
-    ? w.__FREEAPI_SESSION__
+  return w.__TAOTIE_DESKTOP__ === true && typeof w.__TAOTIE_SESSION__ === 'function'
+    ? w.__TAOTIE_SESSION__
     : null
 }
 

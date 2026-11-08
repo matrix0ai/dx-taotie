@@ -153,14 +153,14 @@ if (!app.requestSingleInstanceLock()) {
   ipcMain.handle('freeapi:copy-api-key', () => clipboard.writeText(getUnifiedApiKey()));
   ipcMain.handle('freeapi:set-login-item', (_e, open: boolean) => app.setLoginItemSettings({ openAtLogin: open }));
   ipcMain.handle('freeapi:quit', () => app.quit());
-  // Dashboard → the in-app updater (preload __FREEAPI_UPDATER__). Each call
+  // Dashboard → the in-app updater (preload __TAOTIE_UPDATER__). Each call
   // returns the new state; progress arrives as 'freeapi:update-state' events.
   ipcMain.handle('freeapi:update-state', () => getUpdateState());
   ipcMain.handle('freeapi:update-check', () => checkForUpdates());
   ipcMain.handle('freeapi:update-download', () => downloadUpdate());
   ipcMain.handle('freeapi:update-install', () => installUpdate());
   // Dashboard → a fresh session for the hidden machine account (preload
-  // __FREEAPI_SESSION__). The window never shows a login form: its account has
+  // __TAOTIE_SESSION__). The window never shows a login form: its account has
   // a random password nobody knows, so when the boot-time session is gone the
   // only sane answer is a new one. Later windows reuse it too.
   ipcMain.handle('freeapi:session-token', () => {

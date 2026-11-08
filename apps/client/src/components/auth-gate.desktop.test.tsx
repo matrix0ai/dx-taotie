@@ -14,8 +14,8 @@ import { I18nProvider } from '@/i18n'
 import { AuthGate } from './auth-gate'
 
 type DesktopWindow = Window & {
-  __FREEAPI_DESKTOP__?: boolean
-  __FREEAPI_SESSION__?: () => Promise<string>
+  __TAOTIE_DESKTOP__?: boolean
+  __TAOTIE_SESSION__?: () => Promise<string>
 }
 
 const FRESH = 'fresh-session-token'
@@ -76,8 +76,8 @@ afterEach(() => {
   localStorage.clear()
   vi.unstubAllGlobals()
   const w = window as DesktopWindow
-  delete w.__FREEAPI_DESKTOP__
-  delete w.__FREEAPI_SESSION__
+  delete w.__TAOTIE_DESKTOP__
+  delete w.__TAOTIE_SESSION__
 })
 
 const passwordField = () => container.querySelector('input[type="password"]')
@@ -85,12 +85,12 @@ const passwordField = () => container.querySelector('input[type="password"]')
 describe('AuthGate inside the desktop shell', () => {
   it('replaces a rejected session through the shell and never shows the login form', async () => {
     const w = window as DesktopWindow
-    w.__FREEAPI_DESKTOP__ = true
+    w.__TAOTIE_DESKTOP__ = true
     const bridge = vi.fn(async () => {
       accepted.add(FRESH)
       return FRESH
     })
-    w.__FREEAPI_SESSION__ = bridge
+    w.__TAOTIE_SESSION__ = bridge
 
     mount()
     await flush()
@@ -104,9 +104,9 @@ describe('AuthGate inside the desktop shell', () => {
 
   it('shows the recovery message, not a password prompt, when the fresh session is rejected too', async () => {
     const w = window as DesktopWindow
-    w.__FREEAPI_DESKTOP__ = true
+    w.__TAOTIE_DESKTOP__ = true
     const bridge = vi.fn(async () => 'still-rejected')
-    w.__FREEAPI_SESSION__ = bridge
+    w.__TAOTIE_SESSION__ = bridge
 
     mount()
     await flush()
@@ -121,8 +121,8 @@ describe('AuthGate inside the desktop shell', () => {
   // announced "loading" must be told the wait ended in a failure.
   it('announces the recovery message as an alert', async () => {
     const w = window as DesktopWindow
-    w.__FREEAPI_DESKTOP__ = true
-    w.__FREEAPI_SESSION__ = vi.fn(async () => 'still-rejected')
+    w.__TAOTIE_DESKTOP__ = true
+    w.__TAOTIE_SESSION__ = vi.fn(async () => 'still-rejected')
 
     mount()
     await flush()

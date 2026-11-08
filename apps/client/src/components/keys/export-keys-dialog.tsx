@@ -30,7 +30,7 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 // Only the Electron preload sets this flag: a browser reaching the same desktop
 // server over LAN still walks through the step, and the server still checks it.
 const isDesktopApp = typeof window !== 'undefined'
-  && (window as Window & { __FREEAPI_DESKTOP__?: boolean }).__FREEAPI_DESKTOP__ === true
+  && (window as Window & { __TAOTIE_DESKTOP__?: boolean }).__TAOTIE_DESKTOP__ === true
 
 async function downloadExport(format: ExportFormat, healthyOnly: boolean, password: string) {
   const token = getToken()

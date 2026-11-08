@@ -152,10 +152,10 @@ function Brand() {
 // sets this). The navbar then doubles as the window title bar: draggable,
 // padded for the macOS traffic lights, and without the web-only Sign out.
 const isDesktopApp = typeof window !== 'undefined'
-  && (window as Window & { __FREEAPI_DESKTOP__?: boolean }).__FREEAPI_DESKTOP__ === true
+  && (window as Window & { __TAOTIE_DESKTOP__?: boolean }).__TAOTIE_DESKTOP__ === true
 
 const desktopPlatform = typeof window !== 'undefined'
-  ? (window as Window & { __FREEAPI_PLATFORM__?: string }).__FREEAPI_PLATFORM__
+  ? (window as Window & { __TAOTIE_PLATFORM__?: string }).__TAOTIE_PLATFORM__
   : undefined
 
 const isMacDesktop = isDesktopApp && (

@@ -17,8 +17,8 @@ if (arg) {
 
 // Lets the client adapt its chrome (drag region, traffic-light padding,
 // no Sign out) when running inside the desktop shell.
-contextBridge.exposeInMainWorld('__FREEAPI_DESKTOP__', true);
-contextBridge.exposeInMainWorld('__FREEAPI_PLATFORM__', process.platform);
+contextBridge.exposeInMainWorld('__TAOTIE_DESKTOP__', true);
+contextBridge.exposeInMainWorld('__TAOTIE_PLATFORM__', process.platform);
 
 // The dashboard window signs in as the hidden machine account, whose password
 // is random and never shown, so it must never land on the login form. When the
@@ -28,7 +28,7 @@ contextBridge.exposeInMainWorld('__FREEAPI_PLATFORM__', process.platform);
 // and every extra capability handed to that world is one an XSS could use —
 // this one only ever hands back a session for the account the window already
 // runs as.
-contextBridge.exposeInMainWorld('__FREEAPI_SESSION__', () => ipcRenderer.invoke('freeapi:session-token'));
+contextBridge.exposeInMainWorld('__TAOTIE_SESSION__', () => ipcRenderer.invoke('freeapi:session-token'));
 
 // The running build's version, so the dashboard can show which one it is and
 // offer a check against the published releases (#703). Arrives the same way the
@@ -36,7 +36,7 @@ contextBridge.exposeInMainWorld('__FREEAPI_SESSION__', () => ipcRenderer.invoke(
 // rather than guessing from the server's own (unrelated) package version.
 const versionArg = process.argv.find((a) => a.startsWith('--freeapi-version='));
 contextBridge.exposeInMainWorld(
-  '__FREEAPI_VERSION__',
+  '__TAOTIE_VERSION__',
   versionArg ? versionArg.slice('--freeapi-version='.length) : null,
 );
 
@@ -44,7 +44,7 @@ contextBridge.exposeInMainWorld(
 // narrow: it can only check for, download and install the release published at
 // matrix0ai/dx-taotie — the feed URL and signature checks live in the main
 // process and nothing here can point them anywhere else.
-contextBridge.exposeInMainWorld('__FREEAPI_UPDATER__', {
+contextBridge.exposeInMainWorld('__TAOTIE_UPDATER__', {
   state: () => ipcRenderer.invoke('freeapi:update-state'),
   check: () => ipcRenderer.invoke('freeapi:update-check'),
   download: () => ipcRenderer.invoke('freeapi:update-download'),

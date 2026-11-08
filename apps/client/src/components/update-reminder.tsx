@@ -85,7 +85,7 @@ export function UpdateReminder() {
   // render rather than assigned from an effect; a browser or container install
   // asks the server. Both may be empty → no reminder.
   const shellVersion = typeof window !== 'undefined'
-    ? (window as { __FREEAPI_VERSION__?: string | null }).__FREEAPI_VERSION__ ?? null
+    ? (window as { __TAOTIE_VERSION__?: string | null }).__TAOTIE_VERSION__ ?? null
     : null
   const [serverVersion, setServerVersion] = useState<string | null>(null)
   const [release, setRelease] = useState<LatestRelease | null>(null)

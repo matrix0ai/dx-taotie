@@ -18,7 +18,7 @@ import { toast } from '@/lib/toast'
 // reaching the same desktop server over LAN still gets the field — and the
 // server still demands the password from it.
 const isDesktopApp = typeof window !== 'undefined'
-  && (window as Window & { __FREEAPI_DESKTOP__?: boolean }).__FREEAPI_DESKTOP__ === true
+  && (window as Window & { __TAOTIE_DESKTOP__?: boolean }).__TAOTIE_DESKTOP__ === true
 
 // #705: the list only ever shows a masked key, and the sole way to read one
 // back was to export every key to a file. This narrows that to one key, behind

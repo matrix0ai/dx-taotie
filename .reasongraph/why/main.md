@@ -424,3 +424,21 @@ Status: discussed
 Touches: `apps/client/src/pages/AgentsPage.tsx`, `apps/client/src/components/ui/button.tsx`, `apps/desktop/src/preload/index.ts`
 
 The desktop main window serves the same client build as the web app, so the planned button belongs in the existing Agents page and can use the existing button component. A desktop preload bridge provides the runtime distinction without adding a shared UI package.
+
+### Keep Monitor in the Electron desktop app
+Status: discussed
+Touches: `.spec/rfc/RFC-0005*`
+
+将 Monitor 限定在 Electron 桌面端，避免把新页面加入共享客户端或服务端界面。
+
+### Support WebSocket monitoring events on the server
+Status: discussed
+Touches: `.spec/rfc/RFC-0005*`
+
+RFC 描述服务端通过 WebSocket 推送请求与路由事件，供桌面端 Monitor 订阅展示。
+
+### Keep Dashboard distinct from Analytics and Monitor
+Status: discussed
+Touches: `.spec/rfc/RFC-0005*`
+
+将 Dashboard 视为管理界面、Analytics 视为其中现有统计页面，并将 Monitor 定义为独立的实时监控页面，以明确页面职责和平台范围。

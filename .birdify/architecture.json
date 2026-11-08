@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "language": "en",
+  "mapId": "taotie-monorepo",
+  "revision": 1,
+  "project": {
+    "id": "taotie",
+    "name": "Taotie"
+  },
+  "constraintDiscovery": {
+    "checkedAt": "2026-11-08T06:43:18.000Z",
+    "checkedPaths": ["AGENTS.md", "CLAUDE.md", "CONTRIBUTING.md", "README.md", "package.json", "apps/client/package.json", "apps/server/package.json", "apps/desktop/package.json", "apps/cli/package.json"],
+    "uninspectedPaths": ["directory-specific instruction files outside inspected source roots", "full source-history review for constraints"]
+  },
+  "modules": [
+    {
+      "id": "desktop-host",
+      "role": "frontend",
+      "name": "Desktop Host",
+      "kind": "local",
+      "responsibility": "Starts and owns the embedded local server, database lifecycle, and Electron dashboard window.",
+      "ownership": [{"kind": "directory", "path": "apps/desktop/src/main"}, {"kind": "directory", "path": "apps/desktop/src/preload"}],
+      "evidence": [{"path": "apps/desktop/src/main/server-host.ts", "symbol": "startServer", "note": "Creates the server app, initializes desktop database, and listens on a local port."}, {"path": "apps/desktop/src/main/window.ts", "note": "Loads dashboard from the local server URL."}],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 0, "column": 0}
+    },
+    {
+      "id": "dashboard",
+      "role": "frontend",
+      "name": "Dashboard UI",
+      "kind": "local",
+      "responsibility": "Provides operator pages for models, keys, agents, analytics, logs, and playground interactions.",
+      "ownership": [{"kind": "directory", "path": "apps/client/src"}],
+      "evidence": [{"path": "apps/client/src/App.tsx", "note": "Defines dashboard navigation and page routes."}, {"path": "apps/client/src/pages/AnalyticsPage.tsx", "note": "Reads recent request analytics and request attempt details."}],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 0, "column": 1}
+    },
+    {
+      "id": "server-api",
+      "role": "backend",
+      "name": "HTTP API",
+      "kind": "local",
+      "responsibility": "Composes authenticated dashboard APIs and OpenAI-compatible inference endpoints.",
+      "ownership": [{"kind": "file", "path": "apps/server/src/app.ts"}, {"kind": "directory", "path": "apps/server/src/routes"}],
+      "evidence": [{"path": "apps/server/src/app.ts", "symbol": "createApp", "note": "Mounts authenticated /api routes and inference protocol routes."}, {"path": "apps/server/src/routes/analytics.ts", "note": "Serves recent request and attempt detail endpoints."}],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 1, "column": 1}
+    },
+    {
+      "id": "gateway-router",
+      "role": "backend",
+      "name": "Gateway Router",
+      "kind": "local",
+      "responsibility": "Selects provider/model routes, executes fallback attempts, and returns inference results through the gateway API.",
+      "ownership": [{"kind": "file", "path": "apps/server/src/services/router.ts"}, {"kind": "file", "path": "apps/server/src/routes/proxy.ts"}],
+      "evidence": [{"path": "apps/server/src/routes/proxy.ts", "note": "Inference handlers invoke routing and manage provider results."}, {"path": "apps/server/src/services/router.ts", "note": "Owns model and provider route selection."}],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 2, "column": 1}
+    },
+    {
+      "id": "request-records",
+      "role": "database",
+      "name": "Request History",
+      "kind": "local",
+      "responsibility": "Stores request and attempt records used by analytics and operator diagnostics.",
+      "ownership": [{"kind": "directory", "path": "apps/server/src/db"}, {"kind": "file", "path": "apps/server/src/routes/analytics.ts"}],
+      "evidence": [{"path": "apps/server/src/routes/analytics.ts", "note": "Queries persisted request rows and associated attempt details."}, {"path": "apps/server/src/db/index.ts", "note": "Initializes the application database and data access."}],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 3, "column": 1}
+    },
+    {
+      "id": "agent-cli",
+      "role": "backend",
+      "name": "Agent Setup CLI",
+      "kind": "local",
+      "responsibility": "Configures supported coding-agent clients to use a Taotie gateway endpoint and key.",
+      "ownership": [{"kind": "directory", "path": "apps/cli/src"}],
+      "evidence": [{"path": "apps/cli/src/index.ts", "note": "CLI entry point for agent setup commands."}, {"path": "apps/cli/src/tools.ts", "note": "Builds per-agent configuration changes."}],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 0, "column": 3}
+    },
+    {
+      "id": "model-providers",
+      "role": "generic",
+      "roleAssessment": {"basis": "out-of-taxonomy", "note": "External inference services are outside the local responsibility taxonomy."},
+      "name": "Model Providers",
+      "kind": "external",
+      "responsibility": "External upstream services that receive inference requests and return model responses.",
+      "ownership": [],
+      "evidence": [],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {"row": 2, "column": 3}
+    }
+  ],
+  "relationships": [
+    {"id": "desktop-starts-server", "from": "desktop-host", "to": "server-api", "label": "Starts embedded API", "evidence": [{"path": "apps/desktop/src/main/server-host.ts", "symbol": "startServer", "note": "Desktop process builds the server app and starts listening."}], "kind": "control", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "desktop-opens-dashboard", "from": "desktop-host", "to": "dashboard", "label": "Opens local dashboard", "evidence": [{"path": "apps/desktop/src/main/window.ts", "note": "Electron window loads dashboard from local server URL."}], "kind": "control", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "dashboard-calls-api", "from": "dashboard", "to": "server-api", "label": "Calls dashboard APIs", "evidence": [{"path": "apps/client/src/pages/AnalyticsPage.tsx", "note": "Dashboard queries server analytics endpoints."}], "kind": "request", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "api-routes-through-router", "from": "server-api", "to": "gateway-router", "label": "Routes inference requests", "evidence": [{"path": "apps/server/src/routes/proxy.ts", "note": "Inference route handlers call routing services."}], "kind": "request", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "router-calls-providers", "from": "gateway-router", "to": "model-providers", "label": "Dispatches inference attempts", "evidence": [{"path": "apps/server/src/routes/proxy.ts", "note": "Gateway dispatches selected model requests to upstream providers."}], "kind": "request", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "providers-return-results", "from": "model-providers", "to": "gateway-router", "label": "Returns inference results", "evidence": [{"path": "apps/server/src/routes/proxy.ts", "note": "Gateway handler awaits upstream provider response and returns its result."}], "kind": "result", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "router-records-requests", "from": "gateway-router", "to": "request-records", "label": "Persists request and attempt history", "evidence": [{"path": "apps/server/src/routes/analytics.ts", "note": "Analytics reads persisted gateway request and attempt rows."}], "kind": "event", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "api-serves-request-history", "from": "server-api", "to": "request-records", "label": "Reads request history", "evidence": [{"path": "apps/server/src/routes/analytics.ts", "note": "Analytics endpoints return request rows and attempt detail."}], "kind": "request", "visibility": "overview", "status": "supported", "openQuestions": []},
+    {"id": "cli-configures-agents", "from": "agent-cli", "to": "server-api", "label": "Points agent clients at gateway", "evidence": [{"path": "apps/cli/src/tools.ts", "note": "Agent configuration uses gateway endpoint and key settings."}], "kind": "control", "visibility": "detail", "status": "supported", "openQuestions": []}
+  ]
+}
